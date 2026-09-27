@@ -1,7 +1,8 @@
 /**
- * Preset keypads (spec §8.2) for maths, chemistry and physics at GCSE
- * Foundation, GCSE Higher and A-level. Template keys are labelled with the
- * expression they insert, so a power key shows a base box with a raised box.
+ * Preset keypads (spec §8.2) for maths, chemistry and physics. Template keys
+ * are labelled with the expression they insert, so a power key shows a base
+ * box with a raised box. Keys carry topic tags (spec §8.3) so hosts can trim
+ * the keypad with a patch; presets know nothing about curricula.
  */
 import type { Node, OpName, RelName, Row, Subject, SymName } from "../model/types.js";
 import {
@@ -9,33 +10,28 @@ import {
   sup, sym, text, unit, v,
 } from "../model/builders.js";
 import { GREEK } from "../model/vocabulary.js";
-import type { Key, KeyAction, KeypadLayout, KeypadTab, Level } from "./types.js";
-
-const LEVEL_ORDER: Record<Level, number> = { "gcse-foundation": 0, "gcse-higher": 1, "a-level": 2 };
-
-/** Keys can be restricted to a minimum level. */
-type LeveledKey = Key & { minLevel?: Level };
+import type { Key, KeyAction, KeypadLayout, KeypadPatch, KeypadTab } from "./types.js";
 
 const active = (...steps: [number, number][]) => ({ path: steps.map(([node, slot]) => ({ node, slot })), index: 0 });
 
-function key(id: string, label: Key["label"], aria: string, action: KeyAction, extra: Partial<LeveledKey> = {}): LeveledKey {
+function key(id: string, label: Key["label"], aria: string, action: KeyAction, extra: Partial<Key> = {}): Key {
   return { id, label, aria, action, ...extra };
 }
 
-const digit = (d: string): LeveledKey => key(`digit-${d === "." ? "point" : d}`, { text: d }, d === "." ? "point" : d, { type: d }, { kind: "digit" });
+const digit = (d: string): Key => key(`digit-${d === "." ? "point" : d}`, { text: d }, d === "." ? "point" : d, { type: d }, { kind: "digit" });
 const OP_TEXT: Record<OpName, string> = { plus: "+", minus: "−", times: "×", cdot: "·", div: "÷", slash: "/", pm: "±", mp: "∓" };
-const opKey = (name: OpName, aria: string, extra: Partial<LeveledKey> = {}) =>
+const opKey = (name: OpName, aria: string, extra: Partial<Key> = {}) =>
   key(`op-${name}`, { text: OP_TEXT[name] }, aria, { insert: op(name) }, { kind: "operator", ...extra });
 const REL_TEXT: Partial<Record<RelName, string>> = {
   eq: "=", neq: "≠", lt: "<", gt: ">", le: "≤", ge: "≥", approx: "≈", equiv: "≡", propto: "∝", to: "→", equilibrium: "⇌", ratio: ":",
 };
-const relKey = (name: RelName, aria: string, extra: Partial<LeveledKey> = {}) =>
+const relKey = (name: RelName, aria: string, extra: Partial<Key> = {}) =>
   key(`rel-${name}`, { text: REL_TEXT[name] ?? name }, aria, { insert: rel(name) }, { kind: "operator", ...extra });
-const symKey = (name: SymName, textLabel: string, aria: string, extra: Partial<LeveledKey> = {}) =>
+const symKey = (name: SymName, textLabel: string, aria: string, extra: Partial<Key> = {}) =>
   key(`sym-${name}`, { text: textLabel }, aria, { insert: sym(name) }, extra);
 const letter = (ch: string, aria = ch) => key(`letter-${ch}`, { tree: [v(ch)] }, aria, { type: ch }, { kind: "letter" });
 const greek = (ch: string) => key(`greek-${GREEK[ch]}`, { tree: [v(ch)] }, GREEK[ch] ?? ch, { insert: v(ch) }, { kind: "letter" });
-const fnKey = (name: Parameters<typeof fn>[0], aria: string, extra: Partial<LeveledKey> = {}) =>
+const fnKey = (name: Parameters<typeof fn>[0], aria: string, extra: Partial<Key> = {}) =>
   key(`fn-${name}`, { tree: [fn(name)] }, aria, { insert: fn(name) }, { kind: "function", ...extra });
 const unitKey = (symbol: string, aria: string) => key(`unit-${symbol}`, { text: symbol }, aria, { insert: unit(symbol) }, { kind: "word" });
 const elementKey = (symbol: string) => key(`element-${symbol}`, { tree: [el(symbol)] }, symbol, { insert: el(symbol) });
@@ -43,7 +39,7 @@ const stateKey = (s: "s" | "l" | "g" | "aq", aria: string) => key(`state-${s}`, 
 
 // ------------------------------------------------------------- templates
 
-const tpl = (id: string, labelTree: Row, activeSlot: ReturnType<typeof active> | undefined, aria: string, action: KeyAction, extra: Partial<LeveledKey> = {}) =>
+const tpl = (id: string, labelTree: Row, activeSlot: ReturnType<typeof active> | undefined, aria: string, action: KeyAction, extra: Partial<Key> = {}) =>
   key(id, activeSlot ? { tree: labelTree, active: activeSlot } : { tree: labelTree }, aria, action, { kind: "template", ...extra });
 
 const square = tpl("square", [sup("2")], undefined, "squared", { template: sup("2") });
@@ -64,19 +60,19 @@ const openBrace = key("open-brace", { text: "{" }, "open brace", { bracket: "ope
 const closeBrace = key("close-brace", { text: "}" }, "close brace", { bracket: "close", char: "}" }, { kind: "operator" });
 const openParen = key("open-bracket", { text: "(" }, "open bracket", { bracket: "open", char: "(" }, { kind: "operator", variants: [pair, openSquare, openBrace, modulus] });
 const closeParen = key("close-bracket", { text: ")" }, "close bracket", { bracket: "close", char: ")" }, { kind: "operator", variants: [closeSquare, closeBrace] });
-const vector = tpl("column-vector", [colvec([], [])], active([0, 0]), "column vector", { template: colvec([], []) });
+const vector = tpl("column-vector", [colvec([], [])], active([0, 0]), "column vector", { template: colvec([], []) }, { tags: ["column-vectors"] });
 const recurringKey = tpl("recurring", [num("0"), num("."), recurring("3")], undefined, "recurring decimal", { template: recurring([]) });
 const sciKey = tpl("standard-form", [op("times"), num("1"), num("0"), sup([])], active([3, 0]), "times ten to the power", { template: sup([]), prefix: [op("times"), num("1"), num("0")]});
-const eToX = tpl("e-power", [cst("e"), sup([])], active([1, 0]), "e to the power", { template: sup([]), prefix: [cst("e")]}, { minLevel: "a-level" });
-const logBase = tpl("log-base", [fn("log"), sub([])], active([1, 0]), "log to a base", { template: sub([]), prefix: [fn("log")]}, { minLevel: "a-level" });
+const eToX = tpl("e-power", [cst("e"), sup([])], active([1, 0]), "e to the power", { template: sup([]), prefix: [cst("e")]}, { tags: ["exponentials"] });
+const logBase = tpl("log-base", [fn("log"), sub([])], active([1, 0]), "log to a base", { template: sub([]), prefix: [fn("log")]}, { tags: ["logarithms"] });
 const dydx = tpl("dy-dx", [deriv("y", "x")], undefined, "d y by d x", { template: deriv("y", "x") });
-const ddx = tpl("d-dx", [deriv(undefined, "x")], undefined, "d by d x", { template: deriv(undefined, "x") }, { minLevel: "a-level", variants: [dydx] });
-const integralKey = tpl("integral", [integral(undefined, undefined, [])], undefined, "integral", { template: integral(undefined, undefined, []) }, { minLevel: "a-level" });
-const sumKey = tpl("sum", [sum(undefined, undefined, [])], undefined, "sum", { template: sum(undefined, undefined, []) }, { minLevel: "a-level" });
+const ddx = tpl("d-dx", [deriv(undefined, "x")], undefined, "d by d x", { template: deriv(undefined, "x") }, { tags: ["calculus"], variants: [dydx] });
+const integralKey = tpl("integral", [integral(undefined, undefined, [])], undefined, "integral", { template: integral(undefined, undefined, []) }, { tags: ["calculus"] });
+const sumKey = tpl("sum", [sum(undefined, undefined, [])], undefined, "sum", { template: sum(undefined, undefined, []) }, { tags: ["series"] });
 const fOfX = tpl("function", [v("f"), fence([])], active([1, 0]), "function of", { template: fence([]), prefix: [v("f")]});
 const barKey = tpl("mean", [over("bar", [])], active([0, 0]), "bar", { template: over("bar", []) });
-const vecKey = tpl("vector-arrow", [over("vec", [])], active([0, 0]), "vector arrow", { template: over("vec", []) }, { minLevel: "a-level" });
-const hatKey = tpl("hat", [over("hat", [])], active([0, 0]), "hat", { template: over("hat", []) }, { minLevel: "a-level" });
+const vecKey = tpl("vector-arrow", [over("vec", [])], active([0, 0]), "vector arrow", { template: over("vec", []) }, { tags: ["vector-notation"] });
+const hatKey = tpl("hat", [over("hat", [])], active([0, 0]), "hat", { template: over("hat", []) }, { tags: ["vector-notation"] });
 const charge = tpl("charge", [sup([])], active([0, 0]), "charge", { template: sup([]) });
 const chargePlus = tpl("charge-plus", [sup([op("plus")])], undefined, "positive charge", { template: sup([op("plus")]) });
 const chargeMinus = tpl("charge-minus", [sup([op("minus")])], undefined, "negative charge", { template: sup([op("minus")]) });
@@ -85,7 +81,7 @@ const electron = key("electron", { tree: [el("e"), sup([op("minus")])] }, "elect
 
 // ---------------------------------------------------------------- shared
 
-const equals = relKey("eq", "equals", { variants: [relKey("approx", "approximately equal to"), relKey("neq", "not equal to"), relKey("equiv", "identical to", { minLevel: "a-level" })] });
+const equals = relKey("eq", "equals", { variants: [relKey("approx", "approximately equal to"), relKey("neq", "not equal to"), relKey("equiv", "identical to", { tags: ["proof"] })] });
 const minus = opKey("minus", "minus", { variants: [opKey("pm", "plus or minus")] });
 const times = opKey("times", "times", { variants: [opKey("div", "divide"), opKey("cdot", "dot")] });
 const toArrow = relKey("to", "reacts to give", { variants: [relKey("equilibrium", "reversible reaction")] });
@@ -118,7 +114,7 @@ const algebraTab = (): KeypadTab => ({
   id: "algebra", label: { tree: [v("x"), sup("2")] }, aria: "Algebra", columns: 6,
   keys: [
     letter("x"), letter("y"), letter("a"), letter("b"), letter("n"), letter("t"),
-    square, power, subscript, squareRoot, modulus, { ...vector, minLevel: "gcse-higher" } as LeveledKey,
+    square, power, subscript, squareRoot, modulus, vector,
     relKey("lt", "less than"), relKey("gt", "greater than"), relKey("le", "less than or equal to"),
     relKey("ge", "greater than or equal to"), relKey("neq", "not equal to"), relKey("approx", "approximately equal to"),
     opKey("pm", "plus or minus"), key("const-pi", { tree: [cst("pi")] }, "pi", { insert: cst("pi") }), recurringKey,
@@ -134,12 +130,12 @@ const functionsTab = (): KeypadTab => ({
     fnKey("arcsin", "inverse sine"), fnKey("arccos", "inverse cosine"), fnKey("arctan", "inverse tangent"),
     symKey("degree", "°", "degrees"), symKey("factorial", "!", "factorial"), fOfX,
     symKey("prime", "′", "prime"), barKey, symKey("percent", "%", "percent"),
-    fnKey("ln", "natural log", { minLevel: "a-level" }), fnKey("log", "log", { minLevel: "a-level" }), logBase, eToX,
-    key("const-e", { tree: [cst("e")] }, "e", { insert: cst("e") }, { minLevel: "a-level" }),
-    key("const-infinity", { text: "∞" }, "infinity", { insert: cst("infinity") }, { minLevel: "a-level" }),
+    fnKey("ln", "natural log", { tags: ["logarithms"] }), fnKey("log", "log", { tags: ["logarithms"] }), logBase, eToX,
+    key("const-e", { tree: [cst("e")] }, "e", { insert: cst("e") }, { tags: ["exponentials"] }),
+    key("const-infinity", { text: "∞" }, "infinity", { insert: cst("infinity") }, { tags: ["infinity"] }),
     ddx, integralKey, sumKey, vecKey, hatKey,
-    fnKey("sec", "secant", { minLevel: "a-level", variants: [fnKey("cosec", "cosecant"), fnKey("cot", "cotangent")] }),
-    symKey("therefore", "∴", "therefore", { minLevel: "a-level" }),
+    fnKey("sec", "secant", { tags: ["reciprocal-trig"], variants: [fnKey("cosec", "cosecant"), fnKey("cot", "cotangent")] }),
+    symKey("therefore", "∴", "therefore", { tags: ["proof"] }),
   ],
 });
 
@@ -207,54 +203,51 @@ const nav = (subjectKey: Key): Key[] => [
 /** The key used in place of submit when the host has not enabled it. */
 export const NEXT_BOX_KEY: Key = { id: "next-box", label: { text: "⇥" }, aria: "next box", action: { command: "moveToNextPlaceholder" }, kind: "nav" };
 
-function filterLevel(keys: Key[], level: Level): Key[] {
-  const ok = (k: Key) => LEVEL_ORDER[level] >= LEVEL_ORDER[(k as LeveledKey).minLevel ?? "gcse-foundation"];
-  return keys.filter(ok).map((k) => (k.variants ? { ...k, variants: filterLevel(k.variants, level) } : k))
-    .map((k) => { const { minLevel: _m, ...rest } = k as LeveledKey; return rest.variants?.length === 0 ? { ...rest, variants: undefined } : rest; });
-}
-
-function finish(layout: KeypadLayout, level: Level): KeypadLayout {
-  const tab = (t: KeypadTab): KeypadTab => ({ ...t, keys: filterLevel(t.keys, level) });
-  return {
-    numberPad: tab(layout.numberPad),
-    tabs: layout.tabs.map(tab).filter((t) => t.keys.length > 0),
-    navigation: filterLevel(layout.navigation, level),
-  };
-}
-
-/** The preset keypad for a subject and level. */
-export function keypadPreset(subject: Subject, level: Level = "gcse-higher"): KeypadLayout {
+/** The preset keypad for a subject: every key the subject offers (spec §8.2). */
+export function keypadPreset(subject: Subject): KeypadLayout {
   const variableKey = letter("x");
   const xKey: Key = { ...variableKey, id: "nav-variable", variants: ["y", "a", "b", "n", "t", "θ"].map((c) => (c === "θ" ? greek(c) : letter(c))) };
   switch (subject) {
     case "chemistry":
-      return finish({
+      return {
         numberPad: chemistryNumberPad(),
         tabs: [elementsTab(), chemSymbolsTab()],
         navigation: nav({ ...stateKey("aq", "aqueous"), id: "nav-state", variants: [stateKey("s", "solid"), stateKey("l", "liquid"), stateKey("g", "gas")] }),
-      }, level);
+      };
     case "physics":
-      return finish({
+      return {
         numberPad: mathsNumberPad(),
         tabs: [unitsTab(), algebraTab(), greekTab(), functionsTab()],
         navigation: nav({ ...sciKey, id: "nav-standard-form" }),
-      }, level);
+      };
     default:
-      return finish({
+      return {
         numberPad: mathsNumberPad(),
         tabs: [algebraTab(), functionsTab(), greekTab(), lettersTab()],
         navigation: nav(xKey),
-      }, level);
+      };
   }
 }
 
-/** Apply a host patch to a layout (spec §8.4). */
-export function applyKeypadPatch(layout: KeypadLayout, patch: import("./types.js").KeypadPatch): KeypadLayout {
-  const removed = new Set(patch.removeKeys ?? []);
-  const drop = (keys: Key[]): Key[] => keys.filter((k) => !removed.has(k.id)).map((k) => (k.variants ? { ...k, variants: drop(k.variants) } : k));
+/**
+ * Apply a host patch to a layout (spec §8.4). Removed keys also leave variant
+ * lists; a tab left with no keys is dropped.
+ */
+export function applyKeypadPatch(layout: KeypadLayout, patch: KeypadPatch): KeypadLayout {
+  const removedIds = new Set(patch.removeKeys ?? []);
+  const removedTags = new Set(patch.removeTags ?? []);
+  const keep = (k: Key) => !removedIds.has(k.id) && !(k.tags ?? []).some((t) => removedTags.has(t));
+  const drop = (keys: Key[]): Key[] => keys.filter(keep).map((k) => {
+    if (!k.variants) return k;
+    const variants = drop(k.variants);
+    if (variants.length) return { ...k, variants };
+    const { variants: _v, ...rest } = k;
+    return rest;
+  });
   const tabs = layout.tabs
     .filter((t) => !(patch.removeTabs ?? []).includes(t.id))
-    .map((t) => ({ ...t, keys: [...drop(t.keys), ...(patch.addKeys?.[t.id] ?? [])] }));
+    .map((t) => ({ ...t, keys: [...drop(t.keys), ...(patch.addKeys?.[t.id] ?? [])] }))
+    .filter((t) => t.keys.length > 0);
   return {
     numberPad: { ...layout.numberPad, keys: [...drop(layout.numberPad.keys), ...(patch.addKeys?.[layout.numberPad.id] ?? [])] },
     tabs: [...tabs, ...(patch.addTabs ?? [])],

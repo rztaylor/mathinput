@@ -13,10 +13,9 @@ const typeInto = (el: Element, text: string) => {
 
 describe("<MathInput>", () => {
   it("renders the element with attributes", () => {
-    const { container } = render(<MathInput subject="chemistry" level="a-level" label="Answer" className="my-field" keypad="always" submitOnEnter />);
+    const { container } = render(<MathInput subject="chemistry" label="Answer" className="my-field" keypad="always" submitOnEnter />);
     const el = container.querySelector("math-input") as HTMLElement;
     expect(el.getAttribute("subject")).toBe("chemistry");
-    expect(el.getAttribute("level")).toBe("a-level");
     expect(el.getAttribute("keypad")).toBe("always");
     expect(el.hasAttribute("submit-on-enter")).toBe(true);
     expect(el.classList.contains("my-field")).toBe(true);

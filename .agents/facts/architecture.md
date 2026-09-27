@@ -7,6 +7,8 @@
   - `packages/element` — `@mathinput/element`: `<math-input>` custom element,
     DOM renderer, input handling, keypad UI, default stylesheet.
   - `packages/react` — `@mathinput/react`: thin React wrapper over the element.
+  - `packages/presets-uk` — `@mathinput/presets-uk`: optional UK curriculum
+    keypads as `KeypadPatch`es over the core presets. Depends on core only.
 - Dependency direction: `react → element → core`. Nothing imports upward.
   Within core: `keypad → editor → rules → model`, `serialize → model`,
   `parse → model`; `model` imports nothing.

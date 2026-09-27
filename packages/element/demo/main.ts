@@ -7,6 +7,7 @@ import type { MathInputElement } from "../src/index.js";
 import type { MathInputValue } from "@mathinput/core";
 import { ALL } from "../../core/tests/golden/cases.js";
 import { SKINS, applySkin } from "../../../site/src/skins.js";
+import { ukKeypadPatch, type UkLevel } from "@mathinput/presets-uk";
 
 const samples = [
   { subject: "maths", label: "Maths", latex: "x=\\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}" },
@@ -79,9 +80,11 @@ indicator.addEventListener("change", () => {
     else delete el.dataset.variantIndicator;
   }
 });
-const level = document.getElementById("level") as HTMLSelectElement;
-level.addEventListener("change", () => {
-  for (const el of document.querySelectorAll(".demo-fields math-input")) el.setAttribute("level", level.value);
+// Optional curriculum keypads come from @mathinput/presets-uk, as a host would use them.
+const keys = document.getElementById("keys") as HTMLSelectElement;
+keys.addEventListener("change", () => {
+  const patch = keys.value ? ukKeypadPatch(keys.value as UkLevel) : null;
+  for (const el of document.querySelectorAll<MathInputElement>(".demo-fields math-input")) el.keypadLayout = patch;
 });
 
 // "Show your working": the host owns the steps (spec §1).

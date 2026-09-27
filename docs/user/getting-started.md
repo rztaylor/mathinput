@@ -18,7 +18,7 @@ npm install @mathinput/react
   import "@mathinput/element/mathinput.css"; // default styles
 </script>
 
-<math-input subject="maths" level="gcse-higher" label="Your answer" submit-on-enter></math-input>
+<math-input subject="maths" label="Your answer" submit-on-enter></math-input>
 
 <script type="module">
   const input = document.querySelector("math-input");
@@ -45,7 +45,7 @@ export function Answer() {
       subject="chemistry"
       label="Balanced equation"
       submitOnEnter
-      onSubmit={(v) => sendToTutor(`$${v.latex}$`)}
+      onSubmit={(v) => saveAnswer(`$${v.latex}$`)}
     />
   );
 }

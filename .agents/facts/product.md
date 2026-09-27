@@ -1,13 +1,19 @@
 # Product facts
 
-- Name: MathInput. npm scope `@mathinput` (`core`, `element`, `react`). Licence: MIT.
+- Name: MathInput. npm scope `@mathinput` (`core`, `element`, `react`,
+  `presets-uk`). Licence: MIT.
 - What it is: a web component that lets a learner enter one maths, chemistry
   or physics expression as it looks on paper, using a keypad or keyboard, and
   returns it as a tree plus LaTeX, linear text, spoken text and MathML.
-- Audience: GCSE and A-level learners (England) on phones, tablets and
-  laptops; integrators are web developers embedding it in any framework.
-- First consumer: the NG+ study app (`~/src/ngplus`), which sends answers to an
-  LLM for judging. NG+ needs must not leak into the component.
+- Audience: anyone entering maths, chemistry or physics notation on a phone,
+  tablet or laptop, typically a learner answering a question; integrators are
+  web developers embedding it in any framework.
+- Host- and curriculum-agnostic: default keypads offer every key for the
+  subject; hosts trim them with topic tags and patches. Curriculum presets
+  are optional packages (`@mathinput/presets-uk` for GCSE/A-level in England).
+  Notation coverage is benchmarked against GCSE and A-level content.
+- No host application is named in this repository; integrations live in the
+  host's own repository.
 - Scope boundaries: one expression per instance (hosts own lists of steps); no
   evaluation or CAS; no network, storage or analytics; no handwriting input.
 - Authoritative spec: `docs/dev/specs/mathinput-component.md`. Interactive
@@ -15,6 +21,5 @@
 - Design principles: no input language for learners; keys show exactly what
   they insert; default skin provided, fully reskinnable by tokens and classes;
   accessible by keyboard and screen reader.
-- NG+ integration is out of scope here; it happens in the NG+ repository.
 - Deferred (27 Sep 2026): npm publishing, GitHub remote and CI.
 - Decision needed: hosting for the live demo.

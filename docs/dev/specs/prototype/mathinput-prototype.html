@@ -228,8 +228,8 @@ code.api { display: block; white-space: pre; overflow-x: auto; font-family: ui-m
 <div class="page">
   <header class="page-head">
     <div>
-      <h1>MathInput for NG+</h1>
-      <p>A prototype of a maths and science answer field. Learners write with keys instead of LaTeX, and see their answer as it would look on paper. The component holds one step at a time. NG+ keeps the list of steps.</p>
+      <h1>MathInput prototype</h1>
+      <p>A prototype of a maths and science answer field. Learners write with keys instead of LaTeX, and see their answer as it would look on paper. The component holds one step at a time. The host app keeps the list of steps.</p>
     </div>
     <div class="controls">
       <div><div class="seg-label" id="devLbl">Device</div>
@@ -257,7 +257,7 @@ code.api { display: block; white-space: pre; overflow-x: auto; font-family: ui-m
               <p class="q-meta" id="qMeta"></p>
               <p class="q-text" id="qText"></p>
             </article>
-            <div class="steps-head"><h2>Your working</h2><span>List owned by NG+</span></div>
+            <div class="steps-head"><h2>Your working</h2><span>List owned by the host</span></div>
             <ol class="steps" id="steps"></ol>
             <div class="mi" id="mi">
               <div class="mi-label"><span id="miLabel">Step 3</span><span>MathInput</span></div>
@@ -285,7 +285,7 @@ code.api { display: block; white-space: pre; overflow-x: auto; font-family: ui-m
 
     <aside class="inspector">
       <section class="panel-card">
-        <h2>What NG+ receives</h2>
+        <h2>What the host receives</h2>
         <p>Every format is generated from one expression tree. The learner never sees any of them.</p>
         <div class="out-tabs" role="tablist" id="outTabs">
           <button type="button" role="tab" data-v="tutor" aria-selected="true">Sent to tutor</button>
@@ -304,7 +304,7 @@ code.api { display: block; white-space: pre; overflow-x: auto; font-family: ui-m
       </section>
       <section class="panel-card">
         <h2>Proposed API</h2>
-        <p>A framework-agnostic web component. NG+ wraps it in React.</p>
+        <p>A framework-agnostic web component with a React wrapper.</p>
         <code class="api">&lt;math-input subject="chemistry" keypad="auto"
   label="Step 3"&gt;&lt;/math-input&gt;
 
@@ -657,7 +657,7 @@ function treeJSON(row) {
 const wrapMath = (row) => state.subject === 'chem' ? `$\\ce{${ce(row)}}$` : `$${tex(row)}$`;
 
 const NOTES = {
-  tutor: 'What NG+ would send when the learner taps Check my work. Maths goes in $…$ and chemistry in $\\ce{…}$, both of which ui/Markdown already renders.',
+  tutor: 'What a host app would send when the learner taps Check my work. Maths goes in $…$ and chemistry in $\\ce{…}$, which KaTeX with mhchem renders.',
   latex: 'The current step only. Empty boxes become \\square so the tutor can see what is missing.',
   text: 'A linear fallback for logs, search, or a second hint in the prompt.',
   spoken: 'Read out by screen readers through aria-describedby.',
@@ -807,7 +807,7 @@ const SUBJECTS = {
       'Tap <b>H</b>, then <b>2</b>. The 2 drops to a subscript because it follows an element.',
       'A number at the start of a formula stays full size, as a coefficient: <span class="m">2HCl</span>.',
       'For ions, tap the charge key and then type <b>2</b> and <b>+</b>. Hold it for a quick + or −.',
-      'The tutor receives <b>\\ce{…}</b> (mhchem), which NG+ already renders.',
+      'The tutor receives <b>\\ce{…}</b> (mhchem), which KaTeX renders.',
       'Use <b>Table</b> in Elements for the full periodic table.',
     ],
   },

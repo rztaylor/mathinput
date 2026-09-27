@@ -37,6 +37,8 @@ export interface Key {
   variants?: Key[];
   width?: 1 | 2;
   kind?: KeyKind;
+  /** Topic tags, such as "calculus", for trimming a keypad with `removeTags` (spec §8.3). */
+  tags?: string[];
 }
 
 export interface KeypadTab {
@@ -55,11 +57,11 @@ export interface KeypadLayout {
   numberPad: KeypadTab;
 }
 
-export type Level = "gcse-foundation" | "gcse-higher" | "a-level";
-
 export interface KeypadPatch {
   addKeys?: Record<string, Key[]>;
   removeKeys?: string[];
+  /** Remove every key, and every variant, that carries any of these tags. */
+  removeTags?: string[];
   addTabs?: KeypadTab[];
   removeTabs?: string[];
   navigation?: Key[];

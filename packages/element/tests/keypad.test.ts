@@ -127,12 +127,15 @@ describe("keypad", () => {
     expect(el.querySelector(".mi-sheet")).toBeNull();
   });
 
-  it("filters keys by level", () => {
-    const higher = mount({ keypad: "always" });
-    expect(higher.querySelector('[data-key-id="integral"]')).toBeNull();
-    const alevel = mount({ keypad: "always", level: "a-level" });
-    tab("Functions", alevel);
-    expect(alevel.querySelector('[data-key-id="integral"]')).not.toBeNull();
+  it("offers every key by default and trims keys by tag", () => {
+    const full = mount({ keypad: "always" });
+    tab("Functions", full);
+    expect(full.querySelector('[data-key-id="integral"]')).not.toBeNull();
+    const trimmed = mount({ keypad: "always" });
+    trimmed.keypadLayout = { removeTags: ["calculus"] };
+    tab("Functions", trimmed);
+    expect(trimmed.querySelector('[data-key-id="integral"]')).toBeNull();
+    expect(trimmed.querySelector('[data-key-id="fn-sin"]')).not.toBeNull();
   });
 
   it("accepts a host patch", () => {

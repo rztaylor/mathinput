@@ -8,4 +8,5 @@ names and licence) are logged in
 | Date | Decision | Why |
 |---|---|---|
 | 2026-09-27 | npm workspaces monorepo with `core`, `element`, `react` | Core must stay DOM-free and reusable on servers; wrappers stay thin. |
+| 2026-09-27 | Curriculum levels live in optional preset packages (`@mathinput/presets-uk`); core keys carry topic tags | The component is host- and curriculum-agnostic; one country's levels must not be a core attribute. Supersedes the `level` attribute. |
 | 2026-09-27 | Default stylesheet in plain CSS; Tailwind support is a v4 theme entry (`tailwind.css`) | Consumers must not need Tailwind; Tailwind hosts get token utilities and a correct layer order. Supersedes the plan's `@apply` authoring. |

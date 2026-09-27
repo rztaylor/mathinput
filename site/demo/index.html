@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MathInput demo</title>
-  <meta name="description" content="Try MathInput for maths, chemistry and physics, switch skins, levels and themes, and compare its rendering with KaTeX.">
+  <meta name="description" content="Try MathInput for maths, chemistry and physics, switch skins, key sets and themes, and compare its rendering with KaTeX.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -23,12 +23,12 @@
   <main id="main" class="wrap">
     <div class="demo-top">
       <h1>Demo</h1>
-      <p>Everything here is the real component. Change the skin, level and keypad below; they apply to every field on the page.</p>
+      <p>Everything here is the real component. Change the skin, keys and keypad below; they apply to every field on the page. The UK key sets come from the optional <code>@mathinput/presets-uk</code> package.</p>
     </div>
     <div class="controls" role="group" aria-label="Demo settings">
       <label class="control">Skin <select id="skin"></select></label>
-      <label class="control">Level
-        <select id="level"><option value="gcse-foundation">GCSE Foundation</option><option value="gcse-higher" selected>GCSE Higher</option><option value="a-level">A-level</option></select>
+      <label class="control">Keys
+        <select id="keys"><option value="" selected>All keys</option><option value="gcse-foundation">UK GCSE Foundation</option><option value="gcse-higher">UK GCSE Higher</option><option value="a-level">UK A-level</option></select>
       </label>
       <label class="control">Keypad
         <select id="keypad"><option value="always" selected>Always shown</option><option value="auto">Auto</option><option value="collapsed">Behind a toggle</option><option value="never">Never</option></select>
@@ -73,7 +73,7 @@
   </main>
   <footer class="site-foot">
     <div class="wrap">
-      <span>MathInput · MIT licence · for GCSE and A-level maths, chemistry and physics</span>
+      <span>MathInput · MIT licence · maths, chemistry and physics input</span>
       <span><a href="/docs/">Docs</a> · <a href="/demo/">Demo</a></span>
     </div>
   </footer>

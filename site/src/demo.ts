@@ -4,6 +4,7 @@ import katex from "katex";
 import "katex/contrib/mhchem";
 import type { MathInputElement } from "@mathinput/element";
 import type { MathInputValue } from "@mathinput/core";
+import { ukKeypadPatch, type UkLevel } from "@mathinput/presets-uk";
 import { ALL } from "../../packages/core/tests/golden/cases.ts";
 import { bindOutputs } from "./outputs.ts";
 import { SKINS, applySkin, skinCss } from "./skins.ts";
@@ -64,7 +65,7 @@ for (const c of ALL) {
 
 // Controls apply to every field on the page.
 const skinSel = document.getElementById("skin") as HTMLSelectElement;
-const levelSel = document.getElementById("level") as HTMLSelectElement;
+const keysSel = document.getElementById("keys") as HTMLSelectElement;
 const keypadSel = document.getElementById("keypad") as HTMLSelectElement;
 const indicatorSel = document.getElementById("indicator") as HTMLSelectElement;
 const note = document.getElementById("skin-note") as HTMLElement;
@@ -75,8 +76,9 @@ function applyAll(): void {
   if (!skin) return;
   applySkin(grid, skin, pageTheme());
   note.textContent = `${skin.description} ${Object.keys(skin.tokens).length ? `${Object.keys(skin.tokens).length} token overrides.` : ""}`;
-  for (const el of grid.querySelectorAll<HTMLElement>("math-input:not([readonly])")) {
-    el.setAttribute("level", levelSel.value);
+  const patch = keysSel.value ? ukKeypadPatch(keysSel.value as UkLevel) : null;
+  for (const el of grid.querySelectorAll<MathInputElement>("math-input:not([readonly])")) {
+    el.keypadLayout = patch;
     el.setAttribute("keypad", keypadSel.value);
     if (indicatorSel.value) el.dataset.variantIndicator = indicatorSel.value;
     else delete el.dataset.variantIndicator;
@@ -93,6 +95,6 @@ pre.append(skinCssBlock);
 details.append(pre);
 note.after(details);
 
-for (const s of [skinSel, levelSel, keypadSel, indicatorSel]) s.addEventListener("change", applyAll);
+for (const s of [skinSel, keysSel, keypadSel, indicatorSel]) s.addEventListener("change", applyAll);
 onThemeChange(applyAll);
 applyAll();

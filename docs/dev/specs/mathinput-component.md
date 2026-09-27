@@ -1,6 +1,6 @@
 # MathInput — Component Specification
 
-Status: draft for review · Version 0.2 · 27 September 2026
+Status: draft for review · Version 0.3 · 27 September 2026
 
 MathInput is a reusable web component for entering a single mathematical,
 chemical or physical expression the way it appears on paper, using a keypad
@@ -44,10 +44,15 @@ detail that may change; anything in here changes only with a version bump.
 
 ### Target audience
 
-GCSE (Foundation and Higher) and A-level learners in Maths, Chemistry and
-Physics, on school-issued tablets, personal phones and laptops. The notation
-covered is the union of the DfE GCSE and A-level subject content for those
-three subjects (§9).
+Anyone entering a maths, chemistry or physics expression in a web page —
+typically a learner answering a question — on a phone, tablet or laptop.
+Integrators are web developers embedding the component in any framework.
+
+The component knows notation, not curricula. Its default keypads offer every
+key for a subject; hosts trim them to a course with topic tags and patches
+(§8.3, §8.4). Curriculum presets are optional packages built on that public
+API (§8.6). The notation benchmark is school and early-university maths and
+science (§9).
 
 ---
 
@@ -58,6 +63,7 @@ three subjects (§9).
 | `@mathinput/core` | Expression tree, commands, cursor model, serialisers, parsers, keypad definitions. Pure TypeScript, no DOM. | nothing |
 | `@mathinput/element` | The `<math-input>` custom element, renderer, keypad UI, default stylesheet. | core |
 | `@mathinput/react` | `<MathInput>` React component wrapping the element with typed props and events. | element |
+| `@mathinput/presets-uk` | Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level) as patches (§8.6). | core |
 
 `core` is usable on its own on a server or in tests, for example to convert a
 stored tree to LaTeX or spoken text.
@@ -172,11 +178,10 @@ placeholder box.
 | Attribute / property | Type | Default | Notes |
 |---|---|---|---|
 | `subject` | `"maths" \| "chemistry" \| "physics"` | `"maths"` | Selects interpretation rules and default keypad. |
-| `level` | `"gcse-foundation" \| "gcse-higher" \| "a-level"` | `"gcse-higher"` | Selects which keys appear in the default keypad. |
 | `value` (property only) | `MathDocument` | empty | Get/set the tree. Setting replaces the content and resets undo history. |
 | `latex` | `string` | `""` | Initial content as LaTeX. Parsed with the subset parser (§7.7); unsupported input raises `parse-error` and leaves the field empty. Reflects the current LaTeX when read. |
 | `keypad` | `"auto" \| "always" \| "never" \| "collapsed"` | `"auto"` | `auto`: shown on coarse pointers, collapsed behind a toggle on fine pointers. |
-| `keypad-layout` (property `keypadLayout`) | `KeypadLayout` | preset for subject and level | Replace or extend the keypad (§8.4). |
+| `keypad-layout` (property `keypadLayout`) | `KeypadLayout \| KeypadPatch` | preset for the subject | Replace or trim the keypad (§8.4). |
 | `keypad-container` | element id or `HTMLElement` | inside the component | Render the keypad in another element, for a host-owned bottom sheet. |
 | `placeholder` | `string` | `"Enter your answer"` | Hint shown when empty. |
 | `label` / `aria-label` | `string` | — | Accessible name. One of `label`, `aria-label` or `aria-labelledby` is required. |
@@ -241,7 +246,6 @@ hooks are class names prefixed `mi-` and data attributes; see §10.2.
 ```tsx
 <MathInput
   subject="chemistry"
-  level="gcse-higher"
   value={doc}                 // controlled, optional
   defaultLatex="…"            // uncontrolled
   onInput={(v) => …}
@@ -275,7 +279,8 @@ fromText(text: string, subject: Subject): MathDocument;     // linear syntax, §
 createEditor(doc?: MathDocument): Editor;   // cursor, selection, commands, undo — no DOM
 
 // Keypads
-keypadPreset(subject, level, form: "phone" | "tablet" | "desktop"): KeypadLayout;
+keypadPreset(subject): KeypadLayout;                  // every key for the subject, §8.2
+applyKeypadPatch(layout, patch: KeypadPatch): KeypadLayout;  // §8.4
 
 // Validation
 validateDocument(json: unknown): MathDocument;  // zod-free structural check
@@ -651,16 +656,14 @@ the keypad is `contain: inline-size`, so it cannot widen its container.
 | Symbols | — | arrows, +, state symbols, charges, e⁻, `(` `)` `[` `]` as single keys, ·, ↑, Δ, = | — |
 | Units | — | — | SI and accepted units, `/`, ⁻¹, ×10ⁿ |
 
-`level` trims the set: Foundation hides column vectors; Foundation and Higher
-hide logarithms, `e`, eˣ, ∞, d/dx, ∫, Σ, vector arrows, hats, `sec cosec
-cot`, `∴` and `≡` (GCSE has no logarithms or calculus); A-level shows all.
-Inverse trig is available at every level (GCSE Foundation uses it).
+Each preset offers every key for its subject. Keys for more advanced topics
+carry tags (§8.3) so a host can remove them with one patch.
 
 The navigation row is: a subject key (maths: `x` with other letters as
 variants; chemistry: `(aq)` with other states; physics: ×10ⁿ), ◀, ▶, ⌫, and
 ↵ — replaced by a "next box" key (⇥) when `submit-on-enter` is not set.
 
-`keypadPreset(subject, level)` returns the layout; the element decides
+`keypadPreset(subject)` returns the layout; the element decides
 placement per form factor.
 
 ### 8.3 Keys
@@ -674,6 +677,7 @@ interface Key {
   variants?: Key[];            // long-press / right-click alternatives
   width?: 1 | 2;               // column span
   kind?: "digit" | "operator" | "template" | "letter" | "function" | "nav" | "primary";
+  tags?: string[];             // topic tags, for removal by patch (below)
 }
 
 type KeyLabel =
@@ -682,6 +686,21 @@ type KeyLabel =
   | { icon: "left" | "right" | "backspace" | "enter" | "shift" | "keypad" }
   | { html: string };          // escape hatch
 ```
+
+**Topic tags.** Preset keys for more advanced topics carry tags. Tags are
+public API; untagged keys are basic notation.
+
+| Tag | Keys |
+|---|---|
+| `column-vectors` | column vector |
+| `logarithms` | `ln`, `log`, log to a base (maths and physics; the chemistry `log` key for pH is untagged) |
+| `exponentials` | `e`, eˣ |
+| `infinity` | ∞ |
+| `calculus` | d/dx (with dy/dx), ∫ |
+| `series` | Σ |
+| `vector-notation` | vector arrow, hat |
+| `reciprocal-trig` | `sec` (with `cosec`, `cot`) |
+| `proof` | `∴`, `≡` |
 
 **Key labels are rendered expressions.** A key whose label is `{ tree }` is
 drawn with the same renderer as the field, at key size, with placeholder
@@ -722,14 +741,18 @@ interface KeypadLayout {
   numberPad?: Key[];           // the left block on tablet/desktop; defaults to the `123` tab
 }
 type KeypadPatch = {
-  extend?: string;             // preset name to start from, e.g. "maths/gcse-higher"
   addKeys?: Record<string /* tab id */, Key[]>;
   removeKeys?: string[];       // key ids
+  removeTags?: string[];       // remove keys and variants carrying any of these tags
   addTabs?: KeypadLayout["tabs"];
   removeTabs?: string[];
   navigation?: Key[];
 };
 ```
+
+A patch always starts from the preset for the element's subject, so one
+patch works for every subject. Removed keys also leave variant lists, and a
+tab left with no keys is dropped.
 
 All preset key ids are stable and documented so hosts can remove or reorder
 them.
@@ -740,12 +763,35 @@ Opened from the Elements tab. A scrollable 18-column grid, non-metals tinted,
 each cell a button that inserts the element and closes the sheet. Rendered in
 the component's keypad container so hosts can style or reposition it.
 
+### 8.6 Curriculum presets (optional packages)
+
+Curriculum knowledge lives outside core, in optional packages that use only
+the public keypad API. `@mathinput/presets-uk` is the first:
+
+```ts
+type UkLevel = "gcse-foundation" | "gcse-higher" | "a-level";
+ukKeypadPatch(level: UkLevel): KeypadPatch;             // subject-independent
+ukKeypad(subject: Subject, level: UkLevel): KeypadLayout;
+```
+
+| Level | Removes tags |
+|---|---|
+| `gcse-foundation` | everything `gcse-higher` removes, plus `column-vectors` |
+| `gcse-higher` | `logarithms`, `exponentials`, `infinity`, `calculus`, `series`, `vector-notation`, `reciprocal-trig`, `proof` |
+| `a-level` | none (the full preset) |
+
+A host sets the patch as `keypadLayout`, optionally merged with its own
+`removeKeys` or `addKeys`. Presets for other curricula follow the same
+pattern and need no change to core.
+
 ---
 
 ## 9. Notation coverage
 
 The keypad presets and serialisers must cover every item below. Each has a
-golden test.
+golden test. The list is benchmarked against England's GCSE and A-level
+subject content for the three subjects; it is a coverage yardstick, not a
+restriction on who can use the component.
 
 ### 9.1 Maths (GCSE and A-level)
 
@@ -932,10 +978,10 @@ how to load STIX from Google Fonts or self-host.
 
 ## 14. Versioning and compatibility
 
-- Semantic versioning across the three packages, released together.
+- Semantic versioning across all `@mathinput/*` packages, released together.
 - `MathDocument.version` is bumped only when the tree changes incompatibly;
   a migration function ships with each bump.
-- Preset key ids, class hooks and tokens are part of the public API.
+- Preset key ids, preset tags, class hooks and tokens are part of the public API.
 
 ---
 
@@ -956,6 +1002,7 @@ how to load STIX from Google Fonts or self-host.
 | Enter | Opt-in `submit-on-enter` | Always submit — conflicts with host forms |
 | Mixed numbers | Adjacent atoms, serialiser spacing | Dedicated template |
 | Packages | `@mathinput/*`, MIT | — |
+| Curriculum fit | Topic tags on keys and patches in core; UK levels in optional `@mathinput/presets-uk` | A `level` attribute with GCSE/A-level values in core — ties a host-agnostic component to one curriculum |
 
 ---
 

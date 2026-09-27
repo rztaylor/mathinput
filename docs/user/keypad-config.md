@@ -5,13 +5,15 @@
 | Attribute | Values | Effect |
 |---|---|---|
 | `subject` | `maths` · `chemistry` · `physics` | Picks the preset and the typing rules. |
-| `level` | `gcse-foundation` · `gcse-higher` (default) · `a-level` | Hides keys beyond the level (no logs or calculus at GCSE). |
 | `keypad` | `auto` (default) · `always` · `never` · `collapsed` | `auto` opens on touch devices and sits behind a toggle with a mouse. |
 | `keypad-container` | element id | Renders the keypad inside your own element, for a bottom sheet or side panel. |
 | `submit-on-enter` | boolean | Enter and the ↵ key fire `submit`. Without it the ↵ key becomes "next box". |
 
 `el.keypadOpen = true` opens it from code; the `keypad-toggle` event reports
 changes.
+
+Each subject's keypad offers every key it has. To fit it to a course, remove
+keys by topic or by id.
 
 ## Changing keys
 
@@ -27,17 +29,69 @@ el.keypadLayout = {
 };
 ```
 
+A patch always starts from the preset for the field's subject. Removed keys
+also disappear from long-press menus, and a tab left empty is dropped.
+
 Or replace it entirely with a full `KeypadLayout` (`{ numberPad, tabs,
-navigation }`); start from `keypadPreset(subject, level)` in
-`@mathinput/core`.
+navigation }`); start from `keypadPreset(subject)` in `@mathinput/core`.
 
 Key ids are stable. List them with:
 
 ```js
 import { keypadPreset } from "@mathinput/core";
-const l = keypadPreset("maths", "a-level");
+const l = keypadPreset("maths");
 console.log([l.numberPad, ...l.tabs].flatMap((t) => t.keys.map((k) => k.id)));
 ```
+
+## Removing topics
+
+Keys for more advanced topics carry tags. Remove a whole topic with
+`removeTags`:
+
+```js
+el.keypadLayout = { removeTags: ["calculus", "logarithms"] };
+```
+
+| Tag | Keys |
+|---|---|
+| `column-vectors` | column vector |
+| `logarithms` | `ln`, `log`, log to a base (the chemistry `log` key for pH is untagged) |
+| `exponentials` | `e`, eˣ |
+| `infinity` | ∞ |
+| `calculus` | d/dx (with dy/dx), ∫ |
+| `series` | Σ |
+| `vector-notation` | vector arrow, hat |
+| `reciprocal-trig` | `sec`, `cosec`, `cot` |
+| `proof` | `∴`, `≡` |
+
+Your own keys can carry tags too (`tags: ["my-topic"]`).
+
+## Curriculum presets
+
+Ready-made key sets for a curriculum are optional packages built on the
+same patches. `@mathinput/presets-uk` covers GCSE Foundation, GCSE Higher
+and A-level in England:
+
+```bash
+npm install @mathinput/presets-uk
+```
+
+```js
+import { ukKeypadPatch } from "@mathinput/presets-uk";
+
+el.keypadLayout = ukKeypadPatch("gcse-higher");
+// Combine with your own changes:
+el.keypadLayout = { ...ukKeypadPatch("gcse-foundation"), removeTabs: ["letters"] };
+```
+
+| Level | Hides |
+|---|---|
+| `gcse-foundation` | everything `gcse-higher` hides, plus column vectors |
+| `gcse-higher` | logarithms, `e` and eˣ, ∞, calculus, Σ, vector arrows and hats, `sec cosec cot`, `∴`, `≡` |
+| `a-level` | nothing |
+
+`ukKeypad(subject, level)` returns the full trimmed layout, for example to
+list its key ids. In React, pass the patch as `keypadLayout`.
 
 ## Key definitions
 

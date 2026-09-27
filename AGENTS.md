@@ -8,12 +8,14 @@ of them in the same change — never leave them diverging.
 
 ## Working agreements
 
-- The component is host-agnostic. NG+ is the first consumer, but never add
-  behaviour, naming or dependencies specific to one host.
+- The component is host- and curriculum-agnostic. Never add behaviour,
+  naming or dependencies specific to one host. Curriculum knowledge (levels,
+  exam boards) belongs in optional preset packages such as
+  `@mathinput/presets-uk`, built only on the public keypad API.
 - The expression tree is the single source of truth. Every output format is a
   pure function of the tree; never parse rendered DOM or LaTeX back as state.
 - Public contracts (tree JSON, attributes, events, methods, `mi-*` classes,
-  `--mi-*` tokens, preset key ids) are versioned API. Change the spec first.
+  `--mi-*` tokens, preset key ids and tags) are versioned API. Change the spec first.
 - `@mathinput/core` has no DOM and no runtime dependencies. The element and
   React packages depend on core, never the reverse.
 - Use npm workspaces. Run the validation recorded in `.agents/facts/testing.md`

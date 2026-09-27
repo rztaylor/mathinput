@@ -1,6 +1,6 @@
 # Release governance
 
-- Versions follow SemVer; the three packages are released together at one
+- Versions follow SemVer; all `@mathinput/*` packages are released together at one
   version. Before `1.0.0`, minor versions may break APIs, but every break is
   listed under **Changed** or **Removed** in the changelog with migration
   notes.

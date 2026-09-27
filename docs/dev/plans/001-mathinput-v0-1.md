@@ -44,9 +44,10 @@ MathInput/
 │   │   │   └── styles/          # tokens.css, mathinput.css (Tailwind source), tailwind-preset.ts
 │   │   ├── demo/                # Vite playground with subject/device switches
 │   │   └── tests/               # component (vitest + jsdom) and browser (Playwright)
-│   └── react/
-│       ├── src/MathInput.tsx
-│       └── tests/
+│   ├── react/
+│   │   ├── src/MathInput.tsx
+│   │   └── tests/
+│   └── presets-uk/              # optional UK curriculum keypads (patches over core presets)
 └── tests/
     ├── golden/                  # notation coverage: tree ⇄ latex/text/spoken
     └── browser/                 # cross-device Playwright suites
@@ -196,9 +197,10 @@ after a comma.
 
 `packages/element/src/keypad`, `core/src/keypad`
 
-1. Key, tab and layout types; presets for maths/chemistry/physics ×
-   foundation/higher/a-level; `applyPatch` for host customisation with
-   tests that every preset key id is unique and stable.
+1. Key, tab and layout types; a full preset per subject with topic tags on
+   advanced keys; `applyKeypadPatch` for host customisation (including
+   `removeTags`) with tests that every preset key id is unique and stable;
+   UK curriculum levels as the optional `@mathinput/presets-uk` package.
 2. Key label rendering through the field renderer at key scale
    (`{ tree }` labels), including active-placeholder emphasis.
 3. Form-factor detection with `ResizeObserver` and pointer media queries;
@@ -226,7 +228,9 @@ person with an iPad and an Android phone). Presets and patches are tested in
 core (24 tests); the UI has 14 jsdom tests and 6 Playwright tests × 3 form
 factors, including long-press slide-to-pick, bracketing existing work by
 keys, the periodic table and axe. Found and fixed a circular sizing loop
-(the keypad could widen its own container).
+(the keypad could widen its own container). Curriculum levels were first
+built into core as a `level` attribute, then moved out (spec §8.6): core
+keys carry topic tags and `@mathinput/presets-uk` trims them by level.
 
 ---
 
@@ -257,9 +261,9 @@ with VoiceOver and NVDA. Forced-colours styling is not yet done.
 1. `tokens.css` with light and dark sets and `theme="auto|light|dark"`.
 2. `mathinput.css` authored in Tailwind with `@apply`, compiled to plain CSS
    in `@layer mathinput`, shipped in the package; the Tailwind preset export.
-3. Demo page "Skins" tab: default, a high-contrast skin, and an NG+-styled
-   skin built only with token overrides, to prove level-1 reskinning covers
-   a real design system. Variant indicator shown as triangle, dot and bar.
+3. Demo page "Skins" tab: default, a high-contrast skin, and a skin in the
+   style of an existing product, built only with token overrides, to prove
+   level-1 reskinning covers a real design system. Variant indicator shown as triangle, dot and bar.
 4. `docs/user/theming.md`, `docs/user/keypad-config.md`, `docs/user/formats.md`.
 
 **Done when** the three skins render correctly in light and dark and the
@@ -268,8 +272,8 @@ docs cover every token and hook in SPEC §10.
 **Status (27 Sep 2026): done, with one change.** The stylesheet stays plain
 CSS; Tailwind support is `tailwind.css` (layer order + token theme),
 verified by compiling with Tailwind v4 in CI. The demo has four skins
-(default, high contrast, NG+ style, paper) built from tokens only, indicator
-shape and level switches. Docs: `docs/user/theming.md`,
+(default, high contrast, exercise book, midnight) built from tokens only,
+indicator shape and key-set switches. Docs: `docs/user/theming.md`,
 `keypad-config.md`, `formats.md`.
 
 ---
@@ -279,22 +283,17 @@ shape and level switches. Docs: `docs/user/theming.md`,
 1. `@mathinput/react`: props to attributes, event props, controlled and
    uncontrolled value, forwarded ref, React 18 and 19 tested.
 2. Storybook-free examples in the demo: a "show your working" host that
-   keeps a list of steps and sends them to a fake tutor as Markdown with
-   `$…$` and `$\ce{…}$`.
-3. Integration spike in NG+ (in a branch of `~/src/ngplus`): replace
-   `ui/MathEditor` and the maths parts of `ui/SymbolBar` in the Practise
-   answer box; confirm the emitted LaTeX renders through `ui/Markdown`
-   unchanged. Findings feed back into the spec before release.
+   keeps a list of steps and formats them as Markdown with `$…$` and
+   `$\ce{…}$`.
 
-**Done when** the NG+ spike works on phone and desktop layouts and any
-required API changes are recorded as spec amendments.
+**Done when** the wrapper passes its tests and the host example works on
+phone and desktop layouts. Integrations into specific host applications
+happen in those applications' repositories, not here.
 
-**Status (27 Sep 2026): items 1–2 done; item 3 is out of scope** for this
-repository (decided 27 Sep 2026): NG+ integration is done from the NG+
-project. The React wrapper
-supports controlled and uncontrolled use (7 tests, React 19; React 18 relies
-on the same effect-based wiring). The demo's "show your working" example
-collects steps on submit and shows the tutor payload.
+**Status (27 Sep 2026): done.** The React wrapper supports controlled and
+uncontrolled use (7 tests, React 19; React 18 relies on the same
+effect-based wiring). The demo's "show your working" example collects steps
+on submit and shows the Markdown payload.
 
 ---
 
@@ -305,7 +304,7 @@ collects steps on submit and shows the tutor payload.
 2. Bundle size check against the targets; tree-shaking of unused presets.
 3. Fuzz the parsers with random LaTeX from the golden vocabulary.
 4. README with quick start for vanilla, React and Vite; changelog; MIT
-   licence; publish `0.1.0` of the three packages.
+   licence; publish `0.1.0` of the `@mathinput/*` packages.
 
 **Done when** the release is published and the demo is deployed (GitHub
 Pages) for stakeholder review.
@@ -324,7 +323,7 @@ Pages) for stakeholder review.
 | 5 Keypad | 4 d | 15.5 d |
 | 6 Subject rules and a11y | 2 d | 17.5 d |
 | 7 Theming | 2 d | 19.5 d |
-| 8 React and NG+ spike | 1.5 d | 21 d |
+| 8 React and host example | 1.5 d | 21 d |
 | 9 Hardening and release | 2 d | 23 d |
 
 About five working weeks of focused work for one developer (or a pair of

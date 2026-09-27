@@ -1,6 +1,7 @@
 # Node / TypeScript facts
 
-- Workspaces: `packages/core`, `packages/element`, `packages/react`.
+- Workspaces: `packages/core`, `packages/element`, `packages/react`,
+  `packages/presets-uk`, `site`.
 - Module format: ESM only (`"type": "module"`), `exports` maps with types.
 - TypeScript: `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`,
   `exactOptionalPropertyTypes` off, target ES2022, `moduleResolution: bundler`);

@@ -5,8 +5,10 @@ expressions the way they look on paper — no LaTeX, `^` or `sqrt()` for the
 learner to learn. It returns each expression as a tree plus LaTeX, linear
 text, spoken text and MathML, ready to render, store, or send to an LLM.
 
-Built for GCSE and A-level learners on phones, tablets and desktops.
-Framework-agnostic (`<math-input>` custom element) with a React wrapper.
+Works on phones, tablets and desktops. Framework-agnostic (`<math-input>`
+custom element) with a React wrapper. The keypad offers every key for the
+subject by default; trim it to a course with topic tags, or use an optional
+curriculum preset such as `@mathinput/presets-uk`.
 
 > Status: in development (pre-release). See the
 > [component spec](docs/dev/specs/mathinput-component.md) and the
@@ -21,6 +23,7 @@ Framework-agnostic (`<math-input>` custom element) with a React wrapper.
 | `@mathinput/core` | Expression tree, headless editor, serialisers and parsers. No DOM. |
 | `@mathinput/element` | The `<math-input>` custom element, keypad and default styles. |
 | `@mathinput/react` | React wrapper. |
+| `@mathinput/presets-uk` | Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level). |
 
 ## Quick start
 
@@ -30,7 +33,7 @@ Framework-agnostic (`<math-input>` custom element) with a React wrapper.
   import "@mathinput/element/mathinput.css";
 </script>
 
-<math-input subject="maths" level="gcse-higher" label="Your answer" submit-on-enter></math-input>
+<math-input subject="maths" label="Your answer" submit-on-enter></math-input>
 
 <script type="module">
   const el = document.querySelector("math-input");

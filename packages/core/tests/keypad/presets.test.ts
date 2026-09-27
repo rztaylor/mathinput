@@ -1,29 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { Editor } from "../../src/editor/editor.js";
-import { applyKey, applyKeypadPatch, keypadPreset, type Key, type Level } from "../../src/index.js";
+import { applyKey, applyKeypadPatch, keypadPreset, type Key } from "../../src/index.js";
 import { toLatex, toSpoken, toText, validateDocument } from "../../src/index.js";
 import type { Subject } from "../../src/model/types.js";
 
 const SUBJECTS: Subject[] = ["maths", "chemistry", "physics"];
-const LEVELS: Level[] = ["gcse-foundation", "gcse-higher", "a-level"];
+/** The preset tags documented in spec §8.3. */
+const PRESET_TAGS = [
+  "column-vectors", "logarithms", "exponentials", "infinity", "calculus", "series", "vector-notation", "reciprocal-trig", "proof",
+];
 
-function allKeys(subject: Subject, level: Level): Key[] {
-  const l = keypadPreset(subject, level);
+function allKeys(subject: Subject): Key[] {
+  const l = keypadPreset(subject);
   const top = [...l.numberPad.keys, ...l.tabs.flatMap((t) => t.keys), ...l.navigation];
   return [...top, ...top.flatMap((k) => k.variants ?? [])];
 }
 
 describe("keypad presets", () => {
-  it.each(SUBJECTS.flatMap((s) => LEVELS.map((l) => [s, l] as const)))("%s / %s: ids unique within each tab", (s, l) => {
-    const layout = keypadPreset(s, l);
+  it.each(SUBJECTS)("%s: ids unique within each tab", (s) => {
+    const layout = keypadPreset(s);
     for (const tab of [layout.numberPad, ...layout.tabs, { id: "nav", keys: layout.navigation }]) {
       const ids = tab.keys.map((k) => k.id);
       expect(new Set(ids).size, `duplicate ids in ${tab.id}`).toBe(ids.length);
     }
   });
 
-  it.each(SUBJECTS.flatMap((s) => LEVELS.map((l) => [s, l] as const)))("%s / %s: every key applies cleanly", (s, l) => {
-    for (const k of allKeys(s, l)) {
+  it.each(SUBJECTS)("%s: every key applies cleanly", (s) => {
+    for (const k of allKeys(s)) {
       for (const start of ["", "x"]) {
         const e = new Editor({ version: 1, subject: s, root: [] });
         for (const ch of start) e.type(ch);
@@ -36,14 +39,31 @@ describe("keypad presets", () => {
     }
   });
 
-  it("hides A-level keys below A-level", () => {
-    const ids = (l: Level) => allKeys("maths", l).map((k) => k.id);
-    expect(ids("gcse-higher")).not.toContain("integral");
-    expect(ids("gcse-higher")).not.toContain("fn-ln");
-    expect(ids("a-level")).toContain("integral");
-    expect(ids("gcse-foundation")).not.toContain("column-vector");
-    expect(ids("gcse-higher")).toContain("column-vector");
-    expect(ids("gcse-foundation")).toContain("fn-arcsin");
+  it("offers every key by default and tags topic keys", () => {
+    const keys = allKeys("maths");
+    expect(keys.map((k) => k.id)).toEqual(expect.arrayContaining(["integral", "fn-ln", "column-vector", "rel-equiv"]));
+    const used = new Set(SUBJECTS.flatMap((s) => allKeys(s).flatMap((k) => k.tags ?? [])));
+    expect([...used].sort()).toEqual([...PRESET_TAGS].sort());
+    expect(keys.find((k) => k.id === "integral")?.tags).toEqual(["calculus"]);
+  });
+
+  it("removes keys and variants by tag, and drops emptied tabs", () => {
+    const patched = applyKeypadPatch(keypadPreset("maths"), { removeTags: ["calculus", "proof", "logarithms"] });
+    const top = [...patched.numberPad.keys, ...patched.tabs.flatMap((t) => t.keys)];
+    const ids = [...top, ...top.flatMap((k) => k.variants ?? [])].map((k) => k.id);
+    expect(ids).not.toContain("integral");
+    expect(ids).not.toContain("d-dx");
+    expect(ids).not.toContain("dy-dx");
+    expect(ids).not.toContain("fn-ln");
+    expect(ids).not.toContain("rel-equiv");
+    expect(ids).toContain("rel-approx");
+    expect(ids).toContain("fn-arcsin");
+    const onlyTagged = applyKeypadPatch(keypadPreset("maths"), { removeKeys: ["fn-sin"], removeTags: [] });
+    expect(onlyTagged.tabs.map((t) => t.id)).toContain("functions");
+    const emptied = applyKeypadPatch(keypadPreset("maths"), {
+      addTabs: [], removeKeys: keypadPreset("maths").tabs.find((t) => t.id === "greek")?.keys.map((k) => k.id) ?? [],
+    });
+    expect(emptied.tabs.map((t) => t.id)).not.toContain("greek");
   });
 
   it("offers separate open and close brackets with variants", () => {

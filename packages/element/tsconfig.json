@@ -4,7 +4,10 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node"],
     "noEmit": true,
-    "paths": { "@mathinput/core": ["../core/src/index.ts"] }
+    "paths": {
+      "@mathinput/core": ["../core/src/index.ts"],
+      "@mathinput/presets-uk": ["../presets-uk/src/index.ts"]
+    }
   },
   "include": ["src", "tests", "demo", "vite.config.ts", "vite.demo.config.ts", "vitest.config.ts", "playwright.config.ts"]
 }

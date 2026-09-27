@@ -8,6 +8,7 @@ const root = resolve(import.meta.dirname, "..");
 const limits = [
   { name: "@mathinput/core", entry: "packages/core/dist/index.js", limitKb: 30 },
   { name: "@mathinput/element", entry: "packages/element/dist/index.js", limitKb: 20 },
+  { name: "@mathinput/presets-uk", entry: "packages/presets-uk/dist/index.js", limitKb: 1 },
 ];
 
 let failed = false;

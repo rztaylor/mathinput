@@ -39,6 +39,7 @@ export default defineConfig({
     alias: {
       "@mathinput/core": resolve(repo, "packages/core/src/index.ts"),
       "@mathinput/element": resolve(repo, "packages/element/src/index.ts"),
+      "@mathinput/presets-uk": resolve(repo, "packages/presets-uk/src/index.ts"),
     },
   },
   plugins: [markdownIncludes()],

@@ -6,6 +6,7 @@
     "packages/core",
     "packages/element",
     "packages/react",
+    "packages/presets-uk",
     "site"
   ],
   "engines": {
@@ -17,7 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:katex": "vitest run packages/core/tests/golden/katex.test.ts",
-    "build": "npm run build -w @mathinput/core -w @mathinput/element -w @mathinput/react",
+    "build": "npm run build -w @mathinput/core -w @mathinput/element -w @mathinput/react -w @mathinput/presets-uk",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "test:browser": "npm run test:browser -w @mathinput/element",
     "dev": "npm run dev -w @mathinput/element",

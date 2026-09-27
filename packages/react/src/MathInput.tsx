@@ -6,11 +6,10 @@
 import { createElement, forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, type CSSProperties } from "react";
 import "@mathinput/element/define";
 import type { MathInputElement, ParseErrorDetail } from "@mathinput/element";
-import type { KeypadLayout, KeypadPatch, Level, MathDocument, MathInputValue, Subject } from "@mathinput/core";
+import type { KeypadLayout, KeypadPatch, MathDocument, MathInputValue, Subject } from "@mathinput/core";
 
 export interface MathInputProps {
   subject?: Subject;
-  level?: Level;
   /** Controlled tree value. Updates only when it differs from the element's content. */
   value?: MathDocument;
   /** Initial content as LaTeX (uncontrolled). */
@@ -56,7 +55,6 @@ export const MathInput = forwardRef<MathInputHandle | null, MathInputProps>(func
     const el = elRef.current;
     if (!el) return;
     setAttr(el, "subject", props.subject);
-    setAttr(el, "level", props.level);
     setAttr(el, "keypad", props.keypad);
     setAttr(el, "keypad-container", props.keypadContainer);
     setAttr(el, "submit-on-enter", props.submitOnEnter);
@@ -68,7 +66,7 @@ export const MathInput = forwardRef<MathInputHandle | null, MathInputProps>(func
     setAttr(el, "math-font", props.mathFont);
     if (props.autoreplace === false) el.setAttribute("autoreplace", "false");
     else el.removeAttribute("autoreplace");
-  }, [props.subject, props.level, props.keypad, props.keypadContainer, props.submitOnEnter, props.label,
+  }, [props.subject, props.keypad, props.keypadContainer, props.submitOnEnter, props.label,
     props.placeholder, props.readOnly, props.disabled, props.theme, props.mathFont, props.autoreplace]);
 
   // Initial LaTeX, once.

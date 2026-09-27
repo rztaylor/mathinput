@@ -25,11 +25,14 @@ All notable changes to MathInput are recorded here. The format follows
   hidden receiver, typed events, a debounced spoken live region, and a
   default stylesheet of `--mi-*` tokens with light and dark themes.
 - Demo playground with a MathInput-versus-KaTeX gallery of every golden case.
-- Keypad: presets for maths, chemistry and physics at GCSE Foundation, GCSE
-  Higher and A-level; keys labelled with the expression they insert; an
+- Keypad: presets for maths, chemistry and physics; keys labelled with the expression they insert; an
   orange corner marks keys with more options (long press, right-click or
   Alt+ArrowDown); phone, tablet and desktop layouts; periodic table;
   host patches and `keypad-container` placement.
+- Keypad topic tags (`calculus`, `logarithms`, `proof`, …) and
+  `removeTags` in keypad patches, to trim a keypad to a course.
+- `@mathinput/presets-uk`: optional keypads for GCSE Foundation, GCSE Higher
+  and A-level (`ukKeypadPatch`, `ukKeypad`). The demo's "Keys" control uses it.
 - Theming: `@mathinput/element/tailwind.css` for Tailwind v4 hosts (layer
   order and `--mi-*` tokens as theme utilities); integrator guides for
   theming, keypad configuration and output formats in `docs/user/`; demo
@@ -41,6 +44,13 @@ All notable changes to MathInput are recorded here. The format follows
   live skin switching and copyable skin CSS; Cloudflare Pages workflow for
   mathinput.rztaylor.uk from the `release` branch.
 - Guides: getting started and API reference.
+
+### Removed
+
+- The `level` attribute and React prop, the `Level` type and the `level`
+  argument of `keypadPreset`. Keypads now offer every key by default; use
+  `el.keypadLayout = ukKeypadPatch("gcse-higher")` from
+  `@mathinput/presets-uk` for the previous default.
 
 ### Fixed
 

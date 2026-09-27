@@ -5,7 +5,7 @@
 import {
   Editor, ParseError, applyKey, applyKeypadPatch, createValue, keypadPreset, rowAt, decodeClipboard, encodeClipboard, fromLatex, toLatex, toSpoken, validateDocument,
   MIME_LATEX, MIME_TEXT, MIME_TREE,
-  type ClipboardData, type CommandName, type KeypadLayout, type KeypadPatch, type Level, type MathDocument, type MathInputValue, type Node, type Row, type Subject,
+  type ClipboardData, type CommandName, type KeypadLayout, type KeypadPatch, type MathDocument, type MathInputValue, type Node, type Row, type Subject,
 } from "@mathinput/core";
 import { renderRow } from "./render/renderer.js";
 import { positionAt, tokenRange } from "./render/hit-test.js";
@@ -15,7 +15,6 @@ import { Keypad, type FormFactor } from "./keypad/keypad.js";
 import { icon } from "./keypad/icons.js";
 
 const SUBJECTS = new Set<Subject>(["maths", "chemistry", "physics"]);
-const LEVELS = new Set<Level>(["gcse-foundation", "gcse-higher", "a-level"]);
 type KeypadMode = "auto" | "always" | "never" | "collapsed";
 const SUBJECT_NAMES: Record<Subject, string> = { maths: "Maths", chemistry: "Chemistry", physics: "Physics" };
 
@@ -34,7 +33,7 @@ let uid = 0;
 export class MathInputElement extends HTMLElement {
   static readonly observedAttributes = [
     "subject", "latex", "placeholder", "label", "aria-label", "readonly", "disabled", "autoreplace",
-    "submit-on-enter", "theme", "math-font", "level", "keypad", "keypad-container",
+    "submit-on-enter", "theme", "math-font", "keypad", "keypad-container",
   ];
 
   readonly #editor: Editor;
@@ -95,9 +94,6 @@ export class MathInputElement extends HTMLElement {
         this.#refreshKeypad();
         break;
       }
-      case "level":
-        this.#refreshKeypad();
-        break;
       case "keypad":
         this.#keypadTouched = false;
         this.#updateKeypadVisibility();
@@ -316,8 +312,7 @@ export class MathInputElement extends HTMLElement {
   // ------------------------------------------------------------ keypad
 
   #layout(): KeypadLayout {
-    const level = this.getAttribute("level") as Level | null;
-    const preset = keypadPreset(this.#editor.subject, level && LEVELS.has(level) ? level : "gcse-higher");
+    const preset = keypadPreset(this.#editor.subject);
     const custom = this.#customLayout;
     if (!custom) return preset;
     return "numberPad" in custom ? custom : applyKeypadPatch(preset, custom);

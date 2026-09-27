@@ -1,0 +1,19 @@
+{
+  "name": "@mathinput/presets-uk",
+  "version": "0.0.0",
+  "description": "Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level) for MathInput.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+  },
+  "files": ["dist"],
+  "dependencies": {
+    "@mathinput/core": "0.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

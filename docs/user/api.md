@@ -5,7 +5,6 @@
 | Attribute | Values | Default | Meaning |
 |---|---|---|---|
 | `subject` | `maths`, `chemistry`, `physics` | `maths` | Typing rules, keypad and output style. |
-| `level` | `gcse-foundation`, `gcse-higher`, `a-level` | `gcse-higher` | Which keys the keypad offers. |
 | `latex` | LaTeX | | Initial content. Unsupported LaTeX fires `parse-error`. |
 | `label` | text | | Accessible name (or use `aria-label` / `aria-labelledby`). |
 | `placeholder` | text | `Enter your answer` | Shown when empty. |
@@ -25,7 +24,7 @@
 | `value` | `MathDocument` | The expression tree. Setting it replaces the content and clears undo. |
 | `latex` | `string` | Current LaTeX; setting it parses LaTeX. |
 | `subject`, `readOnly`, `disabled` | | Mirror the attributes. |
-| `keypadLayout` | `KeypadLayout \| KeypadPatch` | Replace or adjust the keypad. |
+| `keypadLayout` | `KeypadLayout \| KeypadPatch` | Replace or trim the keypad; see [Keypad configuration](keypad-config.md). |
 | `keypadOpen` | `boolean` | Open or close the keypad. |
 | `editor` | `Editor` | The headless editor, for advanced use. |
 
@@ -76,3 +75,4 @@ two-letter element is recognised as you type (`Cl`).
 | `@mathinput/core` | Tree, headless editor, serialisers, parsers, keypad presets. No DOM; usable on a server. |
 | `@mathinput/element` | `<math-input>`, keypad, `mathinput.css`, `tailwind.css`. |
 | `@mathinput/react` | `<MathInput>` for React 18 and 19. |
+| `@mathinput/presets-uk` | Optional keypads for UK GCSE Foundation, GCSE Higher and A-level. |
