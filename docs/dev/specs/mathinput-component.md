@@ -859,10 +859,13 @@ ancestor.
 5. **Replace the stylesheet** — import the element without
    `mathinput.css` and provide a complete one against the class contract.
 
-The default stylesheet is authored with Tailwind (`@apply` against a token
-map) and shipped compiled, so consumers do not need Tailwind. A Tailwind
-preset (`@mathinput/element/tailwind`) exposes the tokens as theme colours
-for hosts that do use it.
+The default stylesheet is plain CSS over the token map (no build step for
+consumers). For Tailwind v4 hosts, `@mathinput/element/tailwind.css`
+declares the layer order `theme, base, mathinput, components, utilities`
+(so utilities override defaults), imports the stylesheet and exposes the
+tokens as theme values (`bg-mi-key`, `rounded-mi-key`, `font-mi-math`, …).
+It is imported before `tailwindcss`. A CI test compiles it with Tailwind v4.
+Integrator guide: `docs/user/theming.md`.
 
 ### 10.5 Math rendering
 
@@ -946,6 +949,7 @@ how to load STIX from Google Fonts or self-host.
 | Chemistry output | mhchem `\ce{}` | Hand-built `\mathrm` — verbose and worse for models |
 | Key labels | Rendered mini-trees | Unicode glyphs — ambiguous for power/index |
 | Keypad ownership | Component renders, host may re-parent | Host builds keypad — too much for every consumer |
+| Stylesheet authoring | Plain CSS tokens + a Tailwind v4 theme entry | Authoring in Tailwind `@apply` — build complexity for consumers and maintainers with no gain once tokens exist |
 | Brackets | Single sides with ghost partners, plus pair insert | Pair-only templates — cannot bracket existing work (found in prototype review) |
 | Enter | Opt-in `submit-on-enter` | Always submit — conflicts with host forms |
 | Mixed numbers | Adjacent atoms, serialiser spacing | Dedicated template |

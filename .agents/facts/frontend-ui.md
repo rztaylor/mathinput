@@ -8,8 +8,10 @@
   `a11y/` (live region, roving focus), `styles/` (tokens and default CSS).
   `math-input.ts` composes them.
 - Styling: plain CSS custom properties `--mi-*` own every colour, size, radius
-  and font (spec §10.3). Default CSS is authored with Tailwind and shipped
-  compiled inside `@layer mathinput`; consumers never need Tailwind.
+  and font (spec §10.3). Default CSS is plain CSS in
+  `packages/element/src/styles/mathinput.css`, inside `@layer mathinput`;
+  `tailwind.css` next to it is the Tailwind v4 entry (layer order + token
+  theme). Consumers never need Tailwind. Integrator docs: `docs/user/`.
 - Class contract: `mi-*` names listed in spec §10.2 are public API.
 - Light DOM only. All DOM is built with DOM APIs; `innerHTML` is allowed only
   for host-supplied `{ html }` key labels.

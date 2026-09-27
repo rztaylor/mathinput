@@ -61,3 +61,19 @@ theme.addEventListener("change", () => {
     else el.setAttribute("theme", v);
   }
 });
+
+const skin = document.getElementById("skin") as HTMLSelectElement;
+skin.addEventListener("change", () => {
+  document.body.className = skin.value ? `skin-${skin.value}` : "";
+});
+const indicator = document.getElementById("indicator") as HTMLSelectElement;
+indicator.addEventListener("change", () => {
+  for (const el of document.querySelectorAll<HTMLElement>(".demo-fields math-input")) {
+    if (indicator.value) el.dataset.variantIndicator = indicator.value;
+    else delete el.dataset.variantIndicator;
+  }
+});
+const level = document.getElementById("level") as HTMLSelectElement;
+level.addEventListener("change", () => {
+  for (const el of document.querySelectorAll(".demo-fields math-input")) el.setAttribute("level", level.value);
+});

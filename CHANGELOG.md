@@ -30,3 +30,7 @@ All notable changes to MathInput are recorded here. The format follows
   orange corner marks keys with more options (long press, right-click or
   Alt+ArrowDown); phone, tablet and desktop layouts; periodic table;
   host patches and `keypad-container` placement.
+- Theming: `@mathinput/element/tailwind.css` for Tailwind v4 hosts (layer
+  order and `--mi-*` tokens as theme utilities); integrator guides for
+  theming, keypad configuration and output formats in `docs/user/`; demo
+  skins built from tokens only.

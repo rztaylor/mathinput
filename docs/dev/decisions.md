@@ -8,4 +8,4 @@ names and licence) are logged in
 | Date | Decision | Why |
 |---|---|---|
 | 2026-09-27 | npm workspaces monorepo with `core`, `element`, `react` | Core must stay DOM-free and reusable on servers; wrappers stay thin. |
-| 2026-09-27 | Tailwind used only at build time for the default stylesheet | Consumers must not need Tailwind; tokens are plain CSS custom properties. |
+| 2026-09-27 | Default stylesheet in plain CSS; Tailwind support is a v4 theme entry (`tailwind.css`) | Consumers must not need Tailwind; Tailwind hosts get token utilities and a correct layer order. Supersedes the plan's `@apply` authoring. |

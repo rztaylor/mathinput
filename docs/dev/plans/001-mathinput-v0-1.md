@@ -265,6 +265,13 @@ with VoiceOver and NVDA. Forced-colours styling is not yet done.
 **Done when** the three skins render correctly in light and dark and the
 docs cover every token and hook in SPEC §10.
 
+**Status (27 Sep 2026): done, with one change.** The stylesheet stays plain
+CSS; Tailwind support is `tailwind.css` (layer order + token theme),
+verified by compiling with Tailwind v4 in CI. The demo has four skins
+(default, high contrast, NG+ style, paper) built from tokens only, indicator
+shape and level switches. Docs: `docs/user/theming.md`,
+`keypad-config.md`, `formats.md`.
+
 ---
 
 ## Phase 8 — React wrapper and host integration (1½ days)

@@ -20,7 +20,9 @@ export default defineConfig({
       name: "copy-stylesheet",
       closeBundle() {
         mkdirSync(resolve(import.meta.dirname, "dist"), { recursive: true });
-        copyFileSync(resolve(import.meta.dirname, "src/styles/mathinput.css"), resolve(import.meta.dirname, "dist/mathinput.css"));
+        for (const file of ["mathinput.css", "tailwind.css"]) {
+          copyFileSync(resolve(import.meta.dirname, "src/styles", file), resolve(import.meta.dirname, "dist", file));
+        }
       },
     },
   ],

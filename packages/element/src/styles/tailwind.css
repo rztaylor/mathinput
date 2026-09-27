@@ -1,0 +1,36 @@
+/*
+ * MathInput for Tailwind CSS v4 hosts. Import this BEFORE tailwindcss:
+ *
+ *   @import "@mathinput/element/tailwind.css";
+ *   @import "tailwindcss";
+ *
+ * It fixes the cascade-layer order so Tailwind utilities override the
+ * component's defaults, loads the default stylesheet, and exposes the
+ * --mi-* tokens as theme values (bg-mi-key, text-mi-field-fg, rounded-mi-key…).
+ */
+@layer theme, base, mathinput, components, utilities;
+
+@import "./mathinput.css";
+
+@theme inline {
+  --color-mi-field-bg: var(--mi-field-bg);
+  --color-mi-field-fg: var(--mi-field-fg);
+  --color-mi-field-border: var(--mi-field-border);
+  --color-mi-field-border-focus: var(--mi-field-border-focus);
+  --color-mi-muted: var(--mi-muted);
+  --color-mi-caret: var(--mi-caret);
+  --color-mi-keypad: var(--mi-keypad-bg);
+  --color-mi-key: var(--mi-key-bg);
+  --color-mi-key-fg: var(--mi-key-fg);
+  --color-mi-key-operator: var(--mi-key-operator-bg);
+  --color-mi-key-template: var(--mi-key-template-bg);
+  --color-mi-key-template-fg: var(--mi-key-template-fg);
+  --color-mi-key-primary: var(--mi-key-primary-bg);
+  --color-mi-key-primary-fg: var(--mi-key-primary-fg);
+  --color-mi-variant: var(--mi-key-variant-indicator);
+  --radius-mi-field: var(--mi-field-radius);
+  --radius-mi-key: var(--mi-key-radius);
+  --radius-mi-keypad: var(--mi-keypad-radius);
+  --font-mi-math: var(--mi-font-math);
+  --font-mi-ui: var(--mi-font-ui);
+}

@@ -98,3 +98,12 @@ test("keypad screenshots", async ({ page }, info) => {
   await host.locator('.mi-key[data-key-id="power"]').first().click({ button: "right" });
   await host.screenshot({ path: info.outputPath("maths-variants.png") });
 });
+
+test("skin screenshots", async ({ page }, info) => {
+  test.skip(info.project.name !== "tablet", "one form factor is enough for skins");
+  for (const skin of ["contrast", "ngplus", "paper"]) {
+    await page.selectOption("#skin", skin);
+    const host = await openKeypad(page, "maths");
+    await host.screenshot({ path: info.outputPath(`skin-${skin}.png`) });
+  }
+});
