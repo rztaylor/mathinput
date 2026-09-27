@@ -1,0 +1,34 @@
+{
+  "name": "@mathinput/element",
+  "version": "0.0.0",
+  "description": "The <math-input> custom element: keypad-first maths, chemistry and physics input.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./dist/define.js",
+    "./dist/mathinput.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./define": {
+      "types": "./dist/define.d.ts",
+      "import": "./dist/define.js"
+    },
+    "./mathinput.css": "./dist/mathinput.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@mathinput/core": "0.0.0"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "vite --config vite.demo.config.ts",
+    "test:browser": "playwright test"
+  }
+}

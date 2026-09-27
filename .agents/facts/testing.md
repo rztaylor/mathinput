@@ -13,10 +13,17 @@
   every golden LaTeX string with KaTeX + mhchem in strict mode as part of
   `npm test` (`npm run test:katex` runs it alone). KaTeX is a dev dependency
   only.
-- Element tests: Vitest + jsdom for behaviour; Playwright (Chromium, WebKit,
-  Firefox; phone, tablet and desktop projects) for rendering, touch and axe
-  checks — `npm run test:browser`. Playwright starts its own server on a free
-  port; never hard-code ports.
+- Element tests: Vitest + jsdom for behaviour
+  (`packages/element/tests/*.test.ts`); Playwright for rendering, clicks and
+  axe — `npm run test:browser` (`packages/element/tests/browser/`, projects
+  `desktop`, `tablet`, `phone`, all Chromium). Playwright 1.63 uses the
+  locally cached Chromium; WebKit and Firefox are not installed yet
+  (Decision needed: add them before release, they need a download). The
+  config picks a free port once and shares it with workers through
+  `MI_PLAYWRIGHT_PORT`; set `PLAYWRIGHT_PORT` to reuse a running server.
+- Demo playground: `npm run dev` (Vite, `packages/element/demo/`), including a
+  gallery of every golden case rendered by MathInput next to KaTeX. Browser
+  tests save screenshots to `packages/element/test-results/` (gitignored).
 - Visible UI changes require screenshots at phone, tablet and desktop widths
   in light and dark themes, and axe with no violations.
 - No test may require network access or credentials.

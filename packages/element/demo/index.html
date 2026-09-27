@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MathInput playground</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+  <header class="demo-head">
+    <h1>MathInput playground</h1>
+    <div class="demo-controls">
+      <label>Theme
+        <select id="theme"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+    </div>
+  </header>
+  <main>
+    <section class="demo-fields" id="fields"></section>
+    <section>
+      <h2>Rendering compared with KaTeX</h2>
+      <p class="demo-note">Left: MathInput's own renderer (read-only). Right: KaTeX rendering of the LaTeX it produces.</p>
+      <div class="demo-scroll"><table class="demo-gallery" id="gallery"><thead><tr><th>Case</th><th>MathInput</th><th>KaTeX</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </main>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

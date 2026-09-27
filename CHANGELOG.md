@@ -19,3 +19,9 @@ All notable changes to MathInput are recorded here. The format follows
   undo/redo, change events — and the lazy `MathInputValue` bundle.
 - `@mathinput/core`: `fromLatex` (LaTeX subset and mhchem), `fromText`, and a
   clipboard codec with tree, LaTeX and text flavours.
+- `@mathinput/element`: the `<math-input>` custom element with its own
+  renderer (stretchy brackets and radicals, ghost bracket sides, caret,
+  selection), pointer and keyboard editing, IME/dictation and clipboard via a
+  hidden receiver, typed events, a debounced spoken live region, and a
+  default stylesheet of `--mi-*` tokens with light and dark themes.
+- Demo playground with a MathInput-versus-KaTeX gallery of every golden case.

@@ -1,0 +1,18 @@
+:root { color-scheme: light dark; --bg: #f4f8fd; --fg: #0b2448; --card: #fff; --line: #dbe6f2; --muted: #526783; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0c1726; --fg: #eef6ff; --card: #111f30; --line: #294057; --muted: #a9bad0; } }
+:root[data-theme="dark"] { --bg: #0c1726; --fg: #eef6ff; --card: #111f30; --line: #294057; --muted: #a9bad0; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; }
+.demo-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 20px 16px; max-width: 1100px; margin: 0 auto; }
+.demo-head h1 { margin: 0; font-size: 22px; }
+main { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; display: grid; gap: 32px; }
+.demo-fields { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.demo-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.demo-card h2 { margin: 0; font-size: 15px; }
+.demo-out { margin: 0; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-word; color: var(--muted); }
+.demo-note { color: var(--muted); margin: 0 0 8px; }
+.demo-gallery { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+.demo-gallery th, .demo-gallery td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.demo-gallery td:first-child { color: var(--muted); font-size: 13px; }
+.demo-gallery .katex { font-size: 1.35em; }
+.demo-gallery math-input { --mi-field-size: 23px; }
+.demo-scroll { overflow-x: auto; }

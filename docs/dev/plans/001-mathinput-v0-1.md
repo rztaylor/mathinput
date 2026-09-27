@@ -182,6 +182,14 @@ cases, text and clipboard tests, and LaTeX and text parser fuzzing
 in the demo, and screenshot tests are recorded on Chromium, WebKit and
 Firefox.
 
+**Status (27 Sep 2026): done except** WebKit/Firefox (not installed locally),
+incremental row rendering (deferred to phase 9 measurement) and pixel
+screenshot baselines (screenshots are saved and reviewed, not diffed yet).
+Focus, IME, dictation and clipboard go through a hidden textarea inside the
+field. The gallery was reviewed against KaTeX; fixes made for stacked
+scripts, optional-slot placeholders, the mean bar, italic d and unary minus
+after a comma.
+
 ---
 
 ## Phase 5 — Keypad (4 days)

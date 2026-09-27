@@ -1,0 +1,63 @@
+import "../src/styles/mathinput.css";
+import "katex/dist/katex.min.css";
+import katex from "katex";
+import "katex/contrib/mhchem";
+import "../src/define.js";
+import type { MathInputElement } from "../src/index.js";
+import type { MathInputValue } from "@mathinput/core";
+import { ALL } from "../../core/tests/golden/cases.js";
+
+const samples = [
+  { subject: "maths", label: "Maths", latex: "x=\\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}" },
+  { subject: "chemistry", label: "Chemistry", latex: "\\ce{Mg(s) + 2HCl(aq) -> MgCl2(aq) + H2(g)}" },
+  { subject: "physics", label: "Physics", latex: "a=3.0\\,\\mathrm{m}\\,\\mathrm{s}^{-2}" },
+];
+
+const fields = document.getElementById("fields") as HTMLElement;
+for (const s of samples) {
+  const card = document.createElement("div");
+  card.className = "demo-card";
+  const h = document.createElement("h2");
+  h.textContent = s.label;
+  const input = document.createElement("math-input") as MathInputElement;
+  input.setAttribute("subject", s.subject);
+  input.setAttribute("label", `${s.label} answer`);
+  input.setAttribute("latex", s.latex);
+  input.setAttribute("submit-on-enter", "");
+  input.dataset.testid = s.subject;
+  const out = document.createElement("pre");
+  out.className = "demo-out";
+  const show = (v: MathInputValue) => { out.textContent = `LaTeX: ${v.latex}\nText:  ${v.text}\nSpoken: ${v.spoken}`; };
+  input.addEventListener("input", (e) => show(e.detail));
+  card.append(h, input, out);
+  fields.append(card);
+  show(input.getValue());
+}
+
+const body = document.querySelector("#gallery tbody") as HTMLElement;
+for (const c of ALL) {
+  const tr = document.createElement("tr");
+  const name = document.createElement("td");
+  name.textContent = `${c.doc.subject}: ${c.name}`;
+  const ours = document.createElement("td");
+  const mi = document.createElement("math-input") as MathInputElement;
+  mi.setAttribute("readonly", "");
+  mi.setAttribute("subject", c.doc.subject);
+  ours.append(mi);
+  mi.value = c.doc;
+  const theirs = document.createElement("td");
+  katex.render(c.latex, theirs, { throwOnError: false });
+  tr.append(name, ours, theirs);
+  body.append(tr);
+}
+
+const theme = document.getElementById("theme") as HTMLSelectElement;
+theme.addEventListener("change", () => {
+  const v = theme.value;
+  if (v === "auto") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = v;
+  for (const el of document.querySelectorAll("math-input")) {
+    if (v === "auto") el.removeAttribute("theme");
+    else el.setAttribute("theme", v);
+  }
+});

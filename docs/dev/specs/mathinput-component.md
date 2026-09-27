@@ -780,12 +780,23 @@ shadow root.
 
 All classes are prefixed `mi-`. The structural ones are part of the contract:
 
-`mi-root` (with `data-subject`, `data-form="phone|tablet|desktop"`,
-`data-keypad="open|closed"`), `mi-field`, `mi-row`, `mi-row--active`,
-`mi-caret`, `mi-placeholder`, `mi-placeholder--active`, `mi-selection`,
-`mi-frac`, `mi-frac__bar`, `mi-sup`, `mi-sub`, `mi-root`, `mi-fence`,
-`mi-fence__side--ghost`,
-`mi-vector`, `mi-bigop`, `mi-atom` (with `data-kind`), `mi-keypad`,
+`mi-root` (the host element, with `data-subject`, `data-focused`,
+`data-readonly`, `data-disabled`, `data-mi-theme`, `data-form="phone|tablet|desktop"`,
+`data-keypad="open|closed"`), `mi-field`, `mi-field__content`,
+`mi-field--shake`, `mi-receiver` (the hidden focus/IME/clipboard textarea
+inside the field), `mi-live`, `mi-empty`, `mi-row`, `mi-row--root`,
+`mi-row--active`, `mi-caret`, `mi-placeholder`, `mi-placeholder--active`,
+`mi-placeholder--optional`, `mi-placeholder--ghost`, `mi-selection`,
+`mi-frac` (`data-kind="deriv"` for derivatives), `mi-frac__num`,
+`mi-frac__bar`, `mi-frac__den`, `mi-sup`, `mi-sub`, `mi-subsup`,
+`mi-radical`, `mi-radical__index`, `mi-radical__sign`, `mi-radical__body`,
+`mi-fence` (`data-open`), `mi-fence__side`, `mi-fence__side--open`,
+`mi-fence__side--close`, `mi-fence__side--ghost`, `mi-fence__body`,
+`mi-vector`, `mi-vector__cells`, `mi-vector__cell`, `mi-recurring`,
+`mi-recurring__dot`, `mi-bigop` (`data-op`), `mi-bigop__limits`,
+`mi-bigop__sign`, `mi-over` (`data-kind`), `mi-atom` (with `data-kind` and,
+for operators, relations, functions, symbols and constants, `data-name`;
+`data-unary`, `data-upright`, `data-greek`), `mi-fn__inverse`, `mi-keypad`,
 `mi-tabs`, `mi-tab`, `mi-tab--selected`, `mi-panel`, `mi-key` (with
 `data-kind`, `data-has-variants`), `mi-key--pressed`, `mi-variants`,
 `mi-sheet`, `mi-hint`.
@@ -871,6 +882,8 @@ how to load STIX from Google Fonts or self-host.
 ## 12. Performance
 
 - Re-render only the row that changed; full re-render on structural changes.
+  (v0.1 re-renders the whole field on each change; measure before optimising
+  in plan phase 9.)
   Target < 8 ms per edit on a 2020 mid-range Android phone.
 - No layout thrash: caret scrolling uses one measured rect per edit.
 - Keypad DOM is built once per layout and reused; tab switches swap panels.
