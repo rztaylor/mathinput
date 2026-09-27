@@ -19,27 +19,6 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; display: grid; g
 .demo-controls { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .demo-controls select { margin-left: 4px; }
 
-/* Skins: token overrides only (spec §10.4 level 1). */
-.skin-contrast math-input {
-  --mi-field-border: #000; --mi-field-border-focus: #000; --mi-field-ring: #ffd400;
-  --mi-key-bg: #fff; --mi-key-fg: #000; --mi-key-shadow: #000; --mi-key-operator-bg: #f0f0f0;
-  --mi-key-template-bg: #fff4b3; --mi-key-template-fg: #000; --mi-key-primary-bg: #000; --mi-key-primary-fg: #fff;
-  --mi-key-variant-indicator: #c40000; --mi-placeholder-border: #000; --mi-keypad-bg: #fff; --mi-keypad-border: #000;
-}
-.skin-ngplus math-input {
-  --mi-font-ui: Inter, ui-sans-serif, system-ui, sans-serif;
-  --mi-field-radius: 16px; --mi-key-radius: 11px; --mi-keypad-radius: 24px;
-  --mi-key-primary-bg: linear-gradient(135deg, #0868bf, #2e8ae7);
-}
-.skin-paper math-input {
-  --mi-font-math: "Latin Modern Math", "STIX Two Text", serif;
-  --mi-field-bg: #fffdf7; --mi-field-fg: #2b2118; --mi-field-border: #d8cdb8; --mi-field-border-focus: #8a5a2b;
-  --mi-field-ring: rgba(138, 90, 43, .2); --mi-caret: #8a5a2b; --mi-row-active-bg: #f4ead7;
-  --mi-keypad-bg: #f6f0e3; --mi-keypad-border: #e3d7bf; --mi-key-bg: #fffdf7; --mi-key-fg: #2b2118; --mi-key-shadow: #d8cdb8;
-  --mi-key-operator-bg: #efe6d3; --mi-key-template-bg: #f3e3c3; --mi-key-template-fg: #6b4420;
-  --mi-key-primary-bg: #8a5a2b; --mi-key-primary-fg: #fff; --mi-key-variant-indicator: #b23a48;
-  --mi-key-placeholder-active: #8a5a2b; --mi-tab-selected-fg: #6b4420; --mi-field-radius: 4px; --mi-key-radius: 4px; --mi-keypad-radius: 6px;
-}
 .demo-q { margin: 0; }
 .demo-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
 .demo-steps math-input { --mi-field-size: 21px; }

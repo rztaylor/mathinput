@@ -6,6 +6,7 @@ import "../src/define.js";
 import type { MathInputElement } from "../src/index.js";
 import type { MathInputValue } from "@mathinput/core";
 import { ALL } from "../../core/tests/golden/cases.js";
+import { SKINS, applySkin } from "../../../site/src/skins.js";
 
 const samples = [
   { subject: "maths", label: "Maths", latex: "x=\\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}" },
@@ -62,10 +63,15 @@ theme.addEventListener("change", () => {
   }
 });
 
+// Skins come from the website's definitions, so there is one source of truth.
 const skin = document.getElementById("skin") as HTMLSelectElement;
-skin.addEventListener("change", () => {
-  document.body.className = skin.value ? `skin-${skin.value}` : "";
-});
+for (const s of SKINS) skin.add(new Option(s.name, s.id));
+const applyCurrentSkin = () => {
+  const chosen = SKINS.find((s) => s.id === skin.value) ?? SKINS[0];
+  if (chosen) applySkin(document.querySelector(".demo-fields") as HTMLElement, chosen, theme.value as "auto" | "light" | "dark");
+};
+skin.addEventListener("change", applyCurrentSkin);
+theme.addEventListener("change", applyCurrentSkin);
 const indicator = document.getElementById("indicator") as HTMLSelectElement;
 indicator.addEventListener("change", () => {
   for (const el of document.querySelectorAll<HTMLElement>(".demo-fields math-input")) {

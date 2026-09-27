@@ -101,9 +101,19 @@ test("keypad screenshots", async ({ page }, info) => {
 
 test("skin screenshots", async ({ page }, info) => {
   test.skip(info.project.name !== "tablet", "one form factor is enough for skins");
-  for (const skin of ["contrast", "ngplus", "paper"]) {
+  for (const skin of ["contrast", "paper", "midnight", "rounded"]) {
     await page.selectOption("#skin", skin);
     const host = await openKeypad(page, "maths");
     await host.screenshot({ path: info.outputPath(`skin-${skin}.png`) });
   }
+});
+
+test("a light skin re-skins the keypad tabs even when the page is dark", async ({ page }) => {
+  await page.selectOption("#theme", "dark");
+  await page.selectOption("#skin", "paper");
+  const host = await openKeypad(page, "maths");
+  const selected = host.locator(".mi-tab--selected");
+  await expect(selected).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(host.locator(".mi-tab:not(.mi-tab--selected)").first()).toHaveCSS("color", "rgb(107, 90, 71)");
+  await expect(host).toHaveAttribute("theme", "light");
 });
