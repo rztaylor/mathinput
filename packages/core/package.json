@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "Expression tree, headless editor, serialisers and parsers for MathInput. No DOM.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rztaylor/mathinput.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://mathinput.pages.dev",
+  "bugs": "https://github.com/rztaylor/mathinput/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {

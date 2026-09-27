@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "React wrapper for the <math-input> element.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rztaylor/mathinput.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://mathinput.pages.dev",
+  "bugs": "https://github.com/rztaylor/mathinput/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {

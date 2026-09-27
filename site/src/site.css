@@ -168,5 +168,12 @@ details.css pre { margin: 10px 0 0; }
   .theme-toggle { padding: 0 8px; font-size: 13px; }
 }
 
+/* Narrow phones: the nav takes its own row under the brand. */
+@media (max-width: 480px) {
+  .site-head .wrap { flex-wrap: wrap; row-gap: 0; min-height: 56px; }
+  .theme-toggle { margin-left: auto; }
+  .site-nav { order: 3; flex-basis: 100%; margin: 0 -8px; padding-bottom: 6px; justify-content: space-between; }
+}
+
 .about p { max-width: 40em; font-size: 18px; margin: 0 0 16px; }
 #formula-mathml math { font-size: 20px; }

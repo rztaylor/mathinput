@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "The <math-input> custom element: keypad-first maths, chemistry and physics input.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rztaylor/mathinput.git",
+    "directory": "packages/element"
+  },
+  "homepage": "https://mathinput.pages.dev",
+  "bugs": "https://github.com/rztaylor/mathinput/issues",
   "type": "module",
   "sideEffects": [
     "./dist/define.js",

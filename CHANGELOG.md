@@ -52,6 +52,9 @@ All notable changes to MathInput are recorded here. The format follows
   chemistry input, with every output format presented on equal terms.
 - Website: an About section on the homepage and in the README; a second demo
   example (a formula field that stores the tree and shows MathML).
+- Website: links to the GitHub repository in the header, footer, hero and
+  About section; the header nav wraps onto its own row on narrow phones.
+  Package manifests carry `repository`, `homepage` and `bugs` links.
 
 ### Removed
 

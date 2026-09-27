@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level) for MathInput.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rztaylor/mathinput.git",
+    "directory": "packages/presets-uk"
+  },
+  "homepage": "https://mathinput.pages.dev",
+  "bugs": "https://github.com/rztaylor/mathinput/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
