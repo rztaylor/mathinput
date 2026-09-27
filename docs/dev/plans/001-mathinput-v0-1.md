@@ -244,6 +244,12 @@ keys, the periodic table and axe. Found and fixed a circular sizing loop
 **Done when** axe reports no violations and the manual checklist is signed
 off.
 
+**Status (27 Sep 2026): automated part done.** Axe passes in light and dark
+on all three form factors; a token contrast audit (33 checks) runs in
+`npm test` and led to darker placeholder borders and variant indicator. The
+manual checklist (`docs/dev/guides/a11y-checklist.md`) still needs a person
+with VoiceOver and NVDA. Forced-colours styling is not yet done.
+
 ---
 
 ## Phase 7 — Theming and default stylesheet (2 days)

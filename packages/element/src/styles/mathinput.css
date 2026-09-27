@@ -22,7 +22,7 @@
     --mi-caret: #0868bf;
     --mi-row-active-bg: #e8f3ff;
     --mi-selection-bg: color-mix(in srgb, #0868bf 22%, transparent);
-    --mi-placeholder-border: #9fb6d0;
+    --mi-placeholder-border: #7189a6;
     --mi-placeholder-border-active: #0868bf;
     --mi-placeholder-bg-active: color-mix(in srgb, #0868bf 8%, transparent);
     --mi-ghost-opacity: 0.35;
@@ -48,7 +48,7 @@
     --mi-key-pressed-bg: #dfe9f5;
     --mi-key-placeholder: currentColor;
     --mi-key-placeholder-active: #0868bf;
-    --mi-key-variant-indicator: #d9730d;
+    --mi-key-variant-indicator: #c2620b;
     --mi-tab-fg: #526783;
     --mi-tab-selected-bg: #ffffff;
     --mi-tab-selected-fg: #04549d;

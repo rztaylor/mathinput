@@ -76,12 +76,15 @@ test("chemistry keys and periodic table", async ({ page }) => {
   expect(await latex(page, "chemistry")).toBe("\\ce{NaClXe}");
 });
 
-test("keypad has no accessibility violations", async ({ page }) => {
-  await openKeypad(page, "maths");
-  await openKeypad(page, "chemistry");
-  const results = await new AxeBuilder({ page }).include(".demo-fields").analyze();
-  expect(results.violations).toEqual([]);
-});
+for (const theme of ["light", "dark"]) {
+  test(`keypad has no accessibility violations (${theme})`, async ({ page }) => {
+    await page.selectOption("#theme", theme);
+    await openKeypad(page, "maths");
+    await openKeypad(page, "chemistry");
+    const results = await new AxeBuilder({ page }).include(".demo-fields").analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
 
 test("keypad screenshots", async ({ page }, info) => {
   for (const theme of ["light", "dark"]) {
