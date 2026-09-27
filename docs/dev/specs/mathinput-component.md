@@ -416,7 +416,7 @@ the host `execute()` method all go through the same list.
 | Command | Effect |
 |---|---|
 | `insertAtom(node)` | Insert at caret, replacing a selection. |
-| `insertTemplate(type, opts)` | Insert a template. If there is a selection, it becomes the first row. If the template's first row is a "base" row (`frac.num`, `root.body` when configured) and there is no selection, the preceding operand is absorbed as that row (§7.3). Caret moves to the first empty row, or after the template if none. |
+| `insertTemplate(type, opts)` | Insert a template. A selection goes into the template's content slot (numerator, radicand, bracket body, integrand); for `sup`/`sub`/`subsup` the selection becomes the *base* instead, bracketed if it is more than one operand (`x+1` selected, then power → `(x+1)^▢`). With `absorb` (the fraction key and `/`) and no selection, the preceding operand becomes the numerator (§7.3). The caret moves to the first empty required slot; a fresh template with only optional slots (an integral) starts in its first slot; otherwise the caret goes after the template. |
 | `moveLeft` / `moveRight` | Step through the tree, entering templates. |
 | `moveUp` / `moveDown` | Between numerator and denominator, or limits of a bigop; otherwise no-op. |
 | `moveToNextPlaceholder` / `moveToPreviousPlaceholder` | Tab / Shift+Tab. Wraps within the document. |
@@ -430,6 +430,7 @@ the host `execute()` method all go through the same list.
 | `undo`, `redo` | Command-grouped: a run of atom inserts is one undo step; every template insert or delete is its own step. |
 | `copy`, `cut`, `paste` | §7.8 |
 | `toggleShift` (keypad) | |
+| `type(ch)` | Interpret one keyboard character with the subject rules (§7.5, §7.6). The element maps key events to it. |
 
 ### 7.3 Operand absorption
 
@@ -441,7 +442,12 @@ super/subscripts, ending at an operator, relation or start of row. This
 matches calculator behaviour: `3` then fraction → `3/▢`.
 
 Examples: `2x` ⏐ → `2x / ▢`; `2 + 3` ⏐ → `2 + 3/▢`; `(x+1)²` ⏐ → whole
-bracket with its power becomes the numerator.
+bracket with its power becomes the numerator. A preceding fraction is never
+absorbed.
+
+Mixed numbers conflict with absorption (`1` then fraction gives `1/▢`), so
+the fraction key has a non-absorbing variant, "mixed number", that inserts an
+empty fraction after the whole number.
 
 ### 7.4 Single brackets
 
@@ -496,6 +502,12 @@ easy to take away as to add.
 **Tall content.** Ghost and solid fences grow with their content like any
 fence.
 
+**Edge rule.** A ghost side only exists at the edge of its row. If an edit
+moves a fence away from that edge (wrapping it in a template, selecting and
+moving it, unwrapping around it), the ghost side becomes a real bracket.
+The caret never rests just after a ghost close or just before a ghost open;
+those positions map into the fence body.
+
 **Leaving ghosts in place.** An expression with ghosts is valid. Serialisers
 treat ghost sides as real brackets (auto-balance) and the value reports
 `hasUnbalancedBrackets: true`. Hosts decide whether to accept it or prompt
@@ -518,7 +530,9 @@ tell an opening bar from a closing one.
 | `)` `]` `}` | single closing bracket (§7.4) |
 | `\|` | modulus pair |
 | `*` | × ; `-` → −; `+`; `=` `<` `>` |
-| `<` then `=` | ≤ (likewise `>=` ≥, `!=` ≠, `->` →, `<=>` ⇌, `~=` ≈) |
+| `<` then `=` | ≤ (likewise `>=` ≥, `!=` ≠, `->` →, `=>` ⇒, `~` or `~=` ≈; `<=>` is ⇔ in maths and ⇌ in chemistry) |
+| `!` `,` `%` `'` `:` | factorial, comma, percent, prime, ratio |
+| space | chemistry only: ends a formula so the next digit is a coefficient |
 | `Tab` / `Shift+Tab` | next / previous placeholder (leaves the component when there are none) |
 | arrows, `Backspace`, `Delete`, `Home`, `End` | as in §7.2 |
 | `Enter` | submit when `submit-on-enter` is set, otherwise nothing; `Shift+Enter` reserved for hosts |
