@@ -40,3 +40,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; display: grid; g
   --mi-key-primary-bg: #8a5a2b; --mi-key-primary-fg: #fff; --mi-key-variant-indicator: #b23a48;
   --mi-key-placeholder-active: #8a5a2b; --mi-tab-selected-fg: #6b4420; --mi-field-radius: 4px; --mi-key-radius: 4px; --mi-keypad-radius: 6px;
 }
+.demo-q { margin: 0; }
+.demo-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.demo-steps math-input { --mi-field-size: 21px; }
+.demo-card h3 { margin: 4px 0 0; font-size: 14px; }

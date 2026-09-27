@@ -118,6 +118,10 @@ export class MathInputElement extends HTMLElement {
         if (value) this.style.setProperty("--mi-font-math", value);
         else this.style.removeProperty("--mi-font-math");
         break;
+      case "autoreplace":
+        // Present and not "false" means on; absent means the default (on).
+        this.#editor.setOptions({ autoreplace: value === null || value !== "false" });
+        break;
       case "submit-on-enter":
         this.#refreshKeypad();
         if (this.#built) this.#syncAttributes();

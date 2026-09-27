@@ -53,7 +53,7 @@ export class Editor {
   private _anchor: Position | null = null;
   private readonly history = new History();
   private readonly listeners = new Set<(e: ChangeEvent) => void>();
-  private readonly options: Required<EditorOptions>;
+  private options: Required<EditorOptions>;
   /** The last auto-replaced word, so it can grow into a longer one (cos → cosec). */
   private lastWord: { word: string; path: Step[]; index: number } | null = null;
   /** Chemistry: a space was typed, so the next digit is a coefficient. */
@@ -112,6 +112,11 @@ export class Editor {
     this.normaliseCaret();
     this.resetTransient();
     this.emit(false);
+  }
+
+  /** Change options after construction (the element maps attributes here). */
+  setOptions(options: EditorOptions): void {
+    if (options.autoreplace !== undefined) this.options.autoreplace = options.autoreplace;
   }
 
   canUndo(): boolean { return this.history.canUndo(); }

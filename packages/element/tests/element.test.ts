@@ -196,3 +196,15 @@ describe("<math-input>", () => {
     expect(el.style.getPropertyValue("--mi-font-math")).toBe("Latin Modern Math");
   });
 });
+
+describe("autoreplace attribute", () => {
+  it("turns keyboard auto-replace off with autoreplace=false", () => {
+    const el = mount({ autoreplace: "false" });
+    typeText(el, "pi");
+    expect(el.latex).toBe("pi");
+    el.removeAttribute("autoreplace");
+    el.clear();
+    typeText(el, "pi");
+    expect(el.latex).toBe("\\pi");
+  });
+});

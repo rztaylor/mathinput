@@ -22,13 +22,42 @@ Framework-agnostic (`<math-input>` custom element) with a React wrapper.
 | `@mathinput/element` | The `<math-input>` custom element, keypad and default styles. |
 | `@mathinput/react` | React wrapper. |
 
+## Quick start
+
+```html
+<script type="module">
+  import "@mathinput/element/define";
+  import "@mathinput/element/mathinput.css";
+</script>
+
+<math-input subject="maths" level="gcse-higher" label="Your answer" submit-on-enter></math-input>
+
+<script type="module">
+  const el = document.querySelector("math-input");
+  el.addEventListener("submit", (e) => console.log(e.detail.latex, e.detail.text));
+</script>
+```
+
+React:
+
+```tsx
+import { MathInput } from "@mathinput/react";
+import "@mathinput/element/mathinput.css";
+
+<MathInput subject="chemistry" label="Equation" submitOnEnter onSubmit={(v) => send(`$${v.latex}$`)} />
+```
+
+Guides: [theming](docs/user/theming.md) · [keypad configuration](docs/user/keypad-config.md) · [output formats](docs/user/formats.md).
+
 ## Development
 
 Requires Node 22 or later.
 
 ```bash
 npm install
-npm run check      # lint, typecheck, test, build
+npm run check         # lint, typecheck, unit tests, build
+npm run test:browser  # Playwright: rendering, keypad, axe (Chromium)
+npm run dev           # demo playground
 ```
 
 Repository conventions for contributors and agents are in

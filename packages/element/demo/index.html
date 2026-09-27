@@ -27,6 +27,15 @@
   </header>
   <main>
     <section class="demo-fields" id="fields"></section>
+    <section class="demo-card" id="working">
+      <h2>Show your working (host example)</h2>
+      <p class="demo-note">The host keeps the list of steps; MathInput edits one step at a time. Press Enter or ↵ to add a step.</p>
+      <p class="demo-q">Solve 2<i>x</i>² − 7<i>x</i> + 3 = 0 by factorising.</p>
+      <ol id="steps" class="demo-steps"></ol>
+      <math-input id="step-input" data-testid="working" label="Next step" submit-on-enter placeholder="Write the next step"></math-input>
+      <h3>Sent to the tutor</h3>
+      <pre class="demo-out" id="payload"></pre>
+    </section>
     <section>
       <h2>Rendering compared with KaTeX</h2>
       <p class="demo-note">Left: MathInput's own renderer (read-only). Right: KaTeX rendering of the LaTeX it produces.</p>

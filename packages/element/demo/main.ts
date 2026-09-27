@@ -77,3 +77,30 @@ const level = document.getElementById("level") as HTMLSelectElement;
 level.addEventListener("change", () => {
   for (const el of document.querySelectorAll(".demo-fields math-input")) el.setAttribute("level", level.value);
 });
+
+// "Show your working": the host owns the steps (spec §1).
+const stepInput = document.getElementById("step-input") as MathInputElement;
+const stepsList = document.getElementById("steps") as HTMLOListElement;
+const payload = document.getElementById("payload") as HTMLPreElement;
+const steps: MathInputValue[] = [];
+const wrap = (v: MathInputValue) => `$${v.latex}$`;
+function showPayload(): void {
+  payload.textContent = [
+    "**Question:** Solve 2x² − 7x + 3 = 0 by factorising.",
+    "",
+    "**My working:**",
+    ...steps.map((v, i) => `${i + 1}. ${wrap(v)}  (${v.text})`),
+  ].join("\n");
+}
+stepInput.addEventListener("submit", (e) => {
+  steps.push(e.detail);
+  const li = document.createElement("li");
+  const shown = document.createElement("math-input") as MathInputElement;
+  shown.setAttribute("readonly", "");
+  li.append(shown);
+  stepsList.append(li);
+  shown.value = e.detail.doc;
+  stepInput.clear();
+  showPayload();
+});
+showPayload();

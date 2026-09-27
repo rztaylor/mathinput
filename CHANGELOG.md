@@ -34,3 +34,6 @@ All notable changes to MathInput are recorded here. The format follows
   order and `--mi-*` tokens as theme utilities); integrator guides for
   theming, keypad configuration and output formats in `docs/user/`; demo
   skins built from tokens only.
+- `@mathinput/react`: `<MathInput>` with typed props, controlled and
+  uncontrolled values, event callbacks and a ref to the element.
+- The `autoreplace` attribute now takes effect (`autoreplace="false"`).

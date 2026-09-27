@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "noEmit": true,
+    "paths": {
+      "@mathinput/core": ["../core/src/index.ts"],
+      "@mathinput/element": ["../element/src/index.ts"],
+      "@mathinput/element/define": ["../element/src/define.ts"]
+    }
+  },
+  "include": ["src", "tests", "vitest.config.ts"]
+}

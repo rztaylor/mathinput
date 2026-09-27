@@ -45,3 +45,13 @@ test("screenshot of the fields", async ({ page }, info) => {
   await page.locator(".demo-fields").screenshot({ path: info.outputPath("fields.png") });
   await page.locator(".demo-gallery").screenshot({ path: info.outputPath("gallery.png") });
 });
+
+test("host example collects steps on submit", async ({ page }) => {
+  const input = page.locator("math-input[data-testid=working]");
+  await input.locator(".mi-field").click();
+  await page.keyboard.type("(2x-1)(x-3)=0");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#steps li")).toHaveCount(1);
+  await expect(page.locator("#payload")).toContainText("1. $(2x-1)(x-3)=0$");
+  await expect.poll(() => input.evaluate((el) => (el as unknown as { latex: string }).latex)).toBe("");
+});
