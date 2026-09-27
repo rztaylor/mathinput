@@ -1,0 +1,1023 @@
+<title>MathInput Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --math: "STIX Two Text", "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+  --bg: #f4f8fd;
+  --surface: #ffffff;
+  --surface-soft: #f5f8fc;
+  --surface-raised: #edf4fc;
+  --text: #0b2448;
+  --text-soft: #526783;
+  --border: #dbe6f2;
+  --border-strong: #bfd1e6;
+  --primary: #0868bf;
+  --primary-strong: #04549d;
+  --primary-soft: #e8f3ff;
+  --on-primary: #ffffff;
+  --danger: #b5484f;
+  --key: #ffffff;
+  --key-op: #edf4fc;
+  --key-shadow: #c9d9ea;
+  --kp-bg: #eef3f9;
+  --nonmetal: #e7f5ee;
+  --shadow: 0 18px 54px rgba(36, 78, 125, 0.1);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0c1726; --surface: #111f30; --surface-soft: #172739; --surface-raised: #1c3046;
+    --text: #eef6ff; --text-soft: #a9bad0; --border: #294057; --border-strong: #3a5877;
+    --primary: #4b9ef1; --primary-strong: #76b8fa; --primary-soft: #173759; --on-primary: #04162b;
+    --danger: #ee7a82; --key: #1c3046; --key-op: #172739; --key-shadow: #0a1422; --kp-bg: #0f1c2c;
+    --nonmetal: #16362c; --shadow: 0 22px 62px rgba(0, 0, 0, 0.28);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c1726; --surface: #111f30; --surface-soft: #172739; --surface-raised: #1c3046;
+  --text: #eef6ff; --text-soft: #a9bad0; --border: #294057; --border-strong: #3a5877;
+  --primary: #4b9ef1; --primary-strong: #76b8fa; --primary-soft: #173759; --on-primary: #04162b;
+  --danger: #ee7a82; --key: #1c3046; --key-op: #172739; --key-shadow: #0a1422; --kp-bg: #0f1c2c;
+  --nonmetal: #16362c; --shadow: 0 22px 62px rgba(0, 0, 0, 0.28);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--text); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 58%, white); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+.page { max-width: 1480px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 48px; display: grid; gap: 22px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.page-head h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; text-wrap: balance; }
+.page-head p { margin: 4px 0 0; color: var(--text-soft); max-width: 62ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; }
+.seg { display: inline-flex; padding: 4px; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font-weight: 600; font-size: 14px; color: var(--text-soft); }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.seg-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 4px; }
+
+.layout { display: grid; gap: 22px; align-items: start; }
+@media (min-width: 1180px) { .layout { grid-template-columns: minmax(0, 1fr) 380px; } }
+.stage { display: flex; justify-content: center; min-width: 0; }
+
+/* Device frame */
+.device { width: 100%; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; position: relative; transition: max-width .25s ease; }
+.device[data-device="phone"] { max-width: 390px; height: 800px; border-radius: 34px; border: 8px solid #0b2448; }
+.device[data-device="tablet"] { max-width: 820px; height: 800px; border-radius: 26px; border: 10px solid #0b2448; }
+.device[data-device="desktop"] { max-width: 1040px; border-radius: var(--radius-lg); }
+:root[data-theme="dark"] .device[data-device="phone"], :root[data-theme="dark"] .device[data-device="tablet"] { border-color: #02070e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .device[data-device="phone"], :root:not([data-theme="light"]) .device[data-device="tablet"] { border-color: #02070e; } }
+@media (max-width: 440px) { .device[data-device="phone"], .device[data-device="tablet"] { border-width: 1px; border-color: var(--border); border-radius: var(--radius-md); height: 760px; } }
+
+.app { height: 100%; display: flex; flex-direction: column; position: relative; container-type: inline-size; }
+.app-bar { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); font-weight: 600; flex: none; }
+.app-bar .crumb { color: var(--text-soft); font-weight: 500; }
+.app-bar .pill { margin-left: auto; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary-strong); }
+.scroll { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.device[data-device="desktop"] .scroll { padding: 28px 36px 32px; }
+
+.q-card { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; }
+.q-meta { margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-soft); }
+.q-text { margin: 0; font-size: 16px; }
+.q-text .m { font-family: var(--math); font-size: 1.12em; }
+
+.steps-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.steps-head h2 { margin: 0; font-size: 14px; }
+.steps-head span { font-size: 12px; color: var(--text-soft); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.steps li { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); overflow-x: auto; }
+.steps .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--surface-raised); color: var(--text-soft); }
+.steps .math { font-size: 21px; }
+
+.mi { display: grid; gap: 8px; }
+.mi-label { font-size: 13px; font-weight: 600; color: var(--text-soft); display: flex; justify-content: space-between; }
+.field-wrap { position: relative; }
+.field { font-family: var(--math); font-size: 28px; min-height: 76px; display: flex; align-items: center; padding: 12px 48px 12px 16px; border: 2px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface); overflow-x: auto; overflow-y: hidden; white-space: nowrap; cursor: text; user-select: none; -webkit-user-select: none; touch-action: pan-x; }
+.field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent); }
+.field.shake { animation: shake .35s; border-color: var(--danger); }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--surface-raised); color: var(--text-soft); display: grid; place-items: center; }
+.clear svg { width: 16px; height: 16px; }
+.kb-hint { margin: 0; font-size: 12.5px; color: var(--text-soft); }
+.kb-hint kbd { font-family: var(--ui); font-size: 11.5px; padding: 1px 6px; border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); color: var(--text); }
+.mi-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { min-height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--surface); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); margin-left: auto; }
+.btn svg { width: 17px; height: 17px; }
+.device:not([data-device="desktop"]) .desktop-only { display: none; }
+
+/* Rendered maths */
+.row { display: inline-block; line-height: 1.2; white-space: nowrap; padding: 0 1px; border-radius: 4px; }
+.row.active:not(.root) { background: var(--primary-soft); box-shadow: 0 0 0 2px var(--primary-soft); }
+.v { font-style: italic; }
+.v.up { font-style: normal; }
+.num, .fn, .el, .unit, .st, .sym, .cst { font-style: normal; }
+.cst.e { font-style: italic; }
+.op { margin: 0 .22em; }
+.op.tight, .sup .op, .sub .op { margin: 0 .06em; }
+.op.arrow { margin: 0 .35em; }
+.fn { margin-right: .14em; }
+.fn sup { font-size: .65em; }
+.unit { margin-left: .28em; }
+.st { font-size: .92em; }
+.word { font-family: var(--ui); font-size: .62em; font-weight: 500; margin: 0 .55em; color: var(--text-soft); vertical-align: .12em; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 .12em; }
+.frac > .row { text-align: center; padding: 0 .12em; font-size: .92em; }
+.frac > .bar { align-self: stretch; height: .065em; min-height: 1.5px; background: currentColor; margin: .06em 0; }
+.sup { display: inline-block; font-size: .68em; vertical-align: .82em; margin-left: .03em; }
+.sub { display: inline-block; font-size: .68em; vertical-align: -.42em; margin-left: .02em; }
+.sqrt, .paren { display: inline-flex; align-items: stretch; vertical-align: middle; margin: 0 .06em; }
+.rad { position: relative; width: .62em; flex: none; }
+.fence { position: relative; width: .36em; flex: none; }
+.rad svg, .fence svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rad path, .fence path { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.sqrt > .row.body { border-top: .065em solid currentColor; padding: .1em .12em 0; }
+.sqrt > .idx { font-size: .55em; align-self: flex-start; margin-right: -.45em; margin-top: .05em; position: relative; z-index: 1; }
+.vec { display: inline-flex; flex-direction: column; align-items: center; gap: .05em; padding: .05em .1em; }
+.dot { position: relative; display: inline-block; }
+.dot::after { content: ""; position: absolute; left: 50%; top: .02em; width: .16em; height: .16em; margin-left: -.08em; border-radius: 50%; background: currentColor; }
+.dot > .row { padding-top: .12em; }
+.big { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 .1em; }
+.big > .row { font-size: .6em; min-width: .8em; text-align: center; }
+.big > .bigop { font-size: 1.5em; line-height: 1; }
+.ph { display: inline-block; width: .62em; height: .82em; vertical-align: -.08em; border: 1.5px dashed var(--border-strong); border-radius: 3px; position: relative; }
+.row.active .ph.on { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+.ph.ghost { margin-right: .04em; }
+.ph .caret { position: absolute; left: 50%; top: 10%; height: 80%; }
+.caret { display: inline-block; width: 2px; height: 1.1em; margin: 0 -1px; vertical-align: -.22em; background: var(--primary); animation: blink 1.05s steps(1) infinite; }
+.field:not(:focus) .caret { opacity: .35; animation: none; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } .field.shake { animation: none; } }
+.empty-hint { font-family: var(--ui); font-size: 16px; color: var(--text-soft); margin-left: 10px; vertical-align: .3em; }
+
+/* Keypad */
+.keypad { --kh: 48px; --gap: 6px; background: var(--kp-bg); border-top: 1px solid var(--border); padding: 10px 10px 12px; display: grid; gap: 8px; flex: none; user-select: none; -webkit-user-select: none; }
+.device[data-device="tablet"] .keypad { --kh: 56px; --gap: 8px; padding: 14px 16px 18px; }
+.device[data-device="desktop"] .keypad { --kh: 42px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; }
+.keypad[data-wide="true"] { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 16px; align-items: start; }
+.kp-col { display: grid; gap: 8px; min-width: 0; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { flex: none; border: 0; background: transparent; padding: 6px 13px; min-height: 34px; border-radius: 9px; font-weight: 600; font-size: 14px; color: var(--text-soft); }
+.tabs button .m { font-family: var(--math); font-size: 16px; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--primary-strong); box-shadow: 0 1px 0 var(--key-shadow); }
+.kgrid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gap); align-content: start; }
+.kgrid.panel { min-height: calc(4 * var(--kh) + 3 * var(--gap)); }
+.key { position: relative; min-height: var(--kh); min-width: 0; padding: 0 2px; border: 0; border-radius: 10px; background: var(--key); box-shadow: 0 1.5px 0 var(--key-shadow); font-family: var(--math); font-size: 21px; line-height: 1; display: grid; place-items: center; touch-action: manipulation; -webkit-touch-callout: none; transition: transform .06s; }
+.key:active, .key.pressed { transform: translateY(1px); box-shadow: none; background: var(--surface-raised); }
+.key.op { background: var(--key-op); }
+.key.tpl { background: var(--primary-soft); color: var(--primary-strong); }
+.key.word { font-family: var(--ui); font-size: 14px; font-weight: 600; }
+.key.small { font-size: 17px; }
+.key.letter { font-size: 19px; font-style: italic; }
+.key.letter.up { font-style: normal; }
+.key.primary { background: var(--primary); color: var(--on-primary); box-shadow: 0 1.5px 0 var(--primary-strong); }
+.key.nav svg { width: 22px; height: 22px; }
+.key.has-alts::after { content: ""; position: absolute; right: 5px; top: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--border-strong); }
+.kl { white-space: nowrap; display: inline-flex; align-items: center; }
+.key sup { font-size: .62em; line-height: 1; align-self: flex-start; }
+.key sub { font-size: .62em; line-height: 1; align-self: flex-end; }
+.bx { display: inline-block; width: .56em; height: .7em; border: 1.6px dashed currentColor; border-radius: 3px; vertical-align: -.02em; }
+.kfrac { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.kfrac i { display: block; width: .9em; height: 1.5px; background: currentColor; }
+.kfrac .bx { width: .5em; height: .5em; }
+.kvec { display: inline-flex; flex-direction: column; gap: 2px; border-left: 1.5px solid currentColor; border-right: 1.5px solid currentColor; border-radius: 6px; padding: 1px 4px; }
+.kvec .bx { width: .4em; height: .4em; }
+.kdot { position: relative; }
+.kdot::after { content: ""; position: absolute; left: 50%; top: -.2em; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: currentColor; }
+.alts { position: absolute; z-index: 20; display: flex; gap: 6px; padding: 6px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px; box-shadow: var(--shadow); }
+.alts .key { min-width: 52px; min-height: 48px; }
+
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 72%; z-index: 15; background: var(--surface); border-top: 1px solid var(--border-strong); border-radius: 20px 20px 0 0; box-shadow: 0 -12px 40px rgba(11, 36, 72, .18); display: flex; flex-direction: column; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.sheet-head h3 { margin: 0; font-size: 15px; }
+.sheet-head p { margin: 0; font-size: 12px; color: var(--text-soft); }
+.pt-scroll { overflow: auto; padding: 12px 16px 16px; }
+.pt { display: grid; grid-template-columns: repeat(18, 38px); grid-auto-rows: 38px; gap: 3px; width: max-content; }
+.pt button { border: 1px solid var(--border); border-radius: 6px; background: var(--surface-soft); font-family: var(--math); font-size: 15px; padding: 0; }
+.pt button.nm { background: var(--nonmetal); }
+.pt button:hover { border-color: var(--primary); }
+
+/* Inspector */
+.inspector { display: grid; gap: 16px; min-width: 0; }
+.panel-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel-card h2 { margin: 0; font-size: 16px; }
+.panel-card > p { margin: 0; color: var(--text-soft); font-size: 13.5px; }
+.out-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.out-tabs button { border: 1px solid var(--border); background: var(--surface-soft); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--text-soft); }
+.out-tabs button[aria-selected="true"] { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-strong); }
+.out-note { margin: 0; font-size: 13px; color: var(--text-soft); }
+.out { margin: 0; padding: 12px 14px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; max-height: 340px; overflow: auto; }
+.out.flash { animation: flash 1s; }
+@keyframes flash { 0% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 35%, transparent); } }
+.copy { justify-self: start; }
+.tips { margin: 0; padding-left: 18px; display: grid; gap: 7px; font-size: 14px; }
+.tips b { font-weight: 600; }
+.tips .m { font-family: var(--math); font-size: 1.1em; }
+code.api { display: block; white-space: pre; overflow-x: auto; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; line-height: 1.6; padding: 12px 14px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: 12px; }
+</style>
+
+<div class="page">
+  <header class="page-head">
+    <div>
+      <h1>MathInput for NG+</h1>
+      <p>A prototype of a maths and science answer field. Learners write with keys instead of LaTeX, and see their answer as it would look on paper. The component holds one step at a time. NG+ keeps the list of steps.</p>
+    </div>
+    <div class="controls">
+      <div><div class="seg-label" id="devLbl">Device</div>
+        <div class="seg" role="group" aria-labelledby="devLbl" id="devSeg">
+          <button type="button" data-v="phone" aria-pressed="true">Phone</button>
+          <button type="button" data-v="tablet" aria-pressed="false">Tablet</button>
+          <button type="button" data-v="desktop" aria-pressed="false">Desktop</button>
+        </div></div>
+      <div><div class="seg-label" id="subLbl">Subject</div>
+        <div class="seg" role="group" aria-labelledby="subLbl" id="subSeg">
+          <button type="button" data-v="maths" aria-pressed="true">Maths</button>
+          <button type="button" data-v="chem" aria-pressed="false">Chemistry</button>
+          <button type="button" data-v="phys" aria-pressed="false">Physics</button>
+        </div></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="stage" aria-label="Prototype">
+      <div class="device" id="device" data-device="phone">
+        <div class="app" id="app">
+          <div class="app-bar"><span class="crumb">Practise</span><span aria-hidden="true">›</span><span id="subjName">Maths</span><span class="pill" id="qPill">Q 4 of 10</span></div>
+          <div class="scroll" id="scroll">
+            <article class="q-card">
+              <p class="q-meta" id="qMeta"></p>
+              <p class="q-text" id="qText"></p>
+            </article>
+            <div class="steps-head"><h2>Your working</h2><span>List owned by NG+</span></div>
+            <ol class="steps" id="steps"></ol>
+            <div class="mi" id="mi">
+              <div class="mi-label"><span id="miLabel">Step 3</span><span>MathInput</span></div>
+              <div class="field-wrap">
+                <div class="field" id="field" tabindex="0" role="textbox" aria-labelledby="miLabel" aria-describedby="spoken" inputmode="none"></div>
+                <button type="button" class="clear" id="clear" aria-label="Clear this step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+              </div>
+              <div id="spoken" class="sr-only" aria-live="polite"></div>
+              <p class="kb-hint desktop-only">Keyboard: <kbd>/</kbd> fraction · <kbd>^</kbd> power · <kbd>_</kbd> subscript · <kbd>(</kbd> brackets · type <kbd>sqrt</kbd> <kbd>sin</kbd> <kbd>pi</kbd> <kbd>theta</kbd> · <kbd>&lt;</kbd><kbd>=</kbd> for ≤ · <kbd>Enter</kbd> adds the step</p>
+              <div class="mi-actions">
+                <button type="button" class="btn desktop-only" id="kpToggle" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M7 15h10"/></svg>Keypad</button>
+                <button type="button" class="btn" id="addStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add step</button>
+                <button type="button" class="btn primary" id="check">Check my work</button>
+              </div>
+            </div>
+          </div>
+          <div class="keypad" id="keypad" aria-label="Maths keypad"></div>
+          <div class="sheet" id="ptable" hidden>
+            <div class="sheet-head"><div><h3>Periodic table</h3><p>Green cells are non-metals</p></div><button type="button" class="btn" id="ptClose">Close</button></div>
+            <div class="pt-scroll"><div class="pt" id="ptGrid"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="inspector">
+      <section class="panel-card">
+        <h2>What NG+ receives</h2>
+        <p>Every format is generated from one expression tree. The learner never sees any of them.</p>
+        <div class="out-tabs" role="tablist" id="outTabs">
+          <button type="button" role="tab" data-v="tutor" aria-selected="true">Sent to tutor</button>
+          <button type="button" role="tab" data-v="latex" aria-selected="false">LaTeX</button>
+          <button type="button" role="tab" data-v="text" aria-selected="false">Plain text</button>
+          <button type="button" role="tab" data-v="spoken" aria-selected="false">Spoken</button>
+          <button type="button" role="tab" data-v="tree" aria-selected="false">Tree</button>
+        </div>
+        <p class="out-note" id="outNote"></p>
+        <pre class="out" id="out"></pre>
+        <button type="button" class="btn copy" id="copy">Copy</button>
+      </section>
+      <section class="panel-card">
+        <h2>Try this</h2>
+        <ul class="tips" id="tips"></ul>
+      </section>
+      <section class="panel-card">
+        <h2>Proposed API</h2>
+        <p>A framework-agnostic web component. NG+ wraps it in React.</p>
+        <code class="api">&lt;math-input subject="chemistry" keypad="auto"
+  label="Step 3"&gt;&lt;/math-input&gt;
+
+el.value        // expression tree (JSON)
+el.latex        // "\ce{Mg(s) + 2HCl(aq) -&gt; …}"
+el.text         // linear fallback
+el.addEventListener("submit", …) // ↵ / Add step</code>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const field = $('#field'), app = $('#app'), device = $('#device'), kp = $('#keypad'), mi = $('#mi');
+
+/* ---------- Model ---------- */
+const S = (v, k) => ({ t: 's', v, k });
+const ROWS = { frac: 2, sup: 1, sub: 1, sqrt: 1, nroot: 2, paren: 1, vec: 2, dot: 1, big: 2 };
+const mk = (t, o = {}) => ({ t, rows: Array.from({ length: ROWS[t] }, () => []), ...o });
+
+const state = { subject: 'maths', device: 'phone', tab: null, shift: false, steps: [], root: [], kpOpen: true, out: 'tutor' };
+let cur = { row: state.root, i: 0 };
+let parentOf = new WeakMap();
+
+function reindex() {
+  parentOf = new WeakMap();
+  (function walk(row) {
+    row.forEach((n, pi) => n.rows && n.rows.forEach((r, ri) => { parentOf.set(r, { node: n, ri, prow: row, pi }); walk(r); }));
+  })(state.root);
+}
+
+const isLeaf = (n, ...kinds) => n && n.t === 's' && kinds.includes(n.k);
+const isOperand = (n) => n && (n.t === 's' ? ['num', 'var', 'cst'].includes(n.k) : ['paren', 'sqrt', 'nroot', 'sup', 'sub', 'dot'].includes(n.t));
+
+function insertNode(n) { cur.row.splice(cur.i, 0, n); cur.i++; }
+function insEnter(n, ri = 0) { insertNode(n); const r = n.rows[ri]; cur = { row: r, i: r.length }; }
+
+/* ---------- Commands ---------- */
+function tmpl(name, arg) {
+  switch (name) {
+    case 'frac': {
+      const n = mk('frac'); let j = cur.i;
+      while (j > 0 && isOperand(cur.row[j - 1])) j--;
+      const take = cur.row.splice(j, cur.i - j); cur.i = j;
+      n.rows[0] = take; insertNode(n);
+      cur = take.length ? { row: n.rows[1], i: 0 } : { row: n.rows[0], i: 0 };
+      return;
+    }
+    case 'pw': { const n = mk('sup'); n.rows[0] = arg === '−1' ? [S('−', 'op'), S('1', 'num')] : [S(arg, 'num')]; insertNode(n); return; }
+    case 'sup': case 'sub': case 'sqrt': case 'vec': case 'dot': return insEnter(mk(name));
+    case 'nroot': { const n = mk('nroot'); if (arg) { n.rows[0] = [S(arg, 'num')]; return insEnter(n, 1); } return insEnter(n); }
+    case 'paren': return insEnter(mk('paren', { o: '(', c: ')' }));
+    case 'bracket': return insEnter(mk('paren', { o: '[', c: ']' }));
+    case 'abs': return insEnter(mk('paren', { o: '|', c: '|' }));
+    case 'int': return insEnter(mk('big', { op: '∫' }));
+    case 'sum': return insEnter(mk('big', { op: 'Σ' }));
+    case 'deriv': { const n = mk('frac'); n.rows = [[S('d', 'var')], [S('d', 'var'), S('x', 'var')]]; insertNode(n); return; }
+    case 'sci': insertNode(S('×', 'op')); insertNode(S('1', 'num')); insertNode(S('0', 'num')); return insEnter(mk('sup'));
+    case 'exp': insertNode(S('e', 'cst')); return insEnter(mk('sup'));
+    case 'logb': insertNode(S('log', 'fn')); return insEnter(mk('sub'));
+    case 'fx': insertNode(S('f', 'var')); return insEnter(mk('paren', { o: '(', c: ')' }));
+    case 'chg+': case 'chg−': { const n = mk('sup'); n.rows[0] = [S(name === 'chg+' ? '+' : '−', 'op')]; insertNode(n); return; }
+    case 'electron': { insertNode(S('e', 'el')); const n = mk('sup'); n.rows[0] = [S('−', 'op')]; insertNode(n); return; }
+  }
+}
+
+function typeChar(ch, kb) {
+  const prev = cur.row[cur.i - 1];
+  if (/^[0-9.]$/.test(ch)) {
+    if (state.subject === 'chem' && ch !== '.' && prev) {
+      if (prev.t === 'sub' && prev.rows[0].every((n) => isLeaf(n, 'num'))) { prev.rows[0].push(S(ch, 'num')); return; }
+      if ((isLeaf(prev, 'el') && prev.v !== 'e') || prev.t === 'paren') { const n = mk('sub'); n.rows[0].push(S(ch, 'num')); insertNode(n); return; }
+    }
+    insertNode(S(ch, 'num')); return;
+  }
+  if (state.subject === 'chem') {
+    if (/[a-z]/.test(ch) && isLeaf(prev, 'el') && prev.v.length === 1 && EL.has(prev.v + ch)) { prev.v += ch; return; }
+    if (/[A-Z]/.test(ch) && EL.has(ch)) { insertNode(S(ch, 'el')); return; }
+  }
+  insertNode(S(ch, 'var'));
+  if (kb && state.subject !== 'chem') autoReplace();
+}
+
+const GREEK = { α: 'alpha', β: 'beta', γ: 'gamma', δ: 'delta', θ: 'theta', λ: 'lambda', μ: 'mu', π: 'pi', σ: 'sigma', φ: 'phi', ω: 'omega', ρ: 'rho', ε: 'varepsilon', η: 'eta', τ: 'tau', Δ: 'Delta', Σ: 'Sigma', Ω: 'Omega' };
+const WORDS = { sqrt: () => tmpl('sqrt'), sin: 'sin', cos: 'cos', tan: 'tan', ln: 'ln', log: 'log', pi: () => insertNode(S('π', 'cst')), or: () => insertNode(S('or', 'word')), and: () => insertNode(S('and', 'word')) };
+for (const [g, name] of Object.entries(GREEK)) if (name !== 'pi' && name !== 'varepsilon' && name === name.toLowerCase()) WORDS[name] = () => insertNode(S(g, 'var'));
+function autoReplace() {
+  let s = '';
+  for (let j = cur.i - 1; j >= 0 && cur.i - j <= 6; j--) {
+    const n = cur.row[j];
+    if (!isLeaf(n, 'var') || !/^[a-z]$/i.test(n.v)) break;
+    s = n.v + s;
+  }
+  // Longest match first, so "theta" wins over "eta".
+  for (let len = s.length; len >= 2; len--) {
+    const w = WORDS[s.slice(-len)];
+    if (w) { cur.row.splice(cur.i - len, len); cur.i -= len; typeof w === 'string' ? insertNode(S(w, 'fn')) : w(); return; }
+  }
+}
+
+function right() {
+  const { row, i } = cur;
+  if (i < row.length) { const n = row[i]; if (n.rows) cur = { row: n.rows[0], i: 0 }; else cur.i++; return; }
+  const p = parentOf.get(row); if (!p) return;
+  cur = p.ri < p.node.rows.length - 1 ? { row: p.node.rows[p.ri + 1], i: 0 } : { row: p.prow, i: p.pi + 1 };
+}
+function left() {
+  const { row, i } = cur;
+  if (i > 0) { const n = row[i - 1]; if (n.rows) { const r = n.rows[n.rows.length - 1]; cur = { row: r, i: r.length }; } else cur.i--; return; }
+  const p = parentOf.get(row); if (!p) return;
+  if (p.ri > 0) { const r = p.node.rows[p.ri - 1]; cur = { row: r, i: r.length }; } else cur = { row: p.prow, i: p.pi };
+}
+function vert(dir) {
+  const next = cur.row[cur.i];
+  if (next && (next.t === 'frac' || next.t === 'vec')) { const r = next.rows[dir < 0 ? 0 : 1]; cur = { row: r, i: 0 }; return; }
+  let row = cur.row;
+  for (let p = parentOf.get(row); p; row = p.prow, p = parentOf.get(row)) {
+    const t = p.node.t;
+    let target = -1;
+    if ((t === 'frac' || t === 'vec') && ((dir < 0 && p.ri === 1) || (dir > 0 && p.ri === 0))) target = 1 - p.ri;
+    if (t === 'big' && ((dir < 0 && p.ri === 0) || (dir > 0 && p.ri === 1))) target = 1 - p.ri;
+    if (target >= 0) { const r = p.node.rows[target]; cur = { row: r, i: Math.min(cur.i, r.length) }; return; }
+  }
+}
+function back() {
+  const { row, i } = cur;
+  if (i > 0) {
+    const n = row[i - 1];
+    if (!n.rows || n.rows.every((r) => !r.length)) { row.splice(i - 1, 1); cur.i--; return; }
+    const r = n.rows[n.rows.length - 1]; cur = { row: r, i: r.length }; return;
+  }
+  const p = parentOf.get(row); if (!p) return;
+  let offset = 0; for (let k = 0; k < p.ri; k++) offset += p.node.rows[k].length;
+  p.prow.splice(p.pi, 1, ...p.node.rows.flat());
+  cur = { row: p.prow, i: p.pi + offset };
+}
+function exitParen() {
+  for (let row = cur.row, p = parentOf.get(row); p; row = p.prow, p = parentOf.get(row)) {
+    if (p.node.t === 'paren') { cur = { row: p.prow, i: p.pi + 1 }; return; }
+  }
+}
+function replacePrevOp(from, to) {
+  const prev = cur.row[cur.i - 1];
+  if (prev && prev.t === 's' && prev.v === from) { prev.v = to; prev.k = 'op'; return true; }
+  return false;
+}
+
+/* ---------- Rendering ---------- */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const PATHS = { '(': 'M8 1 C2 7 2 17 8 23', ')': 'M2 1 C8 7 8 17 2 23', '[': 'M8 1 H3 V23 H8', ']': 'M2 1 H7 V23 H2', '|': 'M5 1 V23', rad: 'M1 14 L3.6 12.4 L6.6 23 L11.6 0.5' };
+function glyph(cls, d, vb) {
+  const s = document.createElement('span'); s.className = cls;
+  const svg = document.createElementNS(SVGNS, 'svg'); svg.setAttribute('viewBox', vb); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS(SVGNS, 'path'); p.setAttribute('d', d); p.setAttribute('vector-effect', 'non-scaling-stroke');
+  svg.append(p); s.append(svg); return s;
+}
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const caretEl = () => el('span', 'caret');
+
+const FN = {
+  sin: { h: 'sin', t: '\\sin', l: 'sin', s: 'sine' }, cos: { h: 'cos', t: '\\cos', l: 'cos', s: 'cos' }, tan: { h: 'tan', t: '\\tan', l: 'tan', s: 'tan' },
+  'sin⁻¹': { h: 'sin<sup>−1</sup>', t: '\\sin^{-1}', l: 'arcsin', s: 'inverse sine' }, 'cos⁻¹': { h: 'cos<sup>−1</sup>', t: '\\cos^{-1}', l: 'arccos', s: 'inverse cos' }, 'tan⁻¹': { h: 'tan<sup>−1</sup>', t: '\\tan^{-1}', l: 'arctan', s: 'inverse tan' },
+  ln: { h: 'ln', t: '\\ln', l: 'ln', s: 'natural log' }, log: { h: 'log', t: '\\log', l: 'log', s: 'log' },
+};
+const RELS = new Set(['=', '<', '>', '≤', '≥', '≠', '≈', '≡', '∝']);
+
+function renderRow(row, edit, isRoot) {
+  const r = el('span', 'row' + (isRoot ? ' root' : ''));
+  const here = edit && row === cur.row;
+  if (edit) { r._row = row; if (here) r.classList.add('active'); }
+  if (!row.length && !isRoot) { const ph = el('span', 'ph' + (here ? ' on' : '')); if (here) ph.append(caretEl()); r.append(ph); return r; }
+  row.forEach((n, i) => { if (here && i === cur.i) r.append(caretEl()); renderNode(n, row, i, r, edit); });
+  if (here && cur.i === row.length) r.append(caretEl());
+  if (isRoot && !row.length && edit) r.append(el('span', 'empty-hint', 'Write your answer'));
+  return r;
+}
+function renderNode(n, row, i, parent, edit) {
+  const prev = row[i - 1];
+  let e;
+  if (n.t === 's') {
+    switch (n.k) {
+      case 'num': e = el('span', 'num', n.v); break;
+      case 'var': e = el('span', 'v' + (/[A-ZΔΣΩ]/.test(n.v) && /[ΔΣΩ]/.test(n.v) ? ' up' : ''), n.v); break;
+      case 'cst': e = el('span', 'cst' + (n.v === 'e' ? ' e' : ''), n.v); break;
+      case 'fn': e = el('span', 'fn', FN[n.v].h); break;
+      case 'op': {
+        const unary = (n.v === '−' || n.v === '+') && (!prev || isLeaf(prev, 'op'));
+        const arrow = n.v === '→' || n.v === '⇌';
+        e = el('span', 'op' + (unary || n.v === '/' || n.v === '·' ? ' tight' : '') + (arrow ? ' arrow' : ''), n.v); break;
+      }
+      case 'word': e = el('span', 'word', n.v); break;
+      case 'unit': e = el('span', 'unit', n.v); break;
+      case 'el': e = el('span', 'el', n.v); break;
+      case 'state': e = el('span', 'st', n.v); break;
+      default: e = el('span', 'sym', n.v);
+    }
+  } else if (n.t === 'frac') {
+    e = el('span', 'frac'); e.append(renderRow(n.rows[0], edit), el('span', 'bar'), renderRow(n.rows[1], edit));
+  } else if (n.t === 'sup' || n.t === 'sub') {
+    if (n.t === 'sup' && (!prev || isLeaf(prev, 'op', 'word', 'fn'))) parent.append(el('span', 'ph ghost'));
+    e = el('span', n.t); e.append(renderRow(n.rows[0], edit));
+  } else if (n.t === 'sqrt' || n.t === 'nroot') {
+    e = el('span', 'sqrt');
+    if (n.t === 'nroot') { const idx = renderRow(n.rows[0], edit); idx.classList.add('idx'); e.append(idx); }
+    const body = renderRow(n.rows[n.rows.length - 1], edit); body.classList.add('body');
+    e.append(glyph('rad', PATHS.rad, '0 0 12 24'), body);
+  } else if (n.t === 'paren') {
+    e = el('span', 'paren'); e.append(glyph('fence', PATHS[n.o], '0 0 10 24'), renderRow(n.rows[0], edit), glyph('fence', PATHS[n.c], '0 0 10 24'));
+  } else if (n.t === 'vec') {
+    e = el('span', 'paren'); const v = el('span', 'vec'); v.append(renderRow(n.rows[0], edit), renderRow(n.rows[1], edit));
+    e.append(glyph('fence', PATHS['('], '0 0 10 24'), v, glyph('fence', PATHS[')'], '0 0 10 24'));
+  } else if (n.t === 'dot') {
+    e = el('span', 'dot'); e.append(renderRow(n.rows[0], edit));
+  } else if (n.t === 'big') {
+    e = el('span', 'big'); e.append(renderRow(n.rows[1], edit), el('span', 'bigop', n.op), renderRow(n.rows[0], edit));
+  }
+  if (edit) e.dataset.k = '1';
+  parent.append(e);
+}
+
+function render() {
+  reindex();
+  field.innerHTML = '';
+  field.append(renderRow(state.root, true, true));
+  $('#clear').hidden = !state.root.length;
+  const c = field.querySelector('.caret');
+  if (c) {
+    const fr = field.getBoundingClientRect(), cr = c.getBoundingClientRect();
+    if (cr.right > fr.right - 52) field.scrollLeft += cr.right - fr.right + 70;
+    else if (cr.left < fr.left + 16) field.scrollLeft -= fr.left - cr.left + 40;
+  }
+  updateOutputs();
+}
+
+function renderSteps() {
+  const ol = $('#steps'); ol.innerHTML = '';
+  state.steps.forEach((s, i) => {
+    const li = el('li'); li.append(el('span', 'n', String(i + 1)));
+    const m = el('span', 'math'); m.style.fontFamily = 'var(--math)'; m.append(renderRow(s, false, true)); li.append(m); ol.append(li);
+  });
+  $('#miLabel').textContent = 'Step ' + (state.steps.length + 1);
+}
+
+/* ---------- Serialisers ---------- */
+const OPT = { '×': '\\times ', '÷': '\\div ', '−': '-', '±': '\\pm ', '≤': '\\le ', '≥': '\\ge ', '≠': '\\ne ', '≈': '\\approx ', '≡': '\\equiv ', '→': '\\to ', '⇌': '\\rightleftharpoons ', '·': '\\cdot ', '∝': '\\propto ' };
+const SYMT = { '°': '^{\\circ}', '∞': '\\infty ', '!': '!', ',': ',\\ ', '↑': '\\uparrow ' };
+const tall = (row) => row.some((n) => n.t === 'frac' || n.t === 'big' || n.t === 'vec');
+function tex(row) {
+  const g = (r) => (r.length ? tex(r) : '\\square ');
+  let s = '';
+  row.forEach((n) => {
+    if (n.t === 's') {
+      switch (n.k) {
+        case 'num': s += n.v; break;
+        case 'var': s += GREEK[n.v] ? '\\' + GREEK[n.v] + ' ' : n.v; break;
+        case 'cst': s += n.v === 'π' ? '\\pi ' : n.v; break;
+        case 'fn': s += FN[n.v].t + ' '; break;
+        case 'op': s += OPT[n.v] ?? n.v; break;
+        case 'word': s += '\\;\\text{' + n.v + '}\\;'; break;
+        case 'unit': s += '\\,' + (n.v === '°C' ? '{}^{\\circ}\\mathrm{C}' : '\\mathrm{' + n.v.replace('Ω', '\\Omega').replace('μ', '\\mu ') + '}'); break;
+        case 'el': case 'state': s += '\\mathrm{' + n.v + '}'; break;
+        default: s += SYMT[n.v] ?? n.v;
+      }
+    } else if (n.t === 'frac') s += `\\frac{${g(n.rows[0])}}{${g(n.rows[1])}}`;
+    else if (n.t === 'sup') s += `^{${g(n.rows[0])}}`;
+    else if (n.t === 'sub') s += `_{${g(n.rows[0])}}`;
+    else if (n.t === 'sqrt') s += `\\sqrt{${g(n.rows[0])}}`;
+    else if (n.t === 'nroot') s += `\\sqrt[${g(n.rows[0])}]{${g(n.rows[1])}}`;
+    else if (n.t === 'paren') s += tall(n.rows[0]) ? `\\left${n.o}${g(n.rows[0])}\\right${n.c}` : `${n.o}${g(n.rows[0])}${n.c}`;
+    else if (n.t === 'vec') s += `\\begin{pmatrix}${g(n.rows[0])}\\\\${g(n.rows[1])}\\end{pmatrix}`;
+    else if (n.t === 'dot') s += `\\dot{${g(n.rows[0])}}`;
+    else if (n.t === 'big') s += `${n.op === '∫' ? '\\int' : '\\sum'}_{${tex(n.rows[0])}}^{${tex(n.rows[1])}}`;
+  });
+  return s.replace(/ +(?![A-Za-z])/g, '').trim();
+}
+function ce(row, inSup) {
+  let s = '';
+  row.forEach((n) => {
+    if (n.t === 's') {
+      if (n.k === 'op') s += n.v === '→' ? ' -> ' : n.v === '⇌' ? ' <=> ' : n.v === '+' ? (inSup ? '+' : ' + ') : n.v === '−' ? '-' : n.v === '·' ? '*' : ' ' + n.v + ' ';
+      else if (n.v === '↑') s += ' ^';
+      else s += n.v;
+    } else if (n.t === 'sub') s += n.rows[0].every((x) => isLeaf(x, 'num')) ? ce(n.rows[0]) : '_{' + ce(n.rows[0]) + '}';
+    else if (n.t === 'sup') s += '^{' + ce(n.rows[0], true) + '}';
+    else if (n.t === 'paren') s += n.o + ce(n.rows[0]) + n.c;
+    else s += tex([n]);
+  });
+  return s.replace(/\s+/g, ' ').trim();
+}
+const LINOP = { '×': '*', '÷': '/', '−': '-', '±': '+/-', '≤': '<=', '≥': '>=', '≠': '!=', '≈': '~=', '≡': '==', '→': '->', '⇌': '<=>', '·': '*', '∝': ' proportional to ' };
+function lin(row, chem) {
+  const w = (r) => { const s = r.length ? lin(r, chem) : '?'; return /^[\w.]+$/.test(s) ? s : '(' + s + ')'; };
+  let s = '';
+  row.forEach((n, i) => {
+    const prev = row[i - 1];
+    if (n.t === 's') {
+      if (n.k === 'op') {
+        const v = LINOP[n.v] ?? n.v;
+        const spaced = RELS.has(n.v) || n.v === '→' || n.v === '⇌' || ((n.v === '+' || n.v === '−') && prev && !isLeaf(prev, 'op'));
+        s += spaced ? ' ' + v + ' ' : v;
+      } else if (n.k === 'fn') s += FN[n.v].l + ' ';
+      else if (n.k === 'unit' || n.k === 'word') s += ' ' + n.v + ' ';
+      else s += n.v === '°' ? ' degrees' : n.v;
+    } else if (n.t === 'frac') s += w(n.rows[0]) + '/' + w(n.rows[1]);
+    else if (n.t === 'sup') s += '^' + (chem ? lin(n.rows[0], chem) : w(n.rows[0]));
+    else if (n.t === 'sub') s += chem ? lin(n.rows[0], chem) : '_' + w(n.rows[0]);
+    else if (n.t === 'sqrt') s += 'sqrt(' + lin(n.rows[0]) + ')';
+    else if (n.t === 'nroot') s += 'root(' + lin(n.rows[0]) + ', ' + lin(n.rows[1]) + ')';
+    else if (n.t === 'paren') s += n.o + lin(n.rows[0], chem) + n.c;
+    else if (n.t === 'vec') s += 'vector(' + lin(n.rows[0]) + ', ' + lin(n.rows[1]) + ')';
+    else if (n.t === 'dot') s += lin(n.rows[0]) + '(recurring)';
+    else if (n.t === 'big') s += (n.op === '∫' ? 'integral' : 'sum') + ' from ' + lin(n.rows[0]) + ' to ' + lin(n.rows[1]) + ' of ';
+  });
+  return s.replace(/\s+/g, ' ').trim();
+}
+const SAYOP = { '=': 'equals', '+': 'plus', '−': 'minus', '×': 'times', '÷': 'divided by', '±': 'plus or minus', '<': 'is less than', '>': 'is greater than', '≤': 'is less than or equal to', '≥': 'is greater than or equal to', '≠': 'is not equal to', '≈': 'is approximately', '→': 'gives', '⇌': 'is in equilibrium with', '/': 'per', '∝': 'is proportional to', '·': 'dot' };
+const SAYUNIT = { m: 'metres', s: 'seconds', kg: 'kilograms', N: 'newtons', J: 'joules', W: 'watts', V: 'volts', A: 'amps', Ω: 'ohms', C: 'coulombs', Hz: 'hertz', Pa: 'pascals', km: 'kilometres', cm: 'centimetres', mm: 'millimetres', kJ: 'kilojoules', kW: 'kilowatts', mA: 'milliamps', K: 'kelvin', '°C': 'degrees Celsius', mol: 'moles' };
+const SAYST = { '(s)': 'solid', '(l)': 'liquid', '(g)': 'gas', '(aq)': 'aqueous' };
+function say(row) {
+  const simple = (r) => r.length === 1 && r[0].t === 's';
+  const out = row.map((n) => {
+    if (n.t === 's') {
+      if (n.k === 'op') return SAYOP[n.v] ?? n.v;
+      if (n.k === 'fn') return FN[n.v].s;
+      if (n.k === 'unit') return SAYUNIT[n.v] ?? n.v;
+      if (n.k === 'state') return SAYST[n.v] ?? n.v;
+      if (GREEK[n.v]) return GREEK[n.v].replace('var', '');
+      return n.v === '°' ? 'degrees' : n.v;
+    }
+    const [a, b] = n.rows.map((r) => (r.length ? say(r) : 'blank'));
+    switch (n.t) {
+      case 'frac': return simple(n.rows[0]) && simple(n.rows[1]) ? `${a} over ${b}` : `fraction, ${a}, over, ${b}, end fraction`;
+      case 'sup': return a === '2' ? 'squared' : a === '3' ? 'cubed' : `to the power ${a}${simple(n.rows[0]) ? '' : ', end power'}`;
+      case 'sub': return state.subject === 'chem' ? a : `sub ${a}`;
+      case 'sqrt': return `the square root of ${a}, end root`;
+      case 'nroot': return `the root ${a} of ${b}, end root`;
+      case 'paren': return n.o === '|' ? `the modulus of ${a}` : `open bracket ${a} close bracket`;
+      case 'vec': return `column vector ${a}, ${b}`;
+      case 'dot': return `${a} recurring`;
+      case 'big': return `${n.op === '∫' ? 'integral' : 'sum'} from ${a} to ${b} of`;
+    }
+  });
+  return out.join(' ').replace(/\s+/g, ' ').trim();
+}
+function treeJSON(row) {
+  return row.map((n) => n.t === 's' ? { [n.k]: n.v } : { [n.t]: n.rows.map(treeJSON), ...(n.o ? { fence: n.o + n.c } : {}), ...(n.op ? { op: n.op } : {}) });
+}
+const wrapMath = (row) => state.subject === 'chem' ? `$\\ce{${ce(row)}}$` : `$${tex(row)}$`;
+
+const NOTES = {
+  tutor: 'What NG+ would send when the learner taps Check my work. Maths goes in $…$ and chemistry in $\\ce{…}$, both of which ui/Markdown already renders.',
+  latex: 'The current step only. Empty boxes become \\square so the tutor can see what is missing.',
+  text: 'A linear fallback for logs, search, or a second hint in the prompt.',
+  spoken: 'Read out by screen readers through aria-describedby.',
+  tree: 'The source of truth. Every other format is generated from this.',
+};
+function updateOutputs() {
+  const sub = SUBJECTS[state.subject], root = state.root, chem = state.subject === 'chem';
+  let o = '';
+  switch (state.out) {
+    case 'tutor': {
+      const all = [...state.steps, ...(root.length ? [root] : [])];
+      o = `**Question:** ${sub.qPlain}\n\n**My working:**\n` + (all.length ? all.map((s, i) => `${i + 1}. ${wrapMath(s)}`).join('\n') : '(no steps yet)');
+      break;
+    }
+    case 'latex': o = root.length ? (chem ? `\\ce{${ce(root)}}` : tex(root)) : '(empty)'; break;
+    case 'text': o = root.length ? lin(root, chem) : '(empty)'; break;
+    case 'spoken': o = root.length ? say(root) : '(empty)'; break;
+    case 'tree': o = JSON.stringify(treeJSON(root), null, 1).replace(/\n\s*(?=[}\]])/g, '').replace(/\{\n\s*/g, '{ ').replace(/,\n\s*"/g, ', "'); break;
+  }
+  $('#out').textContent = o;
+  $('#outNote').textContent = NOTES[state.out];
+  $('#spoken').textContent = root.length ? say(root) : 'Empty';
+}
+
+/* ---------- Periodic table ---------- */
+const PT = [
+  'H,,,,,,,,,,,,,,,,,He', 'Li,Be,,,,,,,,,,,B,C,N,O,F,Ne', 'Na,Mg,,,,,,,,,,,Al,Si,P,S,Cl,Ar',
+  'K,Ca,Sc,Ti,V,Cr,Mn,Fe,Co,Ni,Cu,Zn,Ga,Ge,As,Se,Br,Kr', 'Rb,Sr,Y,Zr,Nb,Mo,Tc,Ru,Rh,Pd,Ag,Cd,In,Sn,Sb,Te,I,Xe',
+  'Cs,Ba,La,Hf,Ta,W,Re,Os,Ir,Pt,Au,Hg,Tl,Pb,Bi,Po,At,Rn', 'Fr,Ra,Ac,Rf,Db,Sg,Bh,Hs,Mt,Ds,Rg,Cn,Nh,Fl,Mc,Lv,Ts,Og', '',
+  ',,,Ce,Pr,Nd,Pm,Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu', ',,,Th,Pa,U,Np,Pu,Am,Cm,Bk,Cf,Es,Fm,Md,No,Lr',
+];
+const NONMETAL = new Set('H He C N O F Ne P S Cl Ar Se Br Kr I Xe Rn'.split(' '));
+const EL = new Set();
+PT.forEach((line, r) => line.split(',').forEach((sym, c) => {
+  if (!sym) return; EL.add(sym);
+  const b = el('button', NONMETAL.has(sym) ? 'nm' : '', sym); b.type = 'button';
+  b.style.gridRow = String(r + 1); b.style.gridColumn = String(c + 1);
+  b.addEventListener('pointerdown', (e) => e.preventDefault());
+  b.addEventListener('click', () => { act(() => insertNode(S(sym, 'el'))); $('#ptable').hidden = true; });
+  $('#ptGrid').append(b);
+}));
+$('#ptClose').addEventListener('click', () => { $('#ptable').hidden = true; field.focus({ preventScroll: true }); });
+
+/* ---------- Keys ---------- */
+const B = '<span class="bx"></span>';
+const K = (l, a, o = {}) => ({ l, a, ...o });
+const put = (v, k) => () => insertNode(S(v, k));
+const typ = (ch) => () => typeChar(ch, false);
+const T = (name, arg) => () => tmpl(name, arg);
+const digit = (d) => K(d, typ(d), { c: 'num' });
+const op = (v, o = {}) => K(v, put(v, 'op'), { c: 'op', ...o });
+const letter = (x, o = {}) => K(x, typ(x), { c: 'letter', n: x, ...o });
+const greek = (g) => K(g, put(g, 'var'), { c: 'letter' + (/[ΔΣΩ]/.test(g) ? ' up' : ''), n: GREEK[g] });
+const fnKey = (f) => K(FN[f].h, put(f, 'fn'), { c: 'word', n: FN[f].s });
+const unit = (u) => K(u, put(u, 'unit'), { c: 'word', n: SAYUNIT[u] ?? u });
+const elem = (x) => K(x, put(x, 'el'), { c: 'small' });
+const state_ = (x) => K(x, put(x, 'state'), { c: 'word', n: SAYST[x] });
+
+const kFrac = K(`<span class="kfrac">${B}<i></i>${B}</span>`, T('frac'), { c: 'tpl', n: 'fraction' });
+const kPow = K(`${B}<sup>${B}</sup>`, T('sup'), { c: 'tpl', n: 'power', alts: [K(`${B}<sup>2</sup>`, T('pw', '2'), { n: 'squared' }), K(`${B}<sup>3</sup>`, T('pw', '3'), { n: 'cubed' }), K(`${B}<sup>−1</sup>`, T('pw', '−1'), { n: 'to the power minus one' })] });
+const kSq = K(`${B}<sup>2</sup>`, T('pw', '2'), { c: 'tpl', n: 'squared', alts: [K(`${B}<sup>3</sup>`, T('pw', '3'), { n: 'cubed' }), K(`${B}<sup>−1</sup>`, T('pw', '−1'), { n: 'inverse' })] });
+const kSub = K(`${B}<sub>${B}</sub>`, T('sub'), { c: 'tpl', n: 'subscript' });
+const kSqrt = K(`√${B}`, T('sqrt'), { c: 'tpl', n: 'square root', alts: [K(`∛${B}`, T('nroot', '3'), { n: 'cube root' }), K(`<sup>${B}</sup>√${B}`, T('nroot'), { n: 'nth root' })] });
+const kParen = K('( )', T('paren'), { c: 'tpl', n: 'brackets', alts: [K('[ ]', T('bracket'), { n: 'square brackets' }), K('| |', T('abs'), { n: 'modulus' })] });
+const kEq = op('=', { alts: [op('≈'), op('≠'), op('≡')] });
+const kMinus = op('−', { n: 'minus', alts: [op('±', { n: 'plus or minus' })] });
+const kTimes = op('×', { n: 'times', alts: [op('·', { n: 'dot' })] });
+const kArrow = op('→', { n: 'reacts to give', alts: [op('⇌', { n: 'reversible' })] });
+const kSci = K(`×10<sup>${B}</sup>`, T('sci'), { c: 'tpl small', n: 'times ten to the power' });
+
+const NUMS = () => [digit('7'), digit('8'), digit('9'), op('÷', { n: 'divide' }), kFrac,
+  digit('4'), digit('5'), digit('6'), kTimes, state.subject === 'chem' ? kSub : kPow,
+  digit('1'), digit('2'), digit('3'), kMinus, state.subject === 'chem' ? K(`${B}<sup>n+</sup>`, T('sup'), { c: 'tpl', n: 'charge', alts: [K(`${B}<sup>+</sup>`, T('chg+'), { n: 'positive charge' }), K(`${B}<sup>−</sup>`, T('chg−'), { n: 'negative charge' })] }) : kSqrt,
+  digit('0'), K('.', typ('.'), { n: 'point' }), state.subject === 'chem' ? kArrow : kEq, op('+', { n: 'plus' }), kParen];
+
+const TABS = {
+  '123': { label: '123', cols: 5, keys: NUMS },
+  alg: { label: '<span class="m"><i>x</i>²</span>', aria: 'Algebra', cols: 6, keys: () => [
+    letter('x'), letter('y'), letter('a'), letter('b'), letter('n'), letter('t'),
+    kSq, kPow, kSub, kSqrt, K(`|${B}|`, T('abs'), { c: 'tpl', n: 'modulus' }), K(`<span class="kvec">${B}${B}</span>`, T('vec'), { c: 'tpl', n: 'column vector' }),
+    op('<'), op('>'), op('≤'), op('≥'), op('≠'), op('≈'),
+    op('±'), K('π', put('π', 'cst'), { n: 'pi' }), K(`0.<span class="kdot">3</span>`, T('dot'), { c: 'tpl small', n: 'recurring decimal' }), K(',', put(',', 'sym'), { n: 'comma' }), K('or', put('or', 'word'), { c: 'word' }), K('and', put('and', 'word'), { c: 'word' }),
+  ] },
+  fn: { label: '<span class="m"><i>f</i>(<i>x</i>)</span>', aria: 'Functions', cols: 6, keys: () => [
+    fnKey('sin'), fnKey('cos'), fnKey('tan'), fnKey('ln'), fnKey('log'), K(`log<sub>${B}</sub>`, T('logb'), { c: 'word', n: 'log base' }),
+    fnKey('sin⁻¹'), fnKey('cos⁻¹'), fnKey('tan⁻¹'), K(`<i>e</i><sup>${B}</sup>`, T('exp'), { c: 'tpl', n: 'e to the power' }), K('°', put('°', 'sym'), { n: 'degrees' }), K('!', put('!', 'sym'), { n: 'factorial' }),
+    K(`<span class="kfrac"><span>d</span><i></i><span>dx</span></span>`, T('deriv'), { c: 'tpl small', n: 'd by d x' }), K(`∫<sub>${B}</sub><sup>${B}</sup>`, T('int'), { c: 'tpl', n: 'integral' }), K(`Σ`, T('sum'), { c: 'tpl', n: 'sum' }), K(`<i>f</i>(${B})`, T('fx'), { c: 'tpl', n: 'function' }), K('∞', put('∞', 'sym'), { n: 'infinity' }), K('<i>e</i>', put('e', 'cst'), { n: 'e' }),
+  ] },
+  greek: { label: '<span class="m">αβγ</span>', aria: 'Greek letters', cols: 6, keys: () => [...'αβγδθλμπσφωρεητΔΣΩ'].map((g) => g === 'π' ? K('π', put('π', 'cst'), { c: 'letter up', n: 'pi' }) : greek(g)) },
+  abc: { label: 'abc', cols: 10, keys: () => {
+    const L = (x) => letter(state.shift ? x.toUpperCase() : x, { c: 'letter' + (state.shift ? ' up' : '') });
+    return [...'qwertyuiop', ...'asdfghjkl'].map(L).concat(
+      [K('⇧', () => { state.shift = !state.shift; renderKeypad(); }, { c: 'op word' + (state.shift ? ' tpl' : ''), n: 'shift', keep: true })],
+      [...'zxcvbnm'].map(L), [K(',', put(',', 'sym'), { n: 'comma' }), K('or', put('or', 'word'), { c: 'word' }), K('and', put('and', 'word'), { c: 'word' })]);
+  } },
+  el: { label: 'Elements', cols: 6, keys: () => [
+    ...'H C N O Na Mg Al Si P S Cl K Ca Fe Cu Zn Br Ag I Li He Pb Ba'.split(' ').map(elem),
+    K('Table', () => { $('#ptable').hidden = false; }, { c: 'word tpl', n: 'open periodic table', keep: true }),
+  ] },
+  chem: { label: 'Symbols', cols: 6, keys: () => [
+    kArrow, op('⇌', { n: 'reversible' }), op('+', { n: 'plus' }), state_('(s)'), state_('(l)'), state_('(g)'),
+    state_('(aq)'), kSub, K(`${B}<sup>n+</sup>`, T('sup'), { c: 'tpl', n: 'charge' }), K(`${B}<sup>+</sup>`, T('chg+'), { c: 'tpl', n: 'positive charge' }), K(`${B}<sup>−</sup>`, T('chg−'), { c: 'tpl', n: 'negative charge' }), K('e<sup>−</sup>', T('electron'), { n: 'electron' }),
+    kParen, K('[ ]', T('bracket'), { c: 'tpl', n: 'square brackets' }), op('·', { n: 'dot, for hydrated salts' }), K('↑', put('↑', 'sym'), { n: 'gas given off' }), K('Δ', put('Δ', 'sym'), { n: 'heat' }), kEq,
+  ] },
+  units: { label: 'Units', cols: 6, keys: () => [
+    ...'m s kg N J W V A Ω C Hz Pa km cm mm kJ kW mA K °C mol'.split(' ').map(unit),
+    op('/', { n: 'per' }), K(`${B}<sup>−1</sup>`, T('pw', '−1'), { c: 'tpl', n: 'per, to the power minus one' }), kSci,
+  ] },
+};
+
+const SUBJECTS = {
+  maths: {
+    name: 'Maths', meta: 'GCSE Higher · Quadratics', pill: 'Q 4 of 10', tabs: ['123', 'alg', 'fn', 'greek', 'abc'],
+    q: 'Solve <span class="m">2<i>x</i>² − 7<i>x</i> + 3 = 0</span> by factorising.',
+    qPlain: 'Solve 2x² − 7x + 3 = 0 by factorising.',
+    navKey: () => letter('x', { alts: [letter('y'), letter('a'), letter('b'), letter('n')] }),
+    sample: () => {
+      const n = (v) => S(v, 'num'), v = (x) => S(x, 'var'), o = (x) => S(x, 'op');
+      const P = (...c) => ({ t: 'paren', o: '(', c: ')', rows: [c] });
+      return {
+        steps: [[P(n('2'), v('x'), o('−'), n('1')), P(v('x'), o('−'), n('3')), o('='), n('0')],
+                [n('2'), v('x'), o('−'), n('1'), o('='), n('0'), S('or', 'word'), v('x'), o('−'), n('3'), o('='), n('0')]],
+        cur: [v('x'), o('='), { t: 'frac', rows: [[n('1')], [n('2')]] }, S('or', 'word'), v('x'), o('='), n('3')],
+      };
+    },
+    tips: [
+      'Type <b>3</b>, then tap the fraction key. The 3 becomes the numerator, like on a calculator.',
+      'Press and hold any key with a dot in its corner. <span class="m"><i>x</i>²</span> offers cubed and inverse.',
+      'Tap inside any box to move the cursor there. The box you are typing in is shaded.',
+      'Backspace in an empty box removes the template and keeps what was in the other box.',
+      'On Desktop, try the keyboard: <b>/</b>, <b>^</b>, or type <b>sqrt</b> or <b>sin</b>.',
+    ],
+  },
+  chem: {
+    name: 'Chemistry', meta: 'GCSE · Reactions of acids', pill: 'Q 2 of 8', tabs: ['el', '123', 'chem'],
+    q: 'Magnesium reacts with dilute hydrochloric acid to form magnesium chloride and hydrogen. Write a balanced symbol equation, including state symbols.',
+    qPlain: 'Magnesium reacts with dilute hydrochloric acid to form magnesium chloride and hydrogen. Write a balanced symbol equation, including state symbols.',
+    navKey: () => state_('(aq)'),
+    sample: () => {
+      const e = (x) => S(x, 'el'), o = (x) => S(x, 'op'), st = (x) => S(x, 'state'), sub = (d) => ({ t: 'sub', rows: [[S(d, 'num')]] });
+      return {
+        steps: [[e('Mg'), o('+'), e('H'), e('Cl'), o('→'), e('Mg'), e('Cl'), sub('2'), o('+'), e('H'), sub('2')]],
+        cur: [e('Mg'), st('(s)'), o('+'), S('2', 'num'), e('H'), e('Cl'), st('(aq)'), o('→'), e('Mg'), e('Cl'), sub('2'), st('(aq)'), o('+'), e('H'), sub('2'), st('(g)')],
+      };
+    },
+    tips: [
+      'Tap <b>H</b>, then <b>2</b>. The 2 drops to a subscript because it follows an element.',
+      'A number at the start of a formula stays full size, as a coefficient: <span class="m">2HCl</span>.',
+      'For ions, tap the charge key and then type <b>2</b> and <b>+</b>. Hold it for a quick + or −.',
+      'The tutor receives <b>\\ce{…}</b> (mhchem), which NG+ already renders.',
+      'Use <b>Table</b> in Elements for the full periodic table.',
+    ],
+  },
+  phys: {
+    name: 'Physics', meta: 'GCSE · Forces and motion', pill: 'Q 6 of 10', tabs: ['123', 'units', 'alg', 'greek'],
+    q: 'A car accelerates uniformly from rest to 24 m/s in 8.0 s. Calculate its acceleration.',
+    qPlain: 'A car accelerates uniformly from rest to 24 m/s in 8.0 s. Calculate its acceleration.',
+    navKey: () => kSci,
+    sample: () => {
+      const n = (v) => S(v, 'num'), v = (x) => S(x, 'var'), o = (x) => S(x, 'op'), u = (x) => S(x, 'unit');
+      const F = (a, b) => ({ t: 'frac', rows: [a, b] });
+      return {
+        steps: [[v('a'), o('='), F([v('v'), o('−'), v('u')], [v('t')])],
+                [v('a'), o('='), F([n('2'), n('4'), o('−'), n('0')], [n('8'), n('.'), n('0')])]],
+        cur: [v('a'), o('='), n('3'), n('.'), n('0'), u('m'), u('s'), { t: 'sup', rows: [[o('−'), n('1'), ]] }],
+      };
+    },
+    tips: [
+      'Units come from their own tab. They stay upright and apart from variables, so <span class="m">m</span> (metres) is never confused with <span class="m"><i>m</i></span> (mass).',
+      '<b>×10ⁿ</b> writes standard form in one tap: <span class="m">3.0 × 10⁸</span>.',
+      'Fix the unit in the sample: tap inside the <span class="m">−1</span> and change it to <span class="m">−2</span>.',
+      'Greek letters are one tap away: <span class="m">λ ρ ω Δ</span>.',
+    ],
+  },
+};
+
+/* ---------- Keypad rendering and input ---------- */
+const ICON = {
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M17 9l-5 6M12 9l5 6"/></svg>',
+  enter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5v7a3 3 0 0 1-3 3H5"/><path d="M9 11l-4 4 4 4"/></svg>',
+};
+const navRow = () => [SUBJECTS[state.subject].navKey(),
+  K(ICON.left, left, { c: 'nav op', n: 'move left' }), K(ICON.right, right, { c: 'nav op', n: 'move right' }),
+  K(ICON.back, back, { c: 'nav op', n: 'backspace' }), K(ICON.enter, addStep, { c: 'nav primary', n: 'add step', raw: true })];
+
+function act(fn) { reindex(); fn(); render(); field.focus({ preventScroll: true }); }
+
+let altsEl = null;
+function closeAlts() { if (altsEl) { altsEl.remove(); altsEl = null; } }
+function showAlts(btn, k) {
+  closeAlts();
+  altsEl = el('div', 'alts'); altsEl.setAttribute('role', 'menu');
+  [k, ...k.alts].forEach((a) => altsEl.append(keyBtn({ ...a, alts: null }, true)));
+  app.append(altsEl);
+  const ar = app.getBoundingClientRect(), br = btn.getBoundingClientRect();
+  const w = altsEl.offsetWidth;
+  altsEl.style.left = Math.max(6, Math.min(ar.width - w - 6, br.left - ar.left + br.width / 2 - w / 2)) + 'px';
+  altsEl.style.top = Math.max(6, br.top - ar.top - altsEl.offsetHeight - 8) + 'px';
+}
+document.addEventListener('pointerdown', (e) => { if (altsEl && !altsEl.contains(e.target)) closeAlts(); });
+
+function keyBtn(k, inAlts) {
+  const b = el('button', 'key ' + (k.c || ''), '<span class="kl">' + k.l + '</span>'); b.type = 'button';
+  b.setAttribute('aria-label', k.n || b.textContent);
+  if (k.alts && !inAlts) { b.classList.add('has-alts'); b.setAttribute('aria-haspopup', 'menu'); }
+  let timer = null;
+  b.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (k.alts && !inAlts) timer = setTimeout(() => { b._lp = true; showAlts(b, k); }, 420);
+  });
+  const cancel = () => { clearTimeout(timer); timer = null; };
+  b.addEventListener('pointerup', cancel); b.addEventListener('pointerleave', cancel); b.addEventListener('pointercancel', cancel);
+  b.addEventListener('contextmenu', (e) => { e.preventDefault(); if (k.alts && !inAlts) { b._lp = true; showAlts(b, k); } });
+  b.addEventListener('click', () => {
+    if (b._lp) { b._lp = false; return; }
+    if (inAlts) closeAlts();
+    if (k.raw || k.keep) { k.a(); if (!k.keep) return; field.focus({ preventScroll: true }); return; }
+    act(k.a);
+  });
+  return b;
+}
+function grid(keys, cols, panel) {
+  const g = el('div', 'kgrid' + (panel ? ' panel' : '')); g.style.setProperty('--cols', cols);
+  keys.forEach((k) => g.append(keyBtn(k))); return g;
+}
+function tabBar(tabs) {
+  const bar = el('div', 'tabs'); bar.setAttribute('role', 'tablist');
+  tabs.forEach((t) => {
+    const b = el('button', '', TABS[t].label); b.type = 'button'; b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', String(t === state.tab)); if (TABS[t].aria) b.setAttribute('aria-label', TABS[t].aria);
+    b.addEventListener('pointerdown', (e) => e.preventDefault());
+    b.addEventListener('click', () => { state.tab = t; renderKeypad(); });
+    bar.append(b);
+  });
+  return bar;
+}
+let lastWide = null;
+function renderKeypad() {
+  closeAlts();
+  const sub = SUBJECTS[state.subject];
+  const host = state.device === 'desktop' ? mi : app;
+  const wide = host.clientWidth >= 600;
+  lastWide = wide;
+  kp.dataset.wide = String(wide);
+  let tabs = wide ? sub.tabs.filter((t) => t !== '123') : sub.tabs.slice();
+  if (!tabs.includes(state.tab)) state.tab = tabs[0];
+  kp.innerHTML = '';
+  if (wide) {
+    const leftCol = el('div', 'kp-col'); leftCol.append(el('div', 'tabs', '<button type="button" aria-selected="true" tabindex="-1">123</button>'), grid(NUMS(), 5), grid(navRow(), 5));
+    const rightCol = el('div', 'kp-col'); const tab = TABS[state.tab];
+    rightCol.append(tabBar(tabs), grid(tab.keys(), tab.cols, true));
+    kp.append(leftCol, rightCol);
+  } else {
+    const tab = TABS[state.tab];
+    kp.append(tabBar(tabs), grid(tab.keys(), tab.cols, true), grid(navRow(), 5));
+  }
+  kp.hidden = state.device === 'desktop' && !state.kpOpen;
+}
+new ResizeObserver(() => {
+  const host = state.device === 'desktop' ? mi : app;
+  if ((host.clientWidth >= 600) !== lastWide) renderKeypad();
+}).observe(app);
+
+/* ---------- Physical keyboard ---------- */
+field.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  const run = (fn) => { e.preventDefault(); act(fn); };
+  switch (k) {
+    case 'ArrowLeft': return run(left);
+    case 'ArrowRight': return run(right);
+    case 'ArrowUp': return run(() => vert(-1));
+    case 'ArrowDown': return run(() => vert(1));
+    case 'Backspace': return run(back);
+    case 'Enter': e.preventDefault(); return addStep();
+    case '/': return run(T('frac'));
+    case '^': return run(T('sup'));
+    case '_': return run(T('sub'));
+    case '(': return run(T('paren'));
+    case '[': return run(T('bracket'));
+    case '|': return run(T('abs'));
+    case ')': case ']': return run(exitParen);
+    case '*': return run(put('×', 'op'));
+    case '-': return run(put('−', 'op'));
+    case '+': case '<': case ',': return run(put(k, k === ',' ? 'sym' : 'op'));
+    case '>': return run(() => { if (!replacePrevOp('−', '→')) insertNode(S('>', 'op')); });
+    case '=': return run(() => { replacePrevOp('<', '≤') || replacePrevOp('>', '≥') || replacePrevOp('!', '≠') || insertNode(S('=', 'op')); });
+    case '!': return run(put('!', 'sym'));
+  }
+  if (/^[0-9.]$/.test(k) || /^[a-zA-Z]$/.test(k)) run(() => typeChar(k, true));
+});
+
+field.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('.clear')) return;
+  const rowEl = e.target.closest('.row');
+  if (!rowEl || !rowEl._row) { cur = { row: state.root, i: state.root.length }; render(); return; }
+  let i = 0;
+  for (const c of rowEl.children) {
+    if (!c.dataset.k) continue;
+    const r = c.getBoundingClientRect();
+    if (e.clientX > r.left + r.width / 2) i++;
+  }
+  cur = { row: rowEl._row, i };
+  render();
+});
+
+/* ---------- Host actions ---------- */
+function addStep() {
+  if (!state.root.length) { field.classList.remove('shake'); void field.offsetWidth; field.classList.add('shake'); field.focus({ preventScroll: true }); return; }
+  state.steps.push(JSON.parse(JSON.stringify(state.root)));
+  state.root = []; cur = { row: state.root, i: 0 };
+  renderSteps(); render(); field.focus({ preventScroll: true });
+  const sc = $('#scroll'); sc.scrollTop = sc.scrollHeight;
+}
+$('#addStep').addEventListener('click', addStep);
+$('#clear').addEventListener('pointerdown', (e) => e.preventDefault());
+$('#clear').addEventListener('click', () => { state.root.length = 0; cur = { row: state.root, i: 0 }; render(); field.focus({ preventScroll: true }); });
+$('#check').addEventListener('click', () => {
+  setOut('tutor');
+  const o = $('#out'); o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash');
+  if (window.innerWidth < 1180) o.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('#kpToggle').addEventListener('click', () => { state.kpOpen = !state.kpOpen; $('#kpToggle').setAttribute('aria-pressed', String(state.kpOpen)); renderKeypad(); });
+
+function setOut(v) {
+  state.out = v;
+  document.querySelectorAll('#outTabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.v === v)));
+  updateOutputs();
+}
+document.querySelectorAll('#outTabs button').forEach((b) => b.addEventListener('click', () => setOut(b.dataset.v)));
+$('#copy').addEventListener('click', () => {
+  const text = $('#out').textContent, btn = $('#copy');
+  const done = () => { btn.textContent = 'Copied'; setTimeout(() => (btn.textContent = 'Copy'), 1400); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents($('#out')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText(text).then(done, fallback); } catch { fallback(); }
+});
+
+function setSubject(v) {
+  state.subject = v; state.shift = false; state.tab = null;
+  const sub = SUBJECTS[v], sample = sub.sample();
+  state.steps = sample.steps; state.root = sample.cur; cur = { row: state.root, i: state.root.length };
+  $('#subjName').textContent = sub.name; $('#qMeta').textContent = sub.meta; $('#qText').innerHTML = sub.q; $('#qPill').textContent = sub.pill;
+  $('#tips').innerHTML = sub.tips.map((t) => `<li>${t}</li>`).join('');
+  kp.setAttribute('aria-label', sub.name + ' keypad');
+  $('#ptable').hidden = true;
+  document.querySelectorAll('#subSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  renderSteps(); renderKeypad(); render();
+}
+function setDevice(v) {
+  state.device = v; device.dataset.device = v;
+  document.querySelectorAll('#devSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  if (v === 'desktop') mi.insertBefore(kp, mi.querySelector('.mi-actions')); else app.insertBefore(kp, $('#ptable'));
+  renderKeypad(); render();
+}
+document.querySelectorAll('#subSeg button').forEach((b) => b.addEventListener('click', () => setSubject(b.dataset.v)));
+document.querySelectorAll('#devSeg button').forEach((b) => b.addEventListener('click', () => setDevice(b.dataset.v)));
+
+setSubject('maths');
+setDevice(window.innerWidth >= 1100 ? 'tablet' : 'phone');
+})();
+</script>
