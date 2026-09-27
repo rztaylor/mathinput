@@ -337,10 +337,10 @@ excludes stakeholder review cycles.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Touch behaviour differs between iOS Safari and Android Chrome (focus, OS keyboard, long press) | Keypad unusable on one platform | Phase 5 device tests in Playwright plus manual checks on real hardware before moving on; hidden `contenteditable` isolates the OS keyboard problem to one file |
-| Own renderer drifts from KaTeX so the field and the rendered answer look different | Learner confusion | Side-by-side visual test page in phase 4; metrics pinned in the spec |
-| Ghost brackets confuse learners who expect pairs | Hesitation or unbalanced answers | Faded ghost shows where the bracket will close; pair insert stays available as a variant; include in the phase 5 usability check |
-| Operand absorption surprises learners (`2+3` then fraction) | Wrong expressions submitted | Rules written as tests from calculator behaviour; usability check with two or three learners after phase 5 |
-| Chemistry auto-subscript wrong for edge cases (`Co` vs `CO`, coefficients after `+`) | Wrong formulas | Element table with tests; explicit "space" key; learners can always tap the subscript key |
+| Own renderer drifts from KaTeX so the field and the rendered answer look different | User confusion | Side-by-side visual test page in phase 4; metrics pinned in the spec |
+| Ghost brackets confuse users who expect pairs | Hesitation or unbalanced answers | Faded ghost shows where the bracket will close; pair insert stays available as a variant; include in the phase 5 usability check |
+| Operand absorption surprises users (`2+3` then fraction) | Wrong expressions submitted | Rules written as tests from calculator behaviour; usability check with two or three users after phase 5 |
+| Chemistry auto-subscript wrong for edge cases (`Co` vs `CO`, coefficients after `+`) | Wrong formulas | Element table with tests; explicit "space" key; users can always tap the subscript key |
 | Light DOM style leakage from hosts | Broken layout in some hosts | `@layer`, scoped selectors, a documented reset for the field; shadow wrapper recipe in docs |
 | LaTeX parser scope creep | Time | Subset frozen in SPEC §7.6; anything else errors clearly |
 | Accessibility of a custom editor | Excluded users | Live region and full keyboard operation are in the plan from phase 4, not an afterthought; manual SR pass gates release |

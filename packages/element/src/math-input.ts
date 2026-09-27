@@ -460,7 +460,7 @@ export class MathInputElement extends HTMLElement {
     if (this.#editor.document.root.length === 0 && !focused) {
       const hint = document.createElement("span");
       hint.className = "mi-empty";
-      hint.textContent = this.getAttribute("placeholder") ?? "Enter your answer";
+      hint.textContent = this.getAttribute("placeholder") ?? "Enter an expression";
       root.append(hint);
     }
     this.#content?.replaceChildren(root);

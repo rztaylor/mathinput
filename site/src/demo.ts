@@ -45,6 +45,17 @@ workInput.addEventListener("submit", (e) => {
 });
 showPayload();
 
+// Formula field: the host stores the tree and renders MathML on its own.
+const formulaInput = document.getElementById("formula-input") as MathInputElement;
+const formulaJson = document.getElementById("formula-json") as HTMLElement;
+const formulaMathml = document.getElementById("formula-mathml") as HTMLElement;
+const showFormula = (v: MathInputValue) => {
+  formulaJson.textContent = JSON.stringify(v.doc);
+  formulaMathml.replaceChildren(new DOMParser().parseFromString(v.mathml, "text/html").body.firstElementChild ?? "—");
+};
+formulaInput.addEventListener("input", (e) => showFormula(e.detail));
+showFormula(formulaInput.getValue());
+
 // Gallery against KaTeX.
 const body = document.querySelector("#gallery tbody") as HTMLElement;
 for (const c of ALL) {

@@ -5,26 +5,49 @@ Every event (`input`, `change`, `submit`) carries a value with:
 | Field | Example (`x = ½ or x = 3`) | Use |
 |---|---|---|
 | `doc` | `{ version: 1, subject: "maths", root: [...] }` | Store it; set it back with `el.value = doc`. The only lossless format. |
-| `latex` | `x=\frac{1}{2}\text{ or }x=3` | Render with KaTeX/MathJax; send to an LLM. Chemistry: `\ce{…}` (mhchem). |
-| `text` | `x = 1/2 or x = 3` | Logs, search, a second reading for an LLM. |
-| `spoken` | `x equals 1 over 2 or x equals 3` | Screen readers (already used by the element). |
-| `mathml` | `<math …>…</math>` | Native rendering, assistive technology. |
-| `isEmpty`, `hasPlaceholders`, `hasUnbalancedBrackets` | | Decide whether to accept the answer. |
+| `latex` | `x=\frac{1}{2}\text{ or }x=3` | Render with KaTeX or MathJax, put in documents, exchange with other tools. Chemistry: `\ce{…}` (mhchem). |
+| `text` | `x = 1/2 or x = 3` | Plain storage, search, logs, input to tools that take linear syntax. |
+| `spoken` | `x equals 1 over 2 or x equals 3` | Screen readers and voice output (already used by the element). |
+| `mathml` | `<math …>…</math>` | Native browser rendering, assistive technology, office documents. |
+| `isEmpty`, `hasPlaceholders`, `hasUnbalancedBrackets` | | Decide whether the expression is complete. |
 
-Formats are computed when you first read them.
+Formats are computed when you first read them. Empty boxes appear as
+`\square` in LaTeX and `?` in text, and brackets left open are closed in the
+output but reported in `hasUnbalancedBrackets`.
 
-## Sending answers to an LLM
+## Recipes
 
-Wrap the LaTeX in `$…$` (the host adds delimiters; MathInput never does):
+**Store and restore.** Keep `doc`; it is the only lossless format.
+
+```js
+save(JSON.stringify(event.detail.doc));
+el.value = JSON.parse(saved);
+```
+
+**Render somewhere else.** Wrap `latex` in your renderer's delimiters
+(MathInput never adds them). KaTeX needs the `mhchem` extension for
+chemistry.
+
+```js
+katex.render(event.detail.latex, target);
+```
+
+**Show it read-only.** A `readonly` field renders any stored expression and
+reads it out to screen readers: `<math-input readonly latex="…">`.
+
+**Search or index.** Use `text`, which is stable and readable:
+`x = 1/2 or x = 3`.
+
+**Accessibility.** Use `spoken` for a label or live region, or `mathml`
+where assistive technology reads MathML.
+
+**Language models.** Send LaTeX in `$…$`, optionally with the text as a
+second reading:
 
 ```js
 const v = event.detail;
-const prompt = `Student answer: $${v.latex}$ (read as: ${v.text})`;
+const prompt = `Expression: $${v.latex}$ (read as: ${v.text})`;
 ```
-
-Empty boxes appear as `\square` so the model can see something is missing,
-and brackets the learner left open are closed in the output but reported in
-`hasUnbalancedBrackets`.
 
 ## Reading formats back
 

@@ -7,7 +7,7 @@
 | `subject` | `maths`, `chemistry`, `physics` | `maths` | Typing rules, keypad and output style. |
 | `latex` | LaTeX | | Initial content. Unsupported LaTeX fires `parse-error`. |
 | `label` | text | | Accessible name (or use `aria-label` / `aria-labelledby`). |
-| `placeholder` | text | `Enter your answer` | Shown when empty. |
+| `placeholder` | text | `Enter an expression` | Shown when empty. |
 | `keypad` | `auto`, `always`, `never`, `collapsed` | `auto` | `auto`: open on touch devices, behind a toggle with a mouse. |
 | `keypad-container` | element id | | Render the keypad inside another element. |
 | `submit-on-enter` | boolean | off | Enter and the ↵ key fire `submit`. |

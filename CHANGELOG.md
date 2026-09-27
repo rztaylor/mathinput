@@ -45,6 +45,14 @@ All notable changes to MathInput are recorded here. The format follows
   mathinput.rztaylor.uk from the `release` branch.
 - Guides: getting started and API reference.
 
+### Changed
+
+- The default `placeholder` is now "Enter an expression" (was "Enter your
+  answer"). Docs, spec and site describe MathInput as a general maths and
+  chemistry input, with every output format presented on equal terms.
+- Website: an About section on the homepage and in the README; a second demo
+  example (a formula field that stores the tree and shows MathML).
+
 ### Removed
 
 - The `level` attribute and React prop, the `Level` type and the `level`

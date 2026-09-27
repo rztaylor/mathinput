@@ -1,6 +1,6 @@
 /**
  * Presentation MathML Core (spec §6.4). For native rendering and assistive
- * technology; not intended for LLM prompts.
+ * technology; verbose, so LaTeX suits language-model prompts better.
  */
 import type { FenceChar, MathDocument, Node, Row } from "../model/types.js";
 import { unitInfo } from "../model/vocabulary.js";

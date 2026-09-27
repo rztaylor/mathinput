@@ -18,14 +18,14 @@ npm install @mathinput/react
   import "@mathinput/element/mathinput.css"; // default styles
 </script>
 
-<math-input subject="maths" label="Your answer" submit-on-enter></math-input>
+<math-input subject="maths" label="Expression" submit-on-enter></math-input>
 
 <script type="module">
   const input = document.querySelector("math-input");
   input.addEventListener("submit", (e) => {
-    const answer = e.detail;          // see Output formats
-    console.log(answer.latex);        // x=\frac{1}{2}
-    console.log(answer.text);         // x = 1/2
+    const value = e.detail;           // see Output formats
+    console.log(value.latex);         // x=\frac{1}{2}
+    console.log(value.text);          // x = 1/2
   });
 </script>
 ```
@@ -39,22 +39,22 @@ Give every field an accessible name with `label`, `aria-label` or
 import { MathInput } from "@mathinput/react";
 import "@mathinput/element/mathinput.css";
 
-export function Answer() {
+export function EquationField() {
   return (
     <MathInput
       subject="chemistry"
       label="Balanced equation"
       submitOnEnter
-      onSubmit={(v) => saveAnswer(`$${v.latex}$`)}
+      onSubmit={(v) => save(v.doc)}
     />
   );
 }
 ```
 
 Pass `value` and `onInput` for a controlled field; it never resets the caret
-while the learner types.
+while the user types.
 
-## Show a stored answer
+## Show a stored expression
 
 ```html
 <math-input readonly latex="\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}"></math-input>
@@ -62,10 +62,10 @@ while the learner types.
 
 Read-only fields have no caret or keypad and are read out by screen readers.
 
-## One answer at a time
+## One expression at a time
 
-Each field holds one expression. To let learners show their working, keep
-the list of steps in your app: on `submit`, store `e.detail`, show it
+Each field holds one expression. For multi-line work, such as the steps of
+a calculation, keep the list in your app: on `submit`, store `e.detail`, show it
 read-only, and call `input.clear()`.
 
 ## Fonts

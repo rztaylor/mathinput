@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MathInput — maths answers, typed the way they are written</title>
-  <meta name="description" content="A keypad-first web component for entering maths, chemistry and physics answers without LaTeX. Returns LaTeX, text and spoken output for LLMs and screen readers.">
+  <title>MathInput — maths and chemistry input, the way it is written</title>
+  <meta name="description" content="A keypad-first web component for entering maths, chemistry and physics without LaTeX. Returns a lossless tree plus LaTeX, text, spoken text and MathML.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -16,6 +16,7 @@
         <a href="/" aria-current="page">Home</a>
         <a href="/docs/">Docs</a>
         <a href="/demo/">Demo</a>
+        <a href="/#about">About</a>
       </nav>
       <button type="button" class="theme-toggle" id="theme-toggle">Auto</button>
     </div>
@@ -25,8 +26,8 @@
       <div class="wrap">
         <div>
           <p class="eyebrow">Web component · Maths, chemistry, physics</p>
-          <h1>Maths answers, typed <em>the way they are written</em>.</h1>
-          <p class="lede">MathInput lets learners enter fractions, powers, roots, chemical equations and units with a keypad or keyboard, and see them as they would on paper. No LaTeX, no <code>^</code>, no <code>sqrt()</code>. Your app gets clean LaTeX, text and spoken output.</p>
+          <h1>Maths and chemistry, typed <em>the way they are written</em>.</h1>
+          <p class="lede">MathInput is an input field for fractions, powers, roots, chemical equations and units. People type with a keypad or keyboard and see the result as it would look on paper. No LaTeX, no <code>^</code>, no <code>sqrt()</code>. Your app gets a lossless tree plus LaTeX, text, spoken text and MathML.</p>
           <div class="actions">
             <a class="btn primary" href="/docs/#getting-started">Get started</a>
             <a class="btn" href="/demo/">Open the demo</a>
@@ -53,8 +54,8 @@
 
     <section class="section alt" id="features">
       <div class="wrap">
-        <h2>Built for learners, and for the apps that mark their work</h2>
-        <p class="intro">Designed for students answering questions on phones, tablets and laptops, and for developers who need the answer in a form a computer, or an LLM, can read.</p>
+        <h2>Built for the people typing, and for the apps that use the result</h2>
+        <p class="intro">For anyone entering maths or science on a phone, tablet or laptop, in learning apps, calculators, scientific forms, notebooks or chat. And for developers who need the result in a form their software can use.</p>
         <div class="features">
           <article class="feature">
             <div class="feature-glyph" aria-hidden="true">a⁄b</div>
@@ -74,12 +75,12 @@
           <article class="feature">
             <div class="feature-glyph" aria-hidden="true">( … )</div>
             <h3>Brackets one side at a time</h3>
-            <p>Learners can put brackets around work they have already written: type <code>(</code> before it and <code>)</code> after, just as on paper.</p>
+            <p>Put brackets around something already written: type <code>(</code> before it and <code>)</code> after, just as on paper.</p>
           </article>
           <article class="feature">
             <div class="feature-glyph" aria-hidden="true"><code>\frac{1}{2}</code></div>
-            <h3>Ready for LLMs</h3>
-            <p>Every answer comes as LaTeX (with mhchem for chemistry), linear text, spoken English, MathML and a JSON tree. Empty boxes are marked, never lost.</p>
+            <h3>Every format you need</h3>
+            <p>Each expression comes as a lossless JSON tree, LaTeX (with mhchem for chemistry), linear text, spoken English and MathML. Store it, render it, search it, read it aloud or pass it to other software.</p>
           </article>
           <article class="feature">
             <div class="feature-glyph" aria-hidden="true">“x squared”</div>
@@ -104,10 +105,11 @@
         <pre><code>import "@mathinput/element/define";
 import "@mathinput/element/mathinput.css";
 
-&lt;math-input subject="maths" label="Answer" submit-on-enter&gt;&lt;/math-input&gt;
+&lt;math-input subject="maths" label="Equation" submit-on-enter&gt;&lt;/math-input&gt;
 
 input.addEventListener("submit", (e) =&gt; {
-  send(`Student answer: $${e.detail.latex}$`);
+  save(e.detail.doc);          // lossless tree
+  preview(e.detail.latex);     // or text, spoken, mathml
 });</code></pre>
       </div>
     </section>
@@ -117,6 +119,15 @@ input.addEventListener("submit", (e) =&gt; {
         <h2>Make it look like your app</h2>
         <p class="intro">Every colour, size, radius and font is a CSS custom property. These are all the same component with different tokens. <a href="/docs/#theming">Read the theming guide</a> or <a href="/demo/">try the skins in the demo</a>.</p>
         <div class="skins-strip" id="skins-strip"></div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="wrap about">
+        <h2>About</h2>
+        <p>MathInput started inside a study app for GCSE students in England. Students needed to write maths, chemistry and physics answers on their phones: fractions, powers, chemical equations, units. The editors available either expected them to learn an input language, were built around a desktop keyboard, or did not handle chemistry.</p>
+        <p>So the field was built keypad-first. Each key shows exactly what it inserts. Brackets can go round work already written. Chemistry and units behave the way they do on paper. And the result comes back as a structure software can use, not as markup to parse.</p>
+        <p>Nothing about that turned out to be specific to students or to one app. Anyone typing an equation into a web page has the same problem, so MathInput became a general-purpose component. It knows notation, not curricula. Its roots survive in two places: the GCSE and A-level notation it is tested against, and the optional <code>@mathinput/presets-uk</code> keypads.</p>
       </div>
     </section>
   </main>

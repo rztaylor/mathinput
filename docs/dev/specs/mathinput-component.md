@@ -1,12 +1,13 @@
 # MathInput — Component Specification
 
-Status: draft for review · Version 0.3 · 27 September 2026
+Status: draft for review · Version 0.4 · 27 September 2026
 
 MathInput is a reusable web component for entering a single mathematical,
 chemical or physical expression the way it appears on paper, using a keypad
 and ordinary keyboard rather than an input language. It returns the expression
-in several machine-readable formats so a host application can render it, store
-it, or send it to an LLM.
+in several formats — a lossless tree, LaTeX, linear text, spoken text and
+MathML — so a host application can store it, render it, read it aloud, or
+pass it to other software such as a CAS, a search index or a language model.
 
 This document is the contract. Anything not in here is an implementation
 detail that may change; anything in here changes only with a version bump.
@@ -17,7 +18,7 @@ detail that may change; anything in here changes only with a version bump.
 
 ### Goals
 
-1. **No input language.** A learner never types or sees LaTeX, `^`, `sqrt()`
+1. **No input language.** A user never types or sees LaTeX, `^`, `sqrt()`
    or similar. Structure is created with keys that insert templates with
    empty boxes, and filled in by tapping into the boxes.
 2. **Looks like the textbook.** The field renders the expression as it would
@@ -45,7 +46,9 @@ detail that may change; anything in here changes only with a version bump.
 ### Target audience
 
 Anyone entering a maths, chemistry or physics expression in a web page —
-typically a learner answering a question — on a phone, tablet or laptop.
+on a phone, tablet or laptop: answer fields in learning and assessment
+apps, calculators and CAS front-ends, scientific and engineering forms, lab
+notebooks, note-taking and chat. The person typing is called the user.
 Integrators are web developers embedding the component in any framework.
 
 The component knows notation, not curricula. Its default keypads offer every
@@ -132,7 +135,7 @@ happens in the serialisers.
 | `sub` | `body` | | subscript attached to the preceding node |
 | `subsup` | `sub`, `sup` | | both, aligned (used for `x_1^2`, isotopes) |
 | `root` | `index?`, `body` | | radical; `index` omitted for square root |
-| `fence` | `body` | `open`, `close` ∈ `( ) [ ] { } \|`; `openGhost?`, `closeGhost?` (boolean) | brackets that grow with content. A ghost side is one the learner has not typed yet (§7.4) |
+| `fence` | `body` | `open`, `close` ∈ `( ) [ ] { } \|`; `openGhost?`, `closeGhost?` (boolean) | brackets that grow with content. A ghost side is one the user has not typed yet (§7.4) |
 | `vector` | `cells[]` | `rows`, `cols` | column vector / small matrix, always in round brackets |
 | `recurring` | `body` | | dot over the digits |
 | `bigop` | `lower`, `upper`, `body` | `op` ∈ `int` `sum` | ∫ or Σ with limits |
@@ -183,7 +186,7 @@ placeholder box.
 | `keypad` | `"auto" \| "always" \| "never" \| "collapsed"` | `"auto"` | `auto`: shown on coarse pointers, collapsed behind a toggle on fine pointers. |
 | `keypad-layout` (property `keypadLayout`) | `KeypadLayout \| KeypadPatch` | preset for the subject | Replace or trim the keypad (§8.4). |
 | `keypad-container` | element id or `HTMLElement` | inside the component | Render the keypad in another element, for a host-owned bottom sheet. |
-| `placeholder` | `string` | `"Enter your answer"` | Hint shown when empty. |
+| `placeholder` | `string` | `"Enter an expression"` | Hint shown when empty. |
 | `label` / `aria-label` | `string` | — | Accessible name. One of `label`, `aria-label` or `aria-labelledby` is required. |
 | `readonly` | boolean | `false` | Renders the expression without a caret or keypad. Use for display. |
 | `disabled` | boolean | `false` | |
@@ -203,7 +206,7 @@ All events are `CustomEvent` with `bubbles: true, composed: true`.
 | `input` | `MathInputValue` | After every edit. |
 | `change` | `MathInputValue` | On blur, or when the host calls `commit()`. |
 | `submit` | `MathInputValue` | Enter key or ↵ keypad key, only when `submit-on-enter` is set. Not fired when empty; the field shakes instead. |
-| `keypad-toggle` | `{ open: boolean }` | The learner opened or closed the keypad. |
+| `keypad-toggle` | `{ open: boolean }` | The user opened or closed the keypad. |
 | `parse-error` | `{ source: "latex" \| "paste", input: string, message: string }` | Input could not be parsed. |
 
 ```ts
@@ -301,7 +304,7 @@ rendered with KaTeX + mhchem in strict mode.
 ### 6.1 LaTeX
 
 Target: KaTeX 0.16+ with the `mhchem` extension. The output must render in
-KaTeX without warnings and be readable by an LLM.
+KaTeX without warnings and be readable by people and by language models.
 
 Rules:
 
@@ -310,7 +313,8 @@ Rules:
   `div` `\div`, `slash` `/`, `pm` `\pm`.
 - Relations: `\le \ge \ne \approx \equiv \propto \to \rightleftharpoons
   \Rightarrow \Leftrightarrow`.
-- Functions: `\sin` … ; inverse trig as `\sin^{-1}` (matches UK exam papers).
+- Functions: `\sin` … ; inverse trig as `\sin^{-1}` (the common
+  textbook notation).
 - Fractions: `\frac{…}{…}`. Fences containing a fraction, root or bigop use
   `\left( … \right)`, otherwise plain brackets.
 - Ghost bracket sides are emitted as real brackets (the expression is
@@ -332,7 +336,7 @@ Rules:
 - Vectors: `\begin{pmatrix} 3 \\ -4 \end{pmatrix}`.
 - Accents: `\bar{x}`, `\vec{a}`, `\hat{i}`.
 - Big operators: `\int_{0}^{1} … \,dx` (the `dx` is content typed by the
-  learner, not generated), `\sum_{r=1}^{n}`.
+  user, not generated), `\sum_{r=1}^{n}`.
 - Empty rows: `\square` by default; `{}` with `placeholder: "empty"`; throws
   with `"throw"`.
 - **Chemistry**: when the document contains chemistry (an element, state
@@ -354,7 +358,7 @@ It is also the input syntax of `fromText`.
 - `sin 30 deg = 1/2`, `log_2 8 = 3`, `3.0 m s^-2`, `0.(3)` recurring,
   `vector(3, -4)`, `integral(0, 1, x^2 dx)`, `sum(r=1, n, r^2)`
 - Implicit multiplication is preserved as adjacency: `2ab`. Explicit `*`
-  only where the learner used ×. Hosts that need unambiguous input for a CAS
+  only where the user used ×. Hosts that need unambiguous input for a CAS
   should use the tree.
 - Greek letters are written by name (`theta`), constants `pi`, `infinity`,
   units in ASCII (`ohm`, `um`, `degC`).
@@ -391,13 +395,22 @@ current expression is announced on request.
 ### 6.4 MathML
 
 Presentation MathML (Core), emitted for hosts that want native rendering or
-accessibility tooling. Not intended for LLM prompts.
+accessibility tooling. It is verbose, so LaTeX is usually the better choice
+for language-model prompts.
 
-### 6.5 Recommendation to hosts sending to an LLM
+### 6.5 Choosing a format
 
-Send LaTeX in `$…$` (or `$\ce{…}$` for chemistry) as the primary form. For
-grading prompts, add the linear text in brackets as a second reading. Both
-are available on every event so the host can choose.
+Every format is available on every event, computed lazily; none is
+privileged except the tree, which is the only lossless one.
+
+| Need | Use |
+|---|---|
+| Store and restore exactly | `doc` (tree JSON) |
+| Render elsewhere (KaTeX, MathJax, documents) | `latex` |
+| Plain storage, search, logs, input to other tools | `text` |
+| Screen readers and voice output | `spoken` |
+| Native browser rendering, accessibility tooling, office documents | `mathml` |
+| Language-model prompts | `latex` in `$…$` (or `$\ce{…}$` for chemistry), optionally with `text` as a second reading |
 
 ---
 
@@ -409,7 +422,7 @@ are available on every event so the host can choose.
   when focused.
 - A selection is a contiguous range within one row. Selecting across rows
   (out of a fraction, say) extends to whole templates.
-- The row containing the caret is highlighted so the learner sees which slot
+- The row containing the caret is highlighted so the user sees which slot
   they are typing into. Empty rows show a placeholder box; the caret sits
   inside it.
 - Tap or click places the caret at the nearest boundary of the nearest row.
@@ -459,7 +472,7 @@ empty fraction after the whole number.
 
 ### 7.4 Single brackets
 
-Learners often write an expression first and then decide part of it belongs
+People often write an expression first and then decide part of it belongs
 in brackets, for example turning `2x + 3` into `(2x + 3)²` or `5(x − 1)` into
 `5(x − 1) + 2`. Brackets can therefore be typed one side at a time, as on
 paper, as well as inserted as a pair.
@@ -467,7 +480,7 @@ paper, as well as inserted as a pair.
 The tree always stays well-formed: a single bracket creates a `fence` whose
 missing side is a **ghost**. A ghost is rendered faded (`--mi-ghost-opacity`)
 at the far end of the row, showing where the bracket currently closes. When
-the learner types the matching bracket, the ghost becomes solid at that
+the user types the matching bracket, the ghost becomes solid at that
 position.
 
 **Opening bracket `(`** at caret position *i* in row *R*:
@@ -493,7 +506,7 @@ position.
 
 **Examples** (⏐ is the caret, faded brackets are ghosts):
 
-| Starting with | Learner does | Result |
+| Starting with | User does | Result |
 |---|---|---|
 | `2x + 3⏐` | moves to before `2`, types `(` | `(⏐2x + 3`**`)`** (faded close) |
 | … then moves to end, types `)` | | `(2x + 3)⏐` |
@@ -519,7 +532,7 @@ those positions map into the fence body.
 **Leaving ghosts in place.** An expression with ghosts is valid. Serialisers
 treat ghost sides as real brackets (auto-balance) and the value reports
 `hasUnbalancedBrackets: true`. Hosts decide whether to accept it or prompt
-the learner.
+the user.
 
 **Modulus** `| |` is always inserted as a pair, because a single `|` cannot
 tell an opening bar from a closing one.
@@ -713,7 +726,7 @@ exactly what it inserts.
 
 Placeholder boxes in labels are drawn with a dashed border in
 `--mi-key-placeholder`; the "active" slot (where the caret will land) is
-drawn with a solid border in `--mi-key-placeholder-active` so the learner can
+drawn with a solid border in `--mi-key-placeholder-active` so the user can
 predict where typing continues.
 
 **Variants (hold for options).** A key with `variants` shows a visible
@@ -920,7 +933,7 @@ Integrator guide: `docs/user/theming.md`.
 The field is rendered with the component's own DOM renderer (flex layout,
 inline SVG for radicals and growing brackets), not KaTeX, because editing
 needs a caret, hit-testing and per-row highlighting. Rendering must match
-KaTeX closely enough that the learner's expression looks the same in the
+KaTeX closely enough that the user's expression looks the same in the
 field and in the host's rendered step list. Metrics: fraction bar 0.065em,
 superscript 68 % raised 0.82em, subscript lowered 0.42em, growing fences
 scale to content height.
@@ -993,7 +1006,7 @@ how to load STIX from Google Fonts or self-host.
 | DOM | Light DOM with class contract | Shadow DOM with `::part` — blocks Tailwind and host fonts |
 | Atom granularity | One glyph per atom | Token atoms — simpler serialisation, harder cursor and deletion |
 | Editing renderer | Own DOM/SVG renderer | KaTeX — no caret or hit-testing; MathML — inconsistent across browsers |
-| LLM format | LaTeX (+ text as a hint) | MathJSON — less familiar to models |
+| Primary interchange format | Tree JSON (lossless) plus LaTeX for rendering and exchange | MathJSON — less widely rendered and less familiar to people and models |
 | Chemistry output | mhchem `\ce{}` | Hand-built `\mathrm` — verbose and worse for models |
 | Key labels | Rendered mini-trees | Unicode glyphs — ambiguous for power/index |
 | Keypad ownership | Component renders, host may re-parent | Host builds keypad — too much for every consumer |

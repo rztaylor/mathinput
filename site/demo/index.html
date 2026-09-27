@@ -16,6 +16,7 @@
         <a href="/">Home</a>
         <a href="/docs/">Docs</a>
         <a href="/demo/" aria-current="page">Demo</a>
+        <a href="/#about">About</a>
       </nav>
       <button type="button" class="theme-toggle" id="theme-toggle">Auto</button>
     </div>
@@ -23,7 +24,7 @@
   <main id="main" class="wrap">
     <div class="demo-top">
       <h1>Demo</h1>
-      <p>Everything here is the real component. Change the skin, keys and keypad below; they apply to every field on the page. The UK key sets come from the optional <code>@mathinput/presets-uk</code> package.</p>
+      <p>Everything here is the real component, in a few example settings. Change the skin, keys and keypad below; they apply to every field on the page. The UK key sets come from the optional <code>@mathinput/presets-uk</code> package.</p>
     </div>
     <div class="controls" role="group" aria-label="Demo settings">
       <label class="control">Skin <select id="skin"></select></label>
@@ -42,27 +43,33 @@
       <section class="panel" data-subject="maths">
         <h2>Maths</h2>
         <p class="q">Rearrange, factorise, or type your own. Try <code>3</code> then the fraction key, or hold the power key.</p>
-        <math-input subject="maths" label="Maths answer" submit-on-enter latex="x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}"></math-input>
+        <math-input subject="maths" label="Maths expression" submit-on-enter latex="x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}"></math-input>
         <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
       </section>
       <section class="panel" data-subject="chemistry">
         <h2>Chemistry</h2>
         <p class="q">Type <code>H</code> then <code>2</code>: the 2 becomes a subscript. The Elements tab has the full periodic table.</p>
-        <math-input subject="chemistry" label="Chemistry answer" submit-on-enter latex="\ce{Mg(s) + 2HCl(aq) -> MgCl2(aq) + H2(g)}"></math-input>
+        <math-input subject="chemistry" label="Chemistry equation" submit-on-enter latex="\ce{Mg(s) + 2HCl(aq) -> MgCl2(aq) + H2(g)}"></math-input>
         <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
       </section>
       <section class="panel" data-subject="physics">
         <h2>Physics</h2>
         <p class="q">Units have their own tab and stay upright. ×10ⁿ writes standard form in one tap.</p>
-        <math-input subject="physics" label="Physics answer" submit-on-enter latex="a=3.0\,\mathrm{m}\,\mathrm{s}^{-2}"></math-input>
+        <math-input subject="physics" label="Physics expression" submit-on-enter latex="a=3.0\,\mathrm{m}\,\mathrm{s}^{-2}"></math-input>
         <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
       </section>
       <section class="panel" id="working">
-        <h2>Show your working</h2>
-        <p class="q">Solve 2<i>x</i>² − 7<i>x</i> + 3 = 0 by factorising. Press Enter or ↵ to add each step; the page, not the component, keeps the list.</p>
+        <h2>Example: show your working</h2>
+        <p class="q">A learning app. Solve 2<i>x</i>² − 7<i>x</i> + 3 = 0 by factorising. Press Enter or ↵ to add each step; the page, not the component, keeps the list.</p>
         <ol class="work-steps" id="work-steps"></ol>
         <math-input id="work-input" label="Next step" submit-on-enter placeholder="Write the next step"></math-input>
-        <details class="css"><summary>What a tutor would receive</summary><pre><code id="work-payload"></code></pre></details>
+        <details class="css"><summary>Markdown the page builds from the steps</summary><pre><code id="work-payload"></code></pre></details>
+      </section>
+      <section class="panel" id="formula">
+        <h2>Example: a formula field</h2>
+        <p class="q">A scientific form. The page stores the lossless tree and can show the formula anywhere as MathML, without the component.</p>
+        <math-input id="formula-input" subject="physics" label="Formula" latex="E_{k}=\frac{1}{2}mv^{2}"></math-input>
+        <dl class="outputs"><div><dt>Tree</dt><dd id="formula-json"></dd></div><div><dt>MathML</dt><dd id="formula-mathml"></dd></div></dl>
       </section>
       <section class="panel">
         <h2>Rendering compared with KaTeX</h2>

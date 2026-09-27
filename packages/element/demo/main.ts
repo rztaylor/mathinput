@@ -23,7 +23,7 @@ for (const s of samples) {
   h.textContent = s.label;
   const input = document.createElement("math-input") as MathInputElement;
   input.setAttribute("subject", s.subject);
-  input.setAttribute("label", `${s.label} answer`);
+  input.setAttribute("label", `${s.label} expression`);
   input.setAttribute("latex", s.latex);
   input.setAttribute("submit-on-enter", "");
   input.dataset.testid = s.subject;
