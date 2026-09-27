@@ -289,8 +289,9 @@ shape and level switches. Docs: `docs/user/theming.md`,
 **Done when** the NG+ spike works on phone and desktop layouts and any
 required API changes are recorded as spec amendments.
 
-**Status (27 Sep 2026): items 1–2 done; item 3 (NG+ spike) waiting for the
-user's go-ahead** because it changes another repository. The React wrapper
+**Status (27 Sep 2026): items 1–2 done; item 3 is out of scope** for this
+repository (decided 27 Sep 2026): NG+ integration is done from the NG+
+project. The React wrapper
 supports controlled and uncontrolled use (7 tests, React 19; React 18 relies
 on the same effect-based wiring). The demo's "show your working" example
 collects steps on submit and shows the tutor payload.

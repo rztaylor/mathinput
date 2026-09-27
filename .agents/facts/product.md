@@ -15,5 +15,6 @@
 - Design principles: no input language for learners; keys show exactly what
   they insert; default skin provided, fully reskinnable by tokens and classes;
   accessible by keyboard and screen reader.
-- Decision needed: public npm publishing and a hosted demo URL (planned for
-  plan phase 9).
+- NG+ integration is out of scope here; it happens in the NG+ repository.
+- Deferred (27 Sep 2026): npm publishing, GitHub remote and CI.
+- Decision needed: hosting for the live demo.
