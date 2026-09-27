@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "preview", "--config", "site/vite.config.ts", "--port", "4174", "--strictPort", "--host", "127.0.0.1"],
+      "port": 4174
+    }
+  ]
+}

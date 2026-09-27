@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MathInput documentation</title>
+  <meta name="description" content="Install, use, theme and configure MathInput, the keypad-first maths input web component.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="MathInput home"><span class="brand-mark">Math<b>Input</b></span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="/">Home</a>
+        <a href="/docs/" aria-current="page">Docs</a>
+        <a href="/demo/">Demo</a>
+      </nav>
+      <button type="button" class="theme-toggle" id="theme-toggle">Auto</button>
+    </div>
+  </header>
+  <main id="main" class="wrap docs">
+    <nav class="docs-nav" aria-label="Documentation" id="docs-nav">
+      <a href="#getting-started">Getting started</a>
+      <a href="#api">API reference</a>
+      <a href="#theming">Theming and skins</a>
+      <a class="sub" href="#try-the-skins">Try the skins</a>
+      <a href="#keypad-config">Keypad</a>
+      <a href="#formats">Output formats</a>
+    </nav>
+    <article class="prose">
+      <section id="getting-started"><!-- md:docs/user/getting-started.md --></section>
+      <section id="api"><!-- md:docs/user/api.md --></section>
+      <section id="theming">
+        <!-- md:docs/user/theming.md -->
+        <h3 id="try-the-skins">Try the skins</h3>
+        <p>Pick a skin to restyle the field below. The CSS it needs is shown underneath; copy it into your own stylesheet.</p>
+        <div class="live">
+          <label class="control">Skin <select id="docs-skin"></select></label>
+          <math-input id="docs-skin-input" label="Skin preview" keypad="always" latex="\sqrt{x^{2}+1}"></math-input>
+          <pre><code id="docs-skin-css"></code></pre>
+        </div>
+      </section>
+      <section id="keypad-config"><!-- md:docs/user/keypad-config.md --></section>
+      <section id="formats"><!-- md:docs/user/formats.md --></section>
+    </article>
+  </main>
+  <footer class="site-foot">
+    <div class="wrap">
+      <span>MathInput · MIT licence · for GCSE and A-level maths, chemistry and physics</span>
+      <span><a href="/docs/">Docs</a> · <a href="/demo/">Demo</a></span>
+    </div>
+  </footer>
+  <script type="module" src="../src/docs.ts"></script>
+</body></html>

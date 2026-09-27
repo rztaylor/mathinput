@@ -389,6 +389,7 @@
     color: var(--mi-key-fg);
     cursor: pointer;
   }
+  .mi-keypad-toggle[hidden] { display: none; }
   .mi-keypad-toggle[aria-pressed="true"] { background: var(--mi-key-template-bg); color: var(--mi-key-template-fg); }
   .mi-root:has(> .mi-keypad-toggle:not([hidden])) .mi-field { padding-right: 56px; }
 

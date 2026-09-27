@@ -37,3 +37,11 @@ All notable changes to MathInput are recorded here. The format follows
 - `@mathinput/react`: `<MathInput>` with typed props, controlled and
   uncontrolled values, event callbacks and a ref to the element.
 - The `autoreplace` attribute now takes effect (`autoreplace="false"`).
+- Website (`site/`): homepage, documentation (from `docs/user/`) and demo with
+  live skin switching and copyable skin CSS; Cloudflare Pages workflow for
+  mathinput.rztaylor.uk from the `release` branch.
+- Guides: getting started and API reference.
+
+### Fixed
+
+- The keypad toggle stayed visible with `keypad="never"`.

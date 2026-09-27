@@ -15,3 +15,7 @@
 - Decision needed: npm publishing account and hosted workflow. Until then,
   releases are manual and nothing is published.
 - Ordinary validation needs no credentials or network.
+- Website: `site/` publishes to Cloudflare Pages from the `release` branch via
+  `.github/workflows/deploy-site.yml`; details in `.agents/facts/cloudflare-pages.md`.
+  Promotion to production = pushing `release`. Package publishing is separate
+  and still deferred.

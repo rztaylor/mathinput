@@ -168,3 +168,13 @@ describe("keypad", () => {
     expect(el.hasAttribute("data-focused")).toBe(true);
   });
 });
+
+describe("keypad toggle visibility", () => {
+  it("hides the toggle with keypad=never, including in CSS terms", () => {
+    const el = document.createElement("math-input") as MathInputElement;
+    el.setAttribute("keypad", "never");
+    document.body.append(el);
+    const toggle = el.querySelector(".mi-keypad-toggle") as HTMLElement;
+    expect(toggle.hidden).toBe(true);
+  });
+});

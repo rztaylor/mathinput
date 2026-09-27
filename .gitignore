@@ -11,3 +11,5 @@ test-results/
 .DS_Store
 .agents/skills
 .claude/worktrees/
+site/dist/
+.wrangler/

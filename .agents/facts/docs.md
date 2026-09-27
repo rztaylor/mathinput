@@ -13,6 +13,8 @@
   component-level record and is linked, not duplicated.
 - `docs/dev/guides/`: contributor guides (a11y checklist, testing on devices).
 - `docs/dev/ops/release-governance.md`: versioning and release policy.
-- `docs/user/`: integrator documentation (theming, keypad configuration,
-  output formats), written in plan phase 7.
+- `docs/user/`: integrator documentation (getting started, API, theming,
+  keypad configuration, output formats). It is also the source of the
+  website's Docs page (`site/docs/`), so edits appear on the site on the next
+  release.
 - Document current behaviour as implemented; mark planned behaviour as such.

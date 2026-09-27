@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MathInput demo</title>
+  <meta name="description" content="Try MathInput for maths, chemistry and physics, switch skins, levels and themes, and compare its rendering with KaTeX.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="MathInput home"><span class="brand-mark">Math<b>Input</b></span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="/">Home</a>
+        <a href="/docs/">Docs</a>
+        <a href="/demo/" aria-current="page">Demo</a>
+      </nav>
+      <button type="button" class="theme-toggle" id="theme-toggle">Auto</button>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <div class="demo-top">
+      <h1>Demo</h1>
+      <p>Everything here is the real component. Change the skin, level and keypad below; they apply to every field on the page.</p>
+    </div>
+    <div class="controls" role="group" aria-label="Demo settings">
+      <label class="control">Skin <select id="skin"></select></label>
+      <label class="control">Level
+        <select id="level"><option value="gcse-foundation">GCSE Foundation</option><option value="gcse-higher" selected>GCSE Higher</option><option value="a-level">A-level</option></select>
+      </label>
+      <label class="control">Keypad
+        <select id="keypad"><option value="always" selected>Always shown</option><option value="auto">Auto</option><option value="collapsed">Behind a toggle</option><option value="never">Never</option></select>
+      </label>
+      <label class="control">More-options mark
+        <select id="indicator"><option value="">Corner</option><option value="dot">Dot</option><option value="bar">Bar</option></select>
+      </label>
+      <p class="skin-note" id="skin-note"></p>
+    </div>
+    <div class="demo-grid" id="demo-grid">
+      <section class="panel" data-subject="maths">
+        <h2>Maths</h2>
+        <p class="q">Rearrange, factorise, or type your own. Try <code>3</code> then the fraction key, or hold the power key.</p>
+        <math-input subject="maths" label="Maths answer" submit-on-enter latex="x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}"></math-input>
+        <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
+      </section>
+      <section class="panel" data-subject="chemistry">
+        <h2>Chemistry</h2>
+        <p class="q">Type <code>H</code> then <code>2</code>: the 2 becomes a subscript. The Elements tab has the full periodic table.</p>
+        <math-input subject="chemistry" label="Chemistry answer" submit-on-enter latex="\ce{Mg(s) + 2HCl(aq) -> MgCl2(aq) + H2(g)}"></math-input>
+        <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
+      </section>
+      <section class="panel" data-subject="physics">
+        <h2>Physics</h2>
+        <p class="q">Units have their own tab and stay upright. ×10ⁿ writes standard form in one tap.</p>
+        <math-input subject="physics" label="Physics answer" submit-on-enter latex="a=3.0\,\mathrm{m}\,\mathrm{s}^{-2}"></math-input>
+        <dl class="outputs"><div><dt>LaTeX</dt><dd></dd></div><div><dt>Text</dt><dd></dd></div><div><dt>Spoken</dt><dd></dd></div></dl>
+      </section>
+      <section class="panel" id="working">
+        <h2>Show your working</h2>
+        <p class="q">Solve 2<i>x</i>² − 7<i>x</i> + 3 = 0 by factorising. Press Enter or ↵ to add each step; the page, not the component, keeps the list.</p>
+        <ol class="work-steps" id="work-steps"></ol>
+        <math-input id="work-input" label="Next step" submit-on-enter placeholder="Write the next step"></math-input>
+        <details class="css"><summary>What a tutor would receive</summary><pre><code id="work-payload"></code></pre></details>
+      </section>
+      <section class="panel">
+        <h2>Rendering compared with KaTeX</h2>
+        <p class="q">MathInput's renderer (left) next to KaTeX rendering the LaTeX it produces (right), for every notation in the test suite.</p>
+        <div class="gallery-wrap"><table class="gallery" id="gallery"><thead><tr><th>Case</th><th>MathInput</th><th>KaTeX</th></tr></thead><tbody></tbody></table></div>
+      </section>
+    </div>
+  </main>
+  <footer class="site-foot">
+    <div class="wrap">
+      <span>MathInput · MIT licence · for GCSE and A-level maths, chemistry and physics</span>
+      <span><a href="/docs/">Docs</a> · <a href="/demo/">Demo</a></span>
+    </div>
+  </footer>
+  <script type="module" src="../src/demo.ts"></script>
+</body></html>

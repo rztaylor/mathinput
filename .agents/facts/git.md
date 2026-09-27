@@ -7,4 +7,6 @@
 - Conventional commit subjects (`feat(core): …`, `docs: …`, `chore: …`).
 - No remote is configured yet. Push, remote creation and pull requests happen
   only when the user asks. Never approve or merge on the user's behalf.
+- `release` is the website production branch (Cloudflare Pages deploys on
+  push). Update it only from reviewed `main`.
 - `.agents/skills` is a local symlink and is gitignored.
