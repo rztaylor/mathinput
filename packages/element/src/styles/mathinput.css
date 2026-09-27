@@ -372,6 +372,197 @@
 
   .mi-deriv__d { font-style: italic; }
 
+
+  /* ----------------------------------------------------------- keypad */
+
+  .mi-keypad-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    background: var(--mi-key-operator-bg);
+    color: var(--mi-key-fg);
+    cursor: pointer;
+  }
+  .mi-keypad-toggle[aria-pressed="true"] { background: var(--mi-key-template-bg); color: var(--mi-key-template-fg); }
+  .mi-root:has(> .mi-keypad-toggle:not([hidden])) .mi-field { padding-right: 56px; }
+
+  .mi-keypad {
+    position: relative;
+    /* The keypad takes the width it is given and never widens its container (spec §8.1). */
+    contain: inline-size;
+    min-width: 0;
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    background: var(--mi-keypad-bg);
+    border: 1px solid var(--mi-keypad-border);
+    border-radius: var(--mi-keypad-radius);
+    font-family: var(--mi-font-ui);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .mi-keypad[hidden] { display: none; }
+  .mi-keypad[data-form="phone"] { --mi-key-size: max(44px, var(--mi-key-size-phone, 48px)); }
+  .mi-keypad[data-form="tablet"] { --mi-key-size: var(--mi-key-size-tablet, 54px); --mi-keypad-gap: 8px; padding: 14px; }
+  .mi-keypad[data-form="desktop"] { --mi-key-size: var(--mi-key-size-desktop, 42px); --mi-key-font-size: 19px; }
+  .mi-keypad[data-form="tablet"], .mi-keypad[data-form="desktop"] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: start;
+    column-gap: 16px;
+  }
+  .mi-keypad__side, .mi-keypad__main { display: grid; gap: 8px; min-width: 0; }
+  .mi-keypad__side { padding-top: 44px; }
+
+  .mi-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--mi-columns, 5), minmax(0, 1fr));
+    gap: var(--mi-keypad-gap);
+    align-content: start;
+  }
+  .mi-panel { min-height: calc(4 * var(--mi-key-size) + 3 * var(--mi-keypad-gap)); }
+
+  .mi-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; min-height: 36px; }
+  .mi-tab {
+    flex: none;
+    border: 0;
+    background: transparent;
+    color: var(--mi-tab-fg);
+    padding: 6px 12px;
+    min-height: 36px;
+    border-radius: 9px;
+    font: 600 14px/1 var(--mi-font-ui);
+    cursor: pointer;
+  }
+  .mi-tab--selected { background: var(--mi-tab-selected-bg); color: var(--mi-tab-selected-fg); box-shadow: 0 1px 0 var(--mi-key-shadow); }
+  .mi-tab .mi-key__expr { font-size: 17px; }
+
+  .mi-key {
+    position: relative;
+    min-width: 0;
+    min-height: var(--mi-key-size);
+    padding: 0 2px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: var(--mi-key-radius);
+    background: var(--mi-key-bg);
+    color: var(--mi-key-fg);
+    box-shadow: 0 1.5px 0 var(--mi-key-shadow);
+    font-family: var(--mi-font-math);
+    font-size: var(--mi-key-font-size);
+    line-height: 1;
+    overflow: hidden;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform calc(0.06s * var(--mi-motion));
+  }
+  .mi-key[data-wide] { grid-column: span 2; }
+  .mi-key[data-kind="operator"], .mi-key[data-kind="nav"] { background: var(--mi-key-operator-bg); }
+  .mi-key[data-kind="template"] { background: var(--mi-key-template-bg); color: var(--mi-key-template-fg); }
+  .mi-key[data-kind="primary"] { background: var(--mi-key-primary-bg); color: var(--mi-key-primary-fg); box-shadow: none; }
+  .mi-key[data-kind="word"] { font-family: var(--mi-font-ui); font-size: 14px; font-weight: 600; }
+  .mi-key--pressed, .mi-key:active { background: var(--mi-key-pressed-bg); transform: translateY(1px); box-shadow: none; }
+  .mi-key:focus-visible, .mi-tab:focus-visible, .mi-keypad-toggle:focus-visible, .mi-periodic__cell:focus-visible, .mi-sheet__close:focus-visible {
+    outline: 3px solid var(--mi-field-border-focus);
+    outline-offset: 2px;
+  }
+
+  .mi-key__label { display: inline-flex; align-items: center; justify-content: center; pointer-events: none; white-space: nowrap; }
+  .mi-key__expr .mi-row--active { background: none; box-shadow: none; }
+  .mi-key__expr .mi-placeholder { border-color: var(--mi-key-placeholder); opacity: 0.7; }
+  .mi-key__expr .mi-placeholder--active {
+    opacity: 1;
+    border-style: solid;
+    border-color: var(--mi-key-placeholder-active);
+    background: color-mix(in srgb, var(--mi-key-placeholder-active) 18%, transparent);
+  }
+  .mi-key__expr .mi-placeholder--ghost { opacity: 0.7; }
+  .mi-key__expr .mi-placeholder--optional { display: none; }
+  .mi-key__expr .mi-frac > .mi-row { font-size: 0.8em; }
+  .mi-key__expr .mi-atom[data-kind="element"] { font-size: 0.9em; }
+
+  /* "Hold for more": a filled corner in the variant colour (shape set by data-variant-indicator). */
+  .mi-key__more {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    background: var(--mi-key-variant-indicator);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    border-top-right-radius: var(--mi-key-radius);
+    pointer-events: none;
+  }
+  .mi-root[data-variant-indicator="dot"] .mi-key__more,
+  .mi-keypad[data-variant-indicator="dot"] .mi-key__more {
+    top: 5px; right: 5px; width: 7px; height: 7px; clip-path: none; border-radius: 50%;
+  }
+  .mi-root[data-variant-indicator="bar"] .mi-key__more,
+  .mi-keypad[data-variant-indicator="bar"] .mi-key__more {
+    top: auto; bottom: 4px; left: 30%; right: 30%; width: auto; height: 3px; clip-path: none; border-radius: 2px;
+  }
+
+  .mi-variants {
+    position: absolute;
+    z-index: 20;
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: var(--mi-sheet-bg);
+    border: 1px solid var(--mi-keypad-border);
+    border-radius: 14px;
+    box-shadow: var(--mi-sheet-shadow);
+  }
+  .mi-variants .mi-key { min-width: 52px; min-height: max(44px, var(--mi-key-size)); }
+
+  .mi-icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .mi-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 15;
+    max-height: 100%;
+    min-height: 60%;
+    display: flex;
+    flex-direction: column;
+    background: var(--mi-sheet-bg);
+    border-radius: var(--mi-keypad-radius);
+    box-shadow: var(--mi-sheet-shadow);
+  }
+  .mi-sheet__head { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; }
+  .mi-sheet__title { font-weight: 600; font-size: 14px; }
+  .mi-sheet__close {
+    border: 1px solid var(--mi-keypad-border);
+    background: var(--mi-key-bg);
+    color: var(--mi-key-fg);
+    border-radius: 8px;
+    min-height: 36px;
+    padding: 0 14px;
+    font: 600 14px var(--mi-font-ui);
+  }
+  .mi-sheet__scroll { overflow: auto; padding: 0 12px 12px; }
+  .mi-periodic { display: grid; grid-template-columns: repeat(18, 36px); grid-auto-rows: 36px; gap: 3px; width: max-content; }
+  .mi-periodic__cell {
+    border: 1px solid var(--mi-keypad-border);
+    border-radius: 6px;
+    background: var(--mi-key-bg);
+    color: var(--mi-key-fg);
+    font: 15px var(--mi-font-math);
+    padding: 0;
+  }
+  .mi-periodic__cell[data-nonmetal] { background: var(--mi-key-template-bg); }
+
   @media (prefers-reduced-motion: reduce) {
     .mi-root { --mi-motion: 1000; }
     .mi-caret { animation: none; }

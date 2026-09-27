@@ -261,10 +261,14 @@ export class Editor {
    * `absorb`, the operand before the caret is wrapped instead (§7.3).
    * Scripts treat the wrapped nodes as their base rather than their body.
    */
-  insertTemplate(template: Template, opts: { absorb?: boolean } = {}): boolean {
+  insertTemplate(template: Template, opts: { absorb?: boolean; prefix?: Row } = {}): boolean {
     const node = JSON.parse(JSON.stringify(template)) as Template;
     return this.edit(() => {
       let wrapped = this.takeSelection();
+      if (opts.prefix?.length) {
+        this.insertNodes(cloneRow(opts.prefix));
+        wrapped = null;
+      }
       if (!wrapped && opts.absorb) {
         const row = this.row();
         const j = operandStart(row, this._caret.index);

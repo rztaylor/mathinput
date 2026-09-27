@@ -24,3 +24,7 @@ export { fromLatex } from "./parse/latex.js";
 export { fromText, looksLikeChemistry } from "./parse/text.js";
 export { ParseError } from "./parse/common.js";
 export { encodeClipboard, decodeClipboard, MIME_TREE, MIME_LATEX, MIME_TEXT, type ClipboardData } from "./parse/clipboard.js";
+
+export type { Key, KeyAction, KeyLabel, KeyKind, KeypadLayout, KeypadTab, KeypadPatch, Level } from "./keypad/types.js";
+export { keypadPreset, applyKeypadPatch, NEXT_BOX_KEY } from "./keypad/presets.js";
+export { applyKey, applyKeyAction, type UiAction } from "./keypad/apply.js";

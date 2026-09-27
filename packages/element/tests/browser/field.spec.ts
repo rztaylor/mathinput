@@ -8,9 +8,9 @@ test.beforeEach(async ({ page }) => {
 
 test("renders the sample expressions", async ({ page }) => {
   const maths = page.locator("math-input[data-testid=maths]");
-  await expect(maths.locator(".mi-radical")).toBeVisible();
-  await expect(page.locator("math-input[data-testid=chemistry] .mi-atom[data-kind=state]")).toHaveCount(4);
-  await expect(page.locator("math-input[data-testid=physics] .mi-atom[data-kind=unit]")).toHaveCount(2);
+  await expect(maths.locator(".mi-field .mi-radical")).toBeVisible();
+  await expect(page.locator("math-input[data-testid=chemistry] .mi-field .mi-atom[data-kind=state]")).toHaveCount(4);
+  await expect(page.locator("math-input[data-testid=physics] .mi-field .mi-atom[data-kind=unit]")).toHaveCount(2);
 });
 
 test("typing with a keyboard builds the expression", async ({ page }) => {
@@ -27,7 +27,7 @@ test("typing with a keyboard builds the expression", async ({ page }) => {
 
 test("clicking places the caret inside a fraction", async ({ page }) => {
   const field = page.locator("math-input[data-testid=maths]");
-  const den = field.locator(".mi-frac__den");
+  const den = field.locator(".mi-field .mi-frac__den");
   const box = await den.boundingBox();
   if (!box) throw new Error("no denominator");
   await page.mouse.click(box.x + box.width - 2, box.y + box.height / 2);

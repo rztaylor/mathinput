@@ -3,16 +3,21 @@
  * the renderer, input handling and the live region. Light DOM (spec §10.1).
  */
 import {
-  Editor, ParseError, createValue, rowAt, decodeClipboard, encodeClipboard, fromLatex, toLatex, toSpoken, validateDocument,
+  Editor, ParseError, applyKey, applyKeypadPatch, createValue, keypadPreset, rowAt, decodeClipboard, encodeClipboard, fromLatex, toLatex, toSpoken, validateDocument,
   MIME_LATEX, MIME_TEXT, MIME_TREE,
-  type ClipboardData, type CommandName, type MathDocument, type MathInputValue, type Node, type Row, type Subject,
+  type ClipboardData, type CommandName, type KeypadLayout, type KeypadPatch, type Level, type MathDocument, type MathInputValue, type Node, type Row, type Subject,
 } from "@mathinput/core";
 import { renderRow } from "./render/renderer.js";
 import { positionAt, tokenRange } from "./render/hit-test.js";
 import { handleKeydown } from "./input/keyboard.js";
 import { LiveRegion } from "./a11y/live-region.js";
+import { Keypad, type FormFactor } from "./keypad/keypad.js";
+import { icon } from "./keypad/icons.js";
 
 const SUBJECTS = new Set<Subject>(["maths", "chemistry", "physics"]);
+const LEVELS = new Set<Level>(["gcse-foundation", "gcse-higher", "a-level"]);
+type KeypadMode = "auto" | "always" | "never" | "collapsed";
+const SUBJECT_NAMES: Record<Subject, string> = { maths: "Maths", chemistry: "Chemistry", physics: "Physics" };
 
 export interface ParseErrorDetail { source: "latex" | "paste"; input: string; message: string }
 
@@ -29,7 +34,7 @@ let uid = 0;
 export class MathInputElement extends HTMLElement {
   static readonly observedAttributes = [
     "subject", "latex", "placeholder", "label", "aria-label", "readonly", "disabled", "autoreplace",
-    "submit-on-enter", "theme", "math-font",
+    "submit-on-enter", "theme", "math-font", "level", "keypad", "keypad-container",
   ];
 
   readonly #editor: Editor;
@@ -41,6 +46,14 @@ export class MathInputElement extends HTMLElement {
   #dragging = false;
   #built = false;
   #pendingLatex: string | null = null;
+  #keypad: Keypad | null = null;
+  #keypadOpen = false;
+  #keypadTouched = false;
+  #customLayout: KeypadLayout | KeypadPatch | null = null;
+  #toggle: HTMLButtonElement | null = null;
+  #focusHandlers: { onFocusIn: (e: FocusEvent) => void; onFocusOut: (e: FocusEvent) => void } | null = null;
+  #resize: ResizeObserver | null = null;
+  #coarse: MediaQueryList | null = null;
 
   constructor() {
     super();
@@ -55,6 +68,7 @@ export class MathInputElement extends HTMLElement {
 
   connectedCallback(): void {
     if (!this.#built) this.#build();
+    this.#setupKeypad();
     if (this.#pendingLatex !== null) {
       const latex = this.#pendingLatex;
       this.#pendingLatex = null;
@@ -65,6 +79,11 @@ export class MathInputElement extends HTMLElement {
 
   disconnectedCallback(): void {
     this.#live?.cancel();
+    this.#resize?.disconnect();
+    this.#resize = null;
+    this.#coarse?.removeEventListener("change", this.#onPointerChange);
+    // A keypad rendered into a host container must not outlive the element.
+    if (this.#keypad && !this.contains(this.#keypad.el)) this.#keypad.el.remove();
   }
 
   attributeChangedCallback(name: string, _old: string | null, value: string | null): void {
@@ -73,8 +92,19 @@ export class MathInputElement extends HTMLElement {
         const s = (value ?? "maths") as Subject;
         this.#editor.setSubject(SUBJECTS.has(s) ? s : "maths");
         this.dataset.subject = this.#editor.subject;
+        this.#refreshKeypad();
         break;
       }
+      case "level":
+        this.#refreshKeypad();
+        break;
+      case "keypad":
+        this.#keypadTouched = false;
+        this.#updateKeypadVisibility();
+        break;
+      case "keypad-container":
+        this.#placeKeypad();
+        break;
       case "latex":
         if (value === null) break;
         if (!this.#built) this.#pendingLatex = value;
@@ -87,6 +117,10 @@ export class MathInputElement extends HTMLElement {
       case "math-font":
         if (value) this.style.setProperty("--mi-font-math", value);
         else this.style.removeProperty("--mi-font-math");
+        break;
+      case "submit-on-enter":
+        this.#refreshKeypad();
+        if (this.#built) this.#syncAttributes();
         break;
       default:
         if (this.#built) this.#syncAttributes();
@@ -137,6 +171,7 @@ export class MathInputElement extends HTMLElement {
     r.tabIndex = this.readOnly ? -1 : 0;
     this.toggleAttribute("data-readonly", this.readOnly);
     this.toggleAttribute("data-disabled", this.disabled);
+    this.#applyKeypadOpen();
     this.#render();
   }
 
@@ -179,16 +214,23 @@ export class MathInputElement extends HTMLElement {
     receiver.addEventListener("copy", (e) => this.#copy(e, false));
     receiver.addEventListener("cut", (e) => this.#copy(e, true));
     receiver.addEventListener("paste", (e) => this.#paste(e));
-    receiver.addEventListener("focus", () => {
+    // Focus counts as "in the component" anywhere inside it, including the keypad.
+    const within = (t: EventTarget | null) => t instanceof Node && (this.contains(t) || !!this.#keypad?.el.contains(t));
+    const onFocusIn = (e: FocusEvent) => {
+      if (within(e.relatedTarget)) return;
       this.#valueAtFocus = JSON.stringify(this.#editor.document);
       this.toggleAttribute("data-focused", true);
       this.#render();
-    });
-    receiver.addEventListener("blur", () => {
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (within(e.relatedTarget)) return;
       this.toggleAttribute("data-focused", false);
       this.#render();
       if (JSON.stringify(this.#editor.document) !== this.#valueAtFocus) this.#emit("change");
-    });
+    };
+    this.addEventListener("focusin", onFocusIn);
+    this.addEventListener("focusout", onFocusOut);
+    this.#focusHandlers = { onFocusIn, onFocusOut };
 
     field.addEventListener("pointerdown", (e) => {
       if (!this.#editable() || e.button !== 0) return;
@@ -265,6 +307,144 @@ export class MathInputElement extends HTMLElement {
         this.#dispatch("parse-error", detail);
       } else throw err;
     }
+  }
+
+  // ------------------------------------------------------------ keypad
+
+  #layout(): KeypadLayout {
+    const level = this.getAttribute("level") as Level | null;
+    const preset = keypadPreset(this.#editor.subject, level && LEVELS.has(level) ? level : "gcse-higher");
+    const custom = this.#customLayout;
+    if (!custom) return preset;
+    return "numberPad" in custom ? custom : applyKeypadPatch(preset, custom);
+  }
+
+  #keypadMode(): KeypadMode {
+    const m = this.getAttribute("keypad");
+    return m === "always" || m === "never" || m === "collapsed" ? m : "auto";
+  }
+
+  #setupKeypad(): void {
+    if (this.#keypad || this.readOnly) return;
+    this.#keypad = new Keypad(this.#layout(), {
+      run: (key) => {
+        const ui = applyKey(this.#editor, key);
+        if (ui === "submit") { this.#submit(); return null; }
+        if (ui === "keypad-toggle") { this.#setKeypadOpen(!this.#keypadOpen); return null; }
+        return ui;
+      },
+      submitEnabled: () => this.hasAttribute("submit-on-enter"),
+      refocus: () => this.#receiver?.focus({ preventScroll: true }),
+      insertElement: (symbol) => { this.#editor.insert({ t: "element", v: symbol }); },
+    });
+    this.#keypad.el.addEventListener("focusin", (e) => this.#focusHandlers?.onFocusIn(e));
+    this.#keypad.el.addEventListener("focusout", (e) => this.#focusHandlers?.onFocusOut(e));
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "mi-keypad-toggle";
+    toggle.append(icon("keypad"));
+    toggle.addEventListener("pointerdown", (e) => e.preventDefault());
+    toggle.addEventListener("click", () => {
+      this.#keypadTouched = true;
+      this.#setKeypadOpen(!this.#keypadOpen);
+      this.#receiver?.focus({ preventScroll: true });
+    });
+    this.#toggle = toggle;
+    this.append(toggle);
+    this.#coarse = typeof matchMedia === "function" ? matchMedia("(pointer: coarse)") : null;
+    this.#coarse?.addEventListener("change", this.#onPointerChange);
+    if (typeof ResizeObserver === "function") {
+      // Deferred and width-only, so re-laying out the keypad cannot loop the observer.
+      let lastWidth = -1;
+      let frame = 0;
+      this.#resize = new ResizeObserver((entries) => {
+        const width = Math.round(entries[0]?.contentRect.width ?? 0);
+        if (width === lastWidth) return;
+        lastWidth = width;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => this.#updateForm());
+      });
+      this.#resize.observe(this);
+    }
+    this.#placeKeypad();
+    this.#refreshKeypad();
+    this.#updateForm();
+    this.#updateKeypadVisibility();
+  }
+
+  readonly #onPointerChange = () => {
+    this.#updateForm();
+    this.#updateKeypadVisibility();
+  };
+
+  #refreshKeypad(): void {
+    if (!this.#keypad) return;
+    this.#keypad.setLabel(`${SUBJECT_NAMES[this.#editor.subject]} keypad`);
+    this.#keypad.setLayout(this.#layout());
+  }
+
+  #placeKeypad(): void {
+    const kp = this.#keypad;
+    if (!kp) return;
+    const id = this.getAttribute("keypad-container");
+    const target = id ? document.getElementById(id) : null;
+    (target ?? this).append(kp.el);
+  }
+
+  #updateForm(): void {
+    const width = this.clientWidth || this.#keypad?.el.parentElement?.clientWidth || 0;
+    if (!width) return; // not laid out yet; the resize observer will call again
+    const coarse = this.#coarse?.matches ?? false;
+    const form: FormFactor = width < 600 ? "phone" : coarse || width < 1024 ? "tablet" : "desktop";
+    this.dataset.form = form;
+    this.#keypad?.setForm(form);
+  }
+
+  #updateKeypadVisibility(): void {
+    if (!this.#keypad) return;
+    const mode = this.#keypadMode();
+    const coarse = this.#coarse?.matches ?? false;
+    if (!this.#keypadTouched) {
+      this.#keypadOpen = mode === "always" || (mode === "auto" && coarse);
+    }
+    if (mode === "never") this.#keypadOpen = false;
+    if (this.#toggle) this.#toggle.hidden = mode === "never" || mode === "always";
+    this.#applyKeypadOpen();
+  }
+
+  #setKeypadOpen(open: boolean): void {
+    if (open === this.#keypadOpen) return;
+    this.#keypadOpen = open;
+    this.#applyKeypadOpen();
+    this.#dispatch("keypad-toggle", { open });
+  }
+
+  #applyKeypadOpen(): void {
+    const open = this.#keypadOpen && !this.readOnly && !this.disabled;
+    if (this.#keypad) this.#keypad.el.hidden = !open;
+    this.dataset.keypad = open ? "open" : "closed";
+    if (this.#toggle) {
+      this.#toggle.setAttribute("aria-pressed", String(open));
+      this.#toggle.setAttribute("aria-label", open ? "Hide keypad" : "Show keypad");
+      this.#toggle.title = open ? "Hide keypad" : "Show keypad";
+    }
+    // With the on-screen keypad in use on a touch device, keep the OS keyboard away (spec §7.5).
+    const coarse = this.#coarse?.matches ?? false;
+    this.#receiver?.setAttribute("inputmode", open && coarse ? "none" : "text");
+  }
+
+  /** Replace the keypad (a full layout) or adjust the preset (a patch), spec §8.4. */
+  get keypadLayout(): KeypadLayout { return this.#layout(); }
+  set keypadLayout(layout: KeypadLayout | KeypadPatch | null) {
+    this.#customLayout = layout;
+    this.#refreshKeypad();
+  }
+
+  /** Open or close the keypad from the host. */
+  get keypadOpen(): boolean { return this.#keypadOpen; }
+  set keypadOpen(open: boolean) {
+    this.#keypadTouched = true;
+    this.#setKeypadOpen(open);
   }
 
   // ------------------------------------------------------------ render

@@ -146,9 +146,11 @@ describe("<math-input>", () => {
     const el = mount();
     const onChange = vi.fn();
     el.addEventListener("change", onChange);
-    receiver(el).dispatchEvent(new FocusEvent("focus"));
+    receiver(el).focus();
+    expect(el.hasAttribute("data-focused")).toBe(true);
     typeText(el, "5");
-    receiver(el).dispatchEvent(new FocusEvent("blur"));
+    receiver(el).blur();
+    expect(el.hasAttribute("data-focused")).toBe(false);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 

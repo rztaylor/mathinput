@@ -25,3 +25,8 @@ All notable changes to MathInput are recorded here. The format follows
   hidden receiver, typed events, a debounced spoken live region, and a
   default stylesheet of `--mi-*` tokens with light and dark themes.
 - Demo playground with a MathInput-versus-KaTeX gallery of every golden case.
+- Keypad: presets for maths, chemistry and physics at GCSE Foundation, GCSE
+  Higher and A-level; keys labelled with the expression they insert; an
+  orange corner marks keys with more options (long press, right-click or
+  Alt+ArrowDown); phone, tablet and desktop layouts; periodic table;
+  host patches and `keypad-container` placement.

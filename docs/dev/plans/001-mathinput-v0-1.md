@@ -221,6 +221,13 @@ after a comma.
 suite passes, and a manual pass on a real iPad and Android phone confirms
 tap latency and no OS keyboard.
 
+**Status (27 Sep 2026): done except the manual real-device pass** (needs a
+person with an iPad and an Android phone). Presets and patches are tested in
+core (24 tests); the UI has 14 jsdom tests and 6 Playwright tests × 3 form
+factors, including long-press slide-to-pick, bracketing existing work by
+keys, the periodic table and axe. Found and fixed a circular sizing loop
+(the keypad could widen its own container).
+
 ---
 
 ## Phase 6 — Subject behaviour and accessibility (2 days)

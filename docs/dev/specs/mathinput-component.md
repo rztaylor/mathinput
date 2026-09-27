@@ -184,6 +184,7 @@ placeholder box.
 | `autoreplace` | boolean | `true` | Hardware keyboard shortcuts such as `sqrt` → √ (§7.5). |
 | `variables` | `string` (comma list) | `"x,y,n,t"` (maths) | Letters offered on the primary key of the navigation row. |
 | `theme` | `"light" \| "dark" \| "auto"` | `"auto"` | Selects the built-in token set. Ignored if the host supplies its own tokens. |
+| `keypadOpen` (property) | boolean | per `keypad` | Open or close the keypad from the host. |
 | `math-font` | `string` | `"STIX Two Text"` | Family name for the rendered expression; the host loads the font. |
 
 ### 4.2 Events
@@ -629,14 +630,17 @@ Hosts can place the keypad in their own container (`keypad-container`) to
 implement a bottom sheet or a side panel.
 
 Touch targets are at least 44×44 CSS px on phone and tablet, 40 px on
-desktop. Keys use `touch-action: manipulation` and respond on `pointerdown`
-without waiting for click, with a 120 ms pressed state.
+desktop. Keys use `touch-action: manipulation`, show the pressed state on
+`pointerdown` and act on `pointerup` over the key (sliding off cancels), with
+no click delay. Pointer interaction never moves focus out of the field.
+Form factor is decided from the component's own width (never the page's):
+the keypad is `contain: inline-size`, so it cannot widen its container.
 
 ### 8.2 Tabs
 
 | Tab | Maths | Chemistry | Physics |
 |---|---|---|---|
-| `123` | digits, operators, fraction, power, root, `(` and `)` as separate keys (pair and `[ ]` as variants), = | digits, fraction, subscript, charge, arrow | as maths |
+| `123` | digits, `(` `)` as separate keys (pair, `[`, `{`, modulus as variants), × (÷, · as variants), fraction (mixed number as variant), − (±), power (², ³, ⁻¹), =, (≈, ≠, ≡), +, √ (∛, ⁿ√) | digits, fraction, subscript, charge, arrow | as maths |
 | Algebra `x²` | variables, powers, roots, modulus, vector, relations, ±, π, recurring, comma, or, and | — | as maths |
 | Functions `f(x)` | trig, inverse trig, ln, log, log base, e^x, °, !, d/dx, ∫, Σ, f(x), ∞ | — | trig, °, ×10ⁿ |
 | Greek `αβγ` | common Greek | — | common Greek |
@@ -645,9 +649,17 @@ without waiting for click, with a 120 ms pressed state.
 | Symbols | — | arrows, +, state symbols, charges, e⁻, `(` `)` `[` `]` as single keys, ·, ↑, Δ, = | — |
 | Units | — | — | SI and accepted units, `/`, ⁻¹, ×10ⁿ |
 
-`level` trims the set: Foundation hides inverse trig, Σ, ∫, d/dx, vectors;
-Higher hides Σ, ∫, d/dx; A-level shows all and adds `e`, `ln`, accents,
-`sec cosec cot`, matrices (2×2) and `≡`.
+`level` trims the set: Foundation hides column vectors; Foundation and Higher
+hide logarithms, `e`, eˣ, ∞, d/dx, ∫, Σ, vector arrows, hats, `sec cosec
+cot`, `∴` and `≡` (GCSE has no logarithms or calculus); A-level shows all.
+Inverse trig is available at every level (GCSE Foundation uses it).
+
+The navigation row is: a subject key (maths: `x` with other letters as
+variants; chemistry: `(aq)` with other states; physics: ×10ⁿ), ◀, ▶, ⌫, and
+↵ — replaced by a "next box" key (⇥) when `submit-on-enter` is not set.
+
+`keypadPreset(subject, level)` returns the layout; the element decides
+placement per form factor.
 
 ### 8.3 Keys
 
@@ -684,13 +696,18 @@ drawn with a solid border in `--mi-key-placeholder-active` so the learner can
 predict where typing continues.
 
 **Variants (hold for options).** A key with `variants` shows a visible
-indicator: a filled triangle in the top-right corner in
-`--mi-key-variant-indicator` (default: the accent colour) plus, on hover, a
-tooltip "Hold for more". Long press (≥ 400 ms), right-click, or `ArrowUp`
-while the key is focused opens a small menu above the key with the key
-itself and its variants; tapping outside closes it. The menu is `role="menu"`
-with arrow-key navigation. The indicator's shape and colour are tokens so a
-host can use a corner dot, an underline or a different colour.
+indicator: a filled corner triangle in `--mi-key-variant-indicator` (default
+orange, distinct from the blue template keys) plus a "Hold for more options"
+tooltip. Long press (≥ 400 ms, then slide to a variant and release),
+right-click, or from the keyboard Alt+ArrowDown, Shift+F10 or the context-menu
+key opens a menu above the key with the key itself and its variants; tapping
+outside or Escape closes it. The menu is `role="menu"` with arrow-key
+navigation. The indicator shape is set with `data-variant-indicator="dot"` or
+`"bar"` on the element (default triangle); its colour is the token.
+
+**Keyboard in the keypad.** Keys use roving focus: one tab stop per grid,
+arrow keys and Home/End move between keys, Enter/Space activate. Tabs are a
+`tablist` with arrow-key switching.
 
 ### 8.4 Custom layouts
 
@@ -799,7 +816,14 @@ for operators, relations, functions, symbols and constants, `data-name`;
 `data-unary`, `data-upright`, `data-greek`), `mi-fn__inverse`, `mi-keypad`,
 `mi-tabs`, `mi-tab`, `mi-tab--selected`, `mi-panel`, `mi-key` (with
 `data-kind`, `data-has-variants`), `mi-key--pressed`, `mi-variants`,
-`mi-sheet`, `mi-hint`.
+`mi-sheet`, `mi-hint`, `mi-keypad-toggle`, `mi-keypad` (`data-form`),
+`mi-keypad__side`, `mi-keypad__main`, `mi-keypad__numbers`, `mi-keypad__nav`,
+`mi-grid`, `mi-panel`, `mi-tabs`, `mi-tab`, `mi-tab--selected`, `mi-key`
+(`data-key-id`, `data-kind`, `data-has-variants`, `data-wide`),
+`mi-key--pressed`, `mi-key__label`, `mi-key__expr`, `mi-key__more`,
+`mi-variants`, `mi-icon`, `mi-sheet__head`, `mi-sheet__title`,
+`mi-sheet__close`, `mi-sheet__scroll`, `mi-periodic`, `mi-periodic__cell`
+(`data-nonmetal`).
 
 ### 10.3 Tokens
 
