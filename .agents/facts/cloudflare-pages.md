@@ -14,8 +14,14 @@
   security headers and a strict CSP (no third-party hosts).
 - Local preview: `npx vite preview --config site/vite.config.ts` (or the
   `site` entry in `.claude/launch.json`).
-- Status (27 Sep 2026): site and workflow prepared. Not yet live — waiting
-  for: Cloudflare account access, Pages project and custom domain, a GitHub
-  remote with the `Live` environment and secret, and a first push to `release`.
-- Decision needed: Cloudflare account ID and the GitHub repository
-  (`owner/name`).
+- Repository: `rztaylor/mathinput` (public). Account: the single account of
+  the wrangler login; its ID lives only in the `CLOUDFLARE_ACCOUNT_ID` variable.
+- Created with `wrangler pages project create --force`: wrangler 4.142 tries
+  to route new Pages projects to Workers and fails in this monorepo. `--force`
+  was needed only for creation; `pages deploy` works without it.
+- Status (27 Sep 2026): project created; first production deployment
+  uploaded locally from commit b105245 and live at
+  https://mathinput.pages.dev (headers verified, no CSP errors).
+  Pending: custom domain `mathinput.rztaylor.uk` (wrangler cannot attach it;
+  add in the dashboard), the `Live` environment with its secret and
+  variable, and the first CI deployment from `release`.
