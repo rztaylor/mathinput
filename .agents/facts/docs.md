@@ -1,6 +1,8 @@
 # Documentation facts
 
-- `README.md`: orientation, install, quick start, workspace scripts.
+- `README.md`: orientation, screenshots, install, quick start, workspace
+  scripts, About. Screenshots live in `docs/images/` and are regenerated with
+  `npm run screenshots` (needs `npm run build:site`) after visible UI changes.
 - `CHANGELOG.md`: curated, Keep a Changelog headings, `Unreleased` section.
 - `docs/dev/specs/mathinput-component.md`: the authoritative component
   contract. Section numbers are cited in code comments and tests; do not

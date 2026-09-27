@@ -24,7 +24,8 @@
     "dev": "npm run dev -w @mathinput/element",
     "size": "node scripts/size.mjs",
     "site": "npm run dev -w @mathinput/site",
-    "build:site": "npm run build -w @mathinput/site"
+    "build:site": "npm run build -w @mathinput/site",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

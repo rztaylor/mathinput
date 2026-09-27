@@ -11,6 +11,19 @@ custom element) with a React wrapper. The keypad offers every key for the
 subject by default; trim it to a course with topic tags, or use an optional
 curriculum preset such as `@mathinput/presets-uk`.
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/editor-light.png" alt="MathInput in light mode: the quadratic formula in the field above the maths keypad, with its LaTeX, text and spoken forms below"></td>
+    <td width="50%"><img src="docs/images/editor-dark.png" alt="MathInput in dark mode: the chemical equation 2H₂ + O₂ → 2H₂O in the field above the chemistry keypad, with its LaTeX, text and spoken forms below"></td>
+  </tr>
+  <tr>
+    <td align="center">Maths, light mode</td>
+    <td align="center">Chemistry, dark mode</td>
+  </tr>
+</table>
+
+Try it live at [mathinput.pages.dev](https://mathinput.pages.dev).
+
 > Status: in development (pre-release). See the
 > [component spec](docs/dev/specs/mathinput-component.md) and the
 > [implementation plan](docs/dev/plans/001-mathinput-v0-1.md).
@@ -62,6 +75,7 @@ npm install
 npm run check         # lint, typecheck, unit tests, build
 npm run test:browser  # Playwright: rendering, keypad, axe (Chromium)
 npm run dev           # demo playground
+npm run screenshots   # regenerate the README images (after npm run build:site)
 ```
 
 Repository conventions for contributors and agents are in
