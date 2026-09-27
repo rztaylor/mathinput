@@ -82,11 +82,16 @@ desktop projects), axe-core, changesets, GitHub Actions CI.
 3. `validateDocument` (structural, no external schema library) and
    `migrateDocument` (identity for v1, with the hook in place).
 4. `toLatex` with options; `toText`; `toSpoken`; `toMathML`.
-5. Golden test harness: `tests/golden/*.json` entries of the form
-   `{ name, subject, tree, latex, text, spoken }`. Populate with every item
-   in SPEC §9 (≈ 90 cases). One test per format asserts equality.
+5. Golden test harness: `tests/golden/cases.ts` entries of the form
+   `{ name, doc, latex, text, spoken }`, trees written with the builders.
+   One test per format asserts equality.
 6. Check every golden LaTeX string renders in KaTeX + mhchem without
-   warnings (Node script using katex's `renderToString` in `strict` mode).
+   warnings (a Vitest test using `renderToString` in `strict` mode).
+
+**Status (27 Sep 2026): done.** 86 golden cases across maths, chemistry and
+physics; MathML checked for well-formedness only. Remaining §9 items to add
+as golden cases when their keys land: binomial ⁿCᵣ, `fg(x)`, 2×2 matrix
+determinants, reaction-arrow conditions (v1.1).
 
 **Done when** golden tests pass for all §9 items and the KaTeX check is
 clean.

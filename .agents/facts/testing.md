@@ -6,10 +6,13 @@
   `npm run check` = `lint` + `typecheck` + `test` + `build`.
 - Core tests: unit tests next to the code they cover
   (`packages/core/tests/**/*.test.ts`), golden notation cases in
-  `packages/core/tests/golden/`, property/fuzz tests for editor invariants.
+  `packages/core/tests/golden/cases.ts` (TypeScript, built with the tree
+  builders), property/fuzz tests (fast-check) for editor invariants.
   Core tests run in Node with no DOM.
-- KaTeX render check: `npm run test:katex` renders every golden LaTeX string
-  with KaTeX + mhchem in strict mode; KaTeX is a dev dependency only.
+- KaTeX render check: `packages/core/tests/golden/katex.test.ts` renders
+  every golden LaTeX string with KaTeX + mhchem in strict mode as part of
+  `npm test` (`npm run test:katex` runs it alone). KaTeX is a dev dependency
+  only.
 - Element tests: Vitest + jsdom for behaviour; Playwright (Chromium, WebKit,
   Firefox; phone, tablet and desktop projects) for rendering, touch and axe
   checks — `npm run test:browser`. Playwright starts its own server on a free

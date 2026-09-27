@@ -102,9 +102,9 @@ more child rows). Every node has a `t` discriminator.
 | `var` | a single letter, Latin or Greek | A variable. Rendered italic (upright for capital Greek). |
 | `const` | `pi` `e` `i` `infinity` | Named constants. |
 | `op` | `plus` `minus` `times` `cdot` `div` `slash` `pm` `mp` | Binary or unary operators. |
-| `rel` | `eq` `neq` `lt` `gt` `le` `ge` `approx` `equiv` `propto` `to` `equilibrium` `implies` `iff` | Relations. Arrows for chemistry are relations. |
+| `rel` | `eq` `neq` `lt` `gt` `le` `ge` `approx` `equiv` `propto` `to` `equilibrium` `implies` `iff` `ratio` | Relations. Arrows for chemistry are relations; `ratio` is the colon in `3 : 2`. |
 | `fn` | `sin` `cos` `tan` `arcsin` `arccos` `arctan` `sec` `cosec` `cot` `ln` `log` `exp` | Named functions, rendered upright. |
-| `sym` | `degree` `factorial` `percent` `comma` `prime` `ellipsis` `uparrow` `downarrow` `delta` | Standalone symbols. |
+| `sym` | `degree` `factorial` `percent` `comma` `prime` `ellipsis` `uparrow` `downarrow` `delta` `therefore` | Standalone symbols. |
 | `text` | any short string | Upright words between expressions: `or`, `and`, `where`. |
 | `unit` | SI or accepted unit symbol from the unit table (§9.3) | A unit. Rendered upright with a thin space before it. |
 | `element` | a chemical element symbol | Rendered upright. |
@@ -285,8 +285,10 @@ for all editing behaviour.
 
 ## 6. Output formats
 
-All serialisers are pure functions of the tree and are covered by golden-file
-tests (`tests/golden/*.json`), one entry per notation in §9.
+All serialisers are pure functions of the tree and are covered by golden
+tests (`packages/core/tests/golden/cases.ts`, trees written with the
+builders), one entry per notation in §9. Every golden LaTeX string is also
+rendered with KaTeX + mhchem in strict mode.
 
 ### 6.1 LaTeX
 
@@ -312,7 +314,10 @@ Rules:
   immediately followed by a numeric fraction.
 - Powers and indices: `x^{2}`, `x_{n}`, `x_{n}^{2}`. Braces always present.
 - Roots: `\sqrt{…}`, `\sqrt[3]{…}`.
-- Units: `\,\mathrm{m\,s^{-2}}`. Degrees Celsius `^{\circ}\mathrm{C}`.
+- Units: each unit is `\,\mathrm{…}` with its own script: `3.0\,\mathrm{m}\,\mathrm{s}^{-2}`.
+  Ohms `\Omega`, micro `\mathrm{\mu m}`, degrees Celsius `{}^{\circ}\mathrm{C}`.
+- Spacing: a space follows a control word only before a letter or digit
+  (`\times 3`, `\pm\sqrt{…}`).
 - Text words: `\text{ or }` with surrounding spaces.
 - Recurring: `0.\dot{3}`, `0.\dot{1}\dot{2}` (dot on first and last digit of
   the recurring block).
@@ -322,11 +327,14 @@ Rules:
   learner, not generated), `\sum_{r=1}^{n}`.
 - Empty rows: `\square` by default; `{}` with `placeholder: "empty"`; throws
   with `"throw"`.
-- **Chemistry**: the whole expression is wrapped `\ce{…}` using mhchem
+- **Chemistry**: when the document contains chemistry (an element, state
+  symbol or reaction arrow), the whole expression is wrapped `\ce{…}` using mhchem
   syntax: `2H2 + O2 -> 2H2O`, `Mg(s) + 2HCl(aq) -> MgCl2(aq) + H2(g)`,
   `SO4^{2-}`, `^{14}_{6}C`, `CuSO4*5H2O`, `<=>` for equilibrium, `^` for
-  gas evolved. If the document mixes a chemistry equation with a maths
-  expression (rare), maths parts are emitted with `$…$` inside `\ce`.
+  gas evolved. Maths parts inside a chemistry expression (functions,
+  fractions, Greek letters) are emitted as `$…$` inside `\ce`, e.g.
+  `\ce{pH = -$\log$[H^{+}]}`. A chemistry document with no chemistry in it
+  (such as `ΔH = −57 kJ mol⁻¹`) is written as ordinary maths LaTeX.
 - Output never contains a bare `$`; the host adds delimiters.
 
 ### 6.2 Linear text
@@ -335,29 +343,36 @@ A plain-ASCII form for logs, search, prompts and pasting into a calculator.
 It is also the input syntax of `fromText`.
 
 - `x = (-b +/- sqrt(b^2 - 4ac)) / (2a)`
-- `sin(30) = 1/2`, `log_2(8) = 3`, `3.0 m s^-2`, `0.(3)` recurring,
+- `sin 30 deg = 1/2`, `log_2 8 = 3`, `3.0 m s^-2`, `0.(3)` recurring,
   `vector(3, -4)`, `integral(0, 1, x^2 dx)`, `sum(r=1, n, r^2)`
 - Implicit multiplication is preserved as adjacency: `2ab`. Explicit `*`
   only where the learner used ×. Hosts that need unambiguous input for a CAS
   should use the tree.
+- Greek letters are written by name (`theta`), constants `pi`, `infinity`,
+  units in ASCII (`ohm`, `um`, `degC`).
+- A space separates a script or fraction from a following factor
+  (`x^2 y`, `log_2 8`, `1/2 mv^2`) and a number from a following word form
+  (`3 sqrt(5)`), so the text is never ambiguous.
 - Chemistry uses mhchem syntax without the `\ce{}` wrapper.
 - Placeholders are `?`.
 
 ### 6.3 Spoken
 
 English text for screen readers, following ClearSpeak conventions in
-simplified form.
+simplified form. Numbers stay as numerals so screen readers read them in the
+user's locale.
 
-- Simple fractions: "one over two"; complex: "fraction, x plus one, over, two,
-  end fraction".
+- Simple fractions: "1 over 2"; complex: "fraction, x plus 1, over, 2,
+  end fraction"; mixed numbers "1 and 1 over 2"; recurring "0.3 recurring".
 - Powers: "squared", "cubed", "to the power n"; complex exponents end with
   "end power".
 - Roots: "the square root of … end root".
 - Fences: "open bracket … close bracket"; modulus: "the modulus of …".
 - Relations and operators spoken in words; unary minus "negative".
-- Units by name: "three point zero metres per second squared".
-- Chemistry: element names, subscripts read as plain numbers ("H 2 O"),
-  charges "two plus", state symbols "aqueous". Arrow "reacts to give".
+- Units by name: "3.0 metres per second squared"; `m/s` is "metres per second".
+- Chemistry: element symbols letter by letter, subscripts as plain numbers
+  ("H 2 O", "M g C l 2"), charges "with charge 2 plus", state symbols
+  "aqueous", arrow "reacts to give", minus always "minus".
 - Placeholders: "blank".
 - Ghost brackets: spoken as the bracket followed by "not closed" (or "not
   opened"), so screen-reader users know a side is missing.
