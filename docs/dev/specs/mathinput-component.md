@@ -62,7 +62,9 @@ three subjects (§9).
 `core` is usable on its own on a server or in tests, for example to convert a
 stored tree to LaTeX or spoken text.
 
-Bundle targets (min+gzip): core ≤ 25 kB, element ≤ 45 kB excluding fonts.
+Bundle targets (min+gzip, checked by `npm run size`): core ≤ 30 kB,
+element ≤ 20 kB, excluding fonts (rebalanced from 25/45 on 27 Sep 2026:
+measured 26.3/10.7 kB; the combined budget went down from 70 to 50 kB).
 No runtime dependencies.
 
 Browser support: last two versions of Chrome, Safari (macOS and iOS), Firefox,

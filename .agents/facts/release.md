@@ -8,7 +8,7 @@
   matching changelog section. Changesets may be introduced in plan phase 9.
 - Governance: `docs/dev/ops/release-governance.md`.
 - Release validation: `npm run check`, `npm run test:katex`,
-  `npm run test:browser`, bundle size check (core ≤ 25 kB, element ≤ 45 kB
+  `npm run test:browser`, `npm run size` (core ≤ 30 kB, element ≤ 20 kB
   min+gzip), manual screen-reader and real-device pass.
 - Artifacts: ESM + type declarations per package, plus
   `@mathinput/element/mathinput.css`. No signing or SBOM decided.
