@@ -19,3 +19,8 @@ export { Editor, type EditorOptions, type Selection, type ChangeEvent, type Comm
 export { rowAt, parentOf, samePath, comparePositions, emptySlotPositions, type Position, type Step } from "./editor/position.js";
 export { AUTOREPLACE_WORDS } from "./rules/autoreplace.js";
 export { createValue, type MathInputValue } from "./value.js";
+
+export { fromLatex } from "./parse/latex.js";
+export { fromText, looksLikeChemistry } from "./parse/text.js";
+export { ParseError } from "./parse/common.js";
+export { encodeClipboard, decodeClipboard, MIME_TREE, MIME_LATEX, MIME_TEXT, type ClipboardData } from "./parse/clipboard.js";

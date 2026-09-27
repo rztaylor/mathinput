@@ -584,6 +584,25 @@ Greek letters, `\infty`, `\degree`, `^\circ`. Anything else raises
 `ParseError` with the offending token and position. The parser exists for
 initial values and paste, not for arbitrary LaTeX.
 
+Also accepted: `\lvert…\rvert`, `\begin{bmatrix}`, compound units in one
+`\mathrm{m\,s^{-2}}`, `\left.`/`\right.` (read as a ghost side), and in
+`\ce{}` the charge shorthand `Na+`, `Cl-`. An unmatched bracket becomes a
+ghost side, as if typed.
+
+**Round-trip guarantee.** For every golden case, parsing its LaTeX or text
+and serialising again gives the identical string, and parsing its LaTeX
+gives the same spoken form. Trees may differ in equivalent ways (for example
+`e` as a variable or a constant; a separate `sub` and `sup` become one
+`subsup`).
+
+**Linear text specifics.** `fromText` reads units only in physics and
+chemistry documents, and only after a number, another unit or `unit/`. In a
+chemistry document the text is read with the mhchem rules when it looks like
+chemistry (arrows, state symbols, a digit after an element symbol, charges,
+isotopes, or only element symbols); otherwise it is read as maths. A spaced
+` / ` between single operands is division (÷); an unspaced `/`, or a spaced
+one next to a bracketed group, is a fraction.
+
 ### 7.8 Clipboard
 
 - Copy places three flavours: `application/x-mathinput+json` (tree),

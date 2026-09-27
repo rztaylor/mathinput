@@ -125,6 +125,11 @@ clean.
 **Done when** the command test suite (~150 cases) passes and the fuzz test
 runs 10 000 sequences clean.
 
+**Status (27 Sep 2026): done.** 101 behaviour tests; the property test runs
+2 × 2,500 sequences (maths and chemistry) per `npm test` and found two bugs,
+now fixed with regression tests. Single-bracket ghosts, the edge rule and
+selection-as-base for scripts were added to the spec while implementing.
+
 ---
 
 ## Phase 3 — Parsers and clipboard (2 days)
@@ -142,6 +147,11 @@ runs 10 000 sequences clean.
 **Done when** round-trips pass for all golden cases and a corpus of 30
 hand-written "messy" LaTeX inputs either parses correctly or fails with a
 clear error.
+
+**Status (27 Sep 2026): done.** Round trips are checked as re-serialisation
+identity (spec §7.7). 29 LaTeX variants, 7 mhchem variants, 7 clear-error
+cases, text and clipboard tests, and LaTeX and text parser fuzzing
+(3,000 runs each) pass.
 
 ---
 
