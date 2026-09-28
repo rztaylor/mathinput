@@ -183,9 +183,10 @@ cases, text and clipboard tests, and LaTeX and text parser fuzzing
 in the demo, and screenshot tests are recorded on Chromium, WebKit and
 Firefox.
 
-**Status (27 Sep 2026): done except** WebKit/Firefox (not installed locally),
-incremental row rendering (deferred to phase 9 measurement) and pixel
+**Status (27 Sep 2026): done except** incremental row rendering (deferred to phase 9 measurement) and pixel
 screenshot baselines (screenshots are saved and reviewed, not diffed yet).
+WebKit (desktop, iPad, iPhone 13) and Firefox (desktop) joined the
+Playwright projects and CI on 28 Sep 2026; every test passed unchanged.
 Focus, IME, dictation and clipboard go through a hidden textarea inside the
 field. The gallery was reviewed against KaTeX; fixes made for stacked
 scripts, optional-slot placeholders, the mean bar, italic d and unary minus
@@ -323,7 +324,9 @@ changelog):
 - Step 1: the performance pass on a mid-range Android device.
 - The manual real-device pass (iPad, Android; phase 5) and screen-reader
   pass (VoiceOver, NVDA; phase 6; see `docs/dev/guides/a11y-checklist.md`).
-- WebKit and Firefox in the automated browser runs (phase 4).
+
+WebKit and Firefox joined the automated browser runs after the release
+(phase 4).
 
 ---
 

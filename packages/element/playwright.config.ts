@@ -30,9 +30,15 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 60_000,
   },
+  // Project names are `<form factor>` (Chromium) or `<form factor>-<engine>`;
+  // tests branch on the form factor prefix, never on the engine.
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "tablet", use: { ...devices["Desktop Chrome"], viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: false } },
     { name: "phone", use: { ...devices["Pixel 7"] } },
+    { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "desktop-webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "tablet-webkit", use: { ...devices["iPad (gen 7)"] } },
+    { name: "phone-webkit", use: { ...devices["iPhone 13"] } },
   ],
 });
