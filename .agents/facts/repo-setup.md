@@ -7,4 +7,5 @@
 - Standard project foundation adopted: `AGENTS.md`, `README.md`,
   `CHANGELOG.md`, `.agents/facts/`, developer docs under `docs/dev/`.
 - Node ≥ 22; package manager npm (lockfile committed).
-- GitHub repository, CI hosting and publishing are not yet in scope.
+- GitHub repository `rztaylor/mathinput`; CI, site deploy and npm publishing
+  run in GitHub Actions (`.github/workflows/`).

@@ -13,6 +13,9 @@ All notable changes to MathInput are recorded here. The format follows
 - Automated browser tests (and CI) run in Firefox and WebKit as well as
   Chromium: desktop Firefox, and desktop Safari, iPad and iPhone 13 on
   WebKit.
+- Releases publish from GitHub Actions when a `v<version>` tag is pushed,
+  with npm provenance, and the GitHub release is created from this
+  changelog.
 
 ## [0.1.0] — 2026-09-28
 

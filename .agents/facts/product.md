@@ -27,5 +27,6 @@
 - Design principles: no input language for users; keys show exactly what
   they insert; default skin provided, fully reskinnable by tokens and classes;
   accessible by keyboard and screen reader.
-- Deferred (27 Sep 2026): npm publishing, GitHub remote and CI.
+- npm publishing, the GitHub remote and CI were deferred on 27 Sep 2026 and
+  are now in place (0.1.0, 28 Sep 2026).
 - Decision needed: hosting for the live demo.
