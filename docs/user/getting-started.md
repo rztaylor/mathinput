@@ -4,6 +4,15 @@ MathInput is a web component. It works in any framework, or none.
 
 ## Install
 
+The packages are published on npm under the `@mathinput` scope
+([`@mathinput/element`](https://www.npmjs.com/package/@mathinput/element),
+[`@mathinput/react`](https://www.npmjs.com/package/@mathinput/react),
+[`@mathinput/core`](https://www.npmjs.com/package/@mathinput/core),
+[`@mathinput/presets-uk`](https://www.npmjs.com/package/@mathinput/presets-uk)).
+They are released together at one version. Before 1.0 a minor version may
+change the API; npm's default range (`^0.1.0`) already stays within 0.1.x,
+and the changelog lists every change.
+
 ```bash
 npm install @mathinput/element
 # React apps also:

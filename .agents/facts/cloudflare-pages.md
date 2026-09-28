@@ -6,7 +6,7 @@
   (`.github/workflows/deploy-site.yml`). No Cloudflare Git integration.
 - Pages project: `mathinput`. Production branch: `release`.
 - Custom hostname: `mathinput.rztaylor.uk` (zone `rztaylor.uk`, Cloudflare DNS).
-- GitHub environment: `Live` (restrict to the `release` branch). Secret
+- GitHub environment: `Live`, restricted to the `release` branch. Secret
   `CLOUDFLARE_API_TOKEN` (account-level Cloudflare Pages Edit only); variable
   `CLOUDFLARE_ACCOUNT_ID`. Never commit either value.
 - Commands: install `npm ci`; checks `npm run check`; build
@@ -25,5 +25,6 @@
   https://mathinput.pages.dev still serves the same site. The first CI
   deployment was run 36329759079 (commit bcda047 on `release`); the `Live`
   environment has the `CLOUDFLARE_API_TOKEN` secret and the
-  `CLOUDFLARE_ACCOUNT_ID` variable. Recommended: restrict the `Live`
-  environment to the `release` branch (not yet done).
+  `CLOUDFLARE_ACCOUNT_ID` variable. The `Live` environment accepts
+  deployments from the `release` branch only (custom branch policy, set
+  28 Sep 2026).

@@ -6,6 +6,11 @@ All notable changes to MathInput are recorded here. The format follows
 
 ## Unreleased
 
+### Changed
+
+- The README, getting-started guide and website say the packages are on
+  npm, with links to each package.
+
 ## [0.1.0] — 2026-09-28
 
 First public release of `@mathinput/core`, `@mathinput/element`,
