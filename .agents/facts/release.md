@@ -1,6 +1,7 @@
 # Release facts
 
-- Maturity: pre-release (0.x). No compatibility promise before `1.0.0`, but
+- Maturity: 0.x. Latest release `0.1.0` (28 Sep 2026), on npm and as the
+  GitHub release `v0.1.0`. No compatibility promise before `1.0.0`, but
   the tree JSON `version` field is honoured from the first release (spec §14).
 - Versioning: SemVer; all four `@mathinput/*` packages release together at
   the same version, and internal dependencies use `^<version>`. Tags
@@ -13,8 +14,10 @@
   access (`publishConfig.access: public` in each package). Published
   packages: `@mathinput/core`, `@mathinput/presets-uk`, `@mathinput/element`,
   `@mathinput/react`. The website `@mathinput/site` is private.
-- Publishing: manual, from the maintainer's machine with their npm login and
-  OTP. A hosted publish workflow with provenance is a later decision.
+- Publishing: manual, from the maintainer's machine. npm requires 2FA and
+  confirms each `npm publish` in the browser, so the maintainer runs the
+  publish commands; an agent cannot complete them. New packages can take a
+  few minutes to appear in `npm view` (CDN caches the earlier 404). A hosted publish workflow with provenance is a later decision.
 - Package contents: `dist/`, `README.md` and `LICENSE` only (`files:
   ["dist"]`; npm adds README and LICENSE). `prepack` copies the root
   `LICENSE` into each package (the copies are gitignored). tsc-built

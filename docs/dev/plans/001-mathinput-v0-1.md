@@ -1,6 +1,6 @@
 # MathInput — Implementation Plan
 
-Companion to the spec [mathinput-component.md](../specs/mathinput-component.md). Status: active · 27 September 2026
+Companion to the spec [mathinput-component.md](../specs/mathinput-component.md). Status: active (0.1.0 released; manual checks outstanding) · 28 September 2026
 
 The plan is ordered so that every phase ends with something testable and
 the risky parts (editing engine, touch behaviour) are proved early. Phases 1
@@ -309,15 +309,21 @@ on submit and shows the Markdown payload.
 **Done when** the release is published and the demo is deployed for
 stakeholder review.
 
-**Status (28 Sep 2026): step 4 prepared, publish pending.** Steps 2 and 3 are
-covered by `npm run size` and the parser and editor fuzz tests. Step 4: README quick starts, per-package READMEs,
-MIT licence in every package, changelog section `0.1.0`, versions `0.1.0`,
-publint and a tarball consumer smoke test (Vite + React + TypeScript) all
-pass; `0.1.0` is published manually under the `@mathinput` npm scope (steps
-in `.agents/facts/release.md`). The site is deployed on Cloudflare Pages at
-https://mathinput.rztaylor.uk (not GitHub Pages). Not done: the mid-range
-Android performance pass (step 1) and the manual real-device and
-screen-reader passes, listed under Known limitations in the changelog.
+**Status (28 Sep 2026): released; manual checks outstanding.** `0.1.0` of
+all four packages is on npm under `@mathinput` (published manually; steps
+in `.agents/facts/release.md`), tagged `v0.1.0` with a GitHub release, and
+the site is live at https://mathinput.rztaylor.uk (Cloudflare Pages, not
+GitHub Pages). Steps 2 and 3 are covered by `npm run size` and the parser and
+editor fuzz tests; step 4 is done, and CI (`.github/workflows/ci.yml`) runs
+the release checks on every pull request.
+
+Outstanding before this plan closes (listed under Known limitations in the
+changelog):
+
+- Step 1: the performance pass on a mid-range Android device.
+- The manual real-device pass (iPad, Android; phase 5) and screen-reader
+  pass (VoiceOver, NVDA; phase 6; see `docs/dev/guides/a11y-checklist.md`).
+- WebKit and Firefox in the automated browser runs (phase 4).
 
 ---
 

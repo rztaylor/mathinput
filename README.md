@@ -24,22 +24,30 @@ curriculum preset such as `@mathinput/presets-uk`.
 
 Try it live at [mathinput.rztaylor.uk](https://mathinput.rztaylor.uk).
 
-> Status: in development (pre-release). See the
-> [component spec](docs/dev/specs/mathinput-component.md) and the
-> [implementation plan](docs/dev/plans/001-mathinput-v0-1.md).
-> A clickable [prototype](docs/dev/specs/prototype/mathinput-prototype.html)
-> shows the intended interaction.
+> Status: **0.1.0, published on npm.** Pre-1.0, so a minor version may
+> change the API; every change is listed in the [changelog](CHANGELOG.md),
+> along with known limitations (manual real-device and screen-reader
+> checks are still outstanding). The contract is the
+> [component spec](docs/dev/specs/mathinput-component.md).
 
 ## Packages
 
 | Package | Purpose |
 |---|---|
-| `@mathinput/core` | Expression tree, headless editor, serialisers and parsers. No DOM. |
-| `@mathinput/element` | The `<math-input>` custom element, keypad and default styles. |
-| `@mathinput/react` | React wrapper. |
-| `@mathinput/presets-uk` | Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level). |
+| [`@mathinput/core`](https://www.npmjs.com/package/@mathinput/core) | Expression tree, headless editor, serialisers and parsers. No DOM. |
+| [`@mathinput/element`](https://www.npmjs.com/package/@mathinput/element) | The `<math-input>` custom element, keypad and default styles. |
+| [`@mathinput/react`](https://www.npmjs.com/package/@mathinput/react) | React wrapper. |
+| [`@mathinput/presets-uk`](https://www.npmjs.com/package/@mathinput/presets-uk) | Optional UK curriculum keypads (GCSE Foundation, GCSE Higher, A-level). |
+
+All four are published on npm under the `@mathinput` scope and released
+together at the same version.
 
 ## Quick start
+
+```bash
+npm install @mathinput/element
+npm install @mathinput/react   # React apps also
+```
 
 ```html
 <script type="module">
