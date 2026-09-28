@@ -8,6 +8,8 @@
 - Remote: `origin` = https://github.com/rztaylor/mathinput (public). Push
   and pull requests happen only when the user asks. Never approve or merge
   on the user's behalf.
+- CI (`.github/workflows/ci.yml`) runs on pull requests and `main`. Branch
+  protection requiring it on `main` is recommended (set in GitHub settings).
 - `release` is the website production branch (Cloudflare Pages deploys on
   push). Update it only from reviewed `main`.
 - `.agents/skills` is a local symlink and is gitignored.

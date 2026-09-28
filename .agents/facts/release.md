@@ -26,9 +26,11 @@
 - Release check list:
   1. `npm run check`, `npm run test:katex`, `npm run test:browser`,
      `npm run size` (core ≤ 30 kB, element ≤ 20 kB, presets-uk ≤ 1 kB
-     min+gzip), `npm run lint:packages` (publint), `npm run build:site`.
-  2. `npm pack --dry-run -w <pkg>` for each package: only `dist/`, README,
-     LICENSE, package.json.
+     min+gzip), `npm run lint:packages` (publint), `npm run build:site`
+     — all run by CI (`.github/workflows/ci.yml`), which must be green.
+  2. `npm run check:pack`: each tarball holds only `dist/` (no tests),
+     README, LICENSE and package.json, and every `exports` target.
+     Review `npm pack --dry-run -w <pkg>` by eye before publishing.
   3. Consumer smoke test: install the `npm pack` tarballs into a fresh
      Vite + React + TypeScript app outside the repo; import
      `@mathinput/react`, `@mathinput/element/mathinput.css`,
