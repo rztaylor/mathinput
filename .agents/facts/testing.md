@@ -26,4 +26,9 @@
   tests save screenshots to `packages/element/test-results/` (gitignored).
 - Visible UI changes require screenshots at phone, tablet and desktop widths
   in light and dark themes, and axe with no violations.
+- CI: `.github/workflows/ci.yml` runs on every pull request and push to
+  `main` (ubuntu, Node 22): `npm run check`, `lint:packages` (publint),
+  `check:pack` (tarball contents), `size`, `build:site`, then
+  `test:browser` with Chromium installed by Playwright. Failed runs upload
+  `packages/element/test-results/`. Merge only when it is green.
 - No test may require network access or credentials.
