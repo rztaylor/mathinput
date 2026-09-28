@@ -16,10 +16,12 @@
 - Element tests: Vitest + jsdom for behaviour
   (`packages/element/tests/*.test.ts`); Playwright for rendering, clicks and
   axe — `npm run test:browser` (`packages/element/tests/browser/`, projects
-  `desktop`, `tablet`, `phone`, all Chromium). Playwright 1.63 uses the
-  locally cached Chromium; WebKit and Firefox are not installed yet
-  (decided 27 Sep 2026: not required at present). The
-  config picks a free port once and shares it with workers through
+  `desktop`, `tablet`, `phone` on Chromium; `desktop-firefox`;
+  `desktop-webkit`, `tablet-webkit` (iPad), `phone-webkit` (iPhone 13)).
+  Tests branch on the form-factor prefix of the project name, never on the
+  engine. Install the engines once with
+  `npx playwright install chromium firefox webkit`; `--project=<name>` runs
+  one project. The config picks a free port once and shares it with workers through
   `MI_PLAYWRIGHT_PORT`; set `PLAYWRIGHT_PORT` to reuse a running server.
 - Demo playground: `npm run dev` (Vite, `packages/element/demo/`), including a
   gallery of every golden case rendered by MathInput next to KaTeX. Browser
@@ -29,6 +31,6 @@
 - CI: `.github/workflows/ci.yml` runs on every pull request and push to
   `main` (ubuntu, Node 22): `npm run check`, `lint:packages` (publint),
   `check:pack` (tarball contents), `size`, `build:site`, then
-  `test:browser` with Chromium installed by Playwright. Failed runs upload
+  `test:browser` with Chromium, Firefox and WebKit installed by Playwright. Failed runs upload
   `packages/element/test-results/`. Merge only when it is green.
 - No test may require network access or credentials.

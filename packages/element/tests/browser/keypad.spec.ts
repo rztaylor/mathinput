@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 
 test("keypad opens automatically only on touch devices", async ({ page }, info) => {
   const host = page.locator("math-input[data-testid=maths]");
-  const expected = info.project.name === "desktop" ? "closed" : "open";
+  const expected = info.project.name.startsWith("desktop") ? "closed" : "open";
   await expect(host).toHaveAttribute("data-keypad", expected);
 });
 

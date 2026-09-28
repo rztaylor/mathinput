@@ -81,7 +81,7 @@ Requires Node 22 or later.
 ```bash
 npm install
 npm run check         # lint, typecheck, unit tests, build
-npm run test:browser  # Playwright: rendering, keypad, axe (Chromium)
+npm run test:browser  # Playwright: rendering, keypad, axe (Chromium, Firefox, WebKit)
 npm run dev           # demo playground
 npm run screenshots   # regenerate the README images (after npm run build:site)
 ```
