@@ -19,10 +19,11 @@
 - Created with `wrangler pages project create --force`: wrangler 4.142 tries
   to route new Pages projects to Workers and fails in this monorepo. `--force`
   was needed only for creation; `pages deploy` works without it.
-- Status (27 Sep 2026): live at https://mathinput.pages.dev. The first CI
-  deployment (run 36329759079, commit bcda047 on `release`) succeeded; the
-  `Live` environment has the `CLOUDFLARE_API_TOKEN` secret and the
-  `CLOUDFLARE_ACCOUNT_ID` variable. Pending: custom domain
-  `mathinput.rztaylor.uk` (wrangler cannot attach it; add in the dashboard,
-  which also creates the DNS record). The `Live` environment has no
-  branch restriction yet; restricting it to `release` is recommended.
+- Status (28 Sep 2026): live at https://mathinput.rztaylor.uk, the canonical
+  address used in the README, package manifests and site. The custom domain
+  is attached (added in the dashboard, which created the DNS record).
+  https://mathinput.pages.dev still serves the same site. The first CI
+  deployment was run 36329759079 (commit bcda047 on `release`); the `Live`
+  environment has the `CLOUDFLARE_API_TOKEN` secret and the
+  `CLOUDFLARE_ACCOUNT_ID` variable. Recommended: restrict the `Live`
+  environment to the `release` branch (not yet done).

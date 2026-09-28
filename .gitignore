@@ -13,3 +13,4 @@ test-results/
 .claude/worktrees/
 site/dist/
 .wrangler/
+packages/*/LICENSE

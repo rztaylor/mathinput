@@ -22,7 +22,7 @@ curriculum preset such as `@mathinput/presets-uk`.
   </tr>
 </table>
 
-Try it live at [mathinput.pages.dev](https://mathinput.pages.dev).
+Try it live at [mathinput.rztaylor.uk](https://mathinput.rztaylor.uk).
 
 > Status: in development (pre-release). See the
 > [component spec](docs/dev/specs/mathinput-component.md) and the
