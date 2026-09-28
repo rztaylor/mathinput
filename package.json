@@ -25,7 +25,8 @@
     "size": "node scripts/size.mjs",
     "site": "npm run dev -w @mathinput/site",
     "build:site": "npm run build -w @mathinput/site",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "lint:packages": "publint packages/core && publint packages/element && publint packages/react && publint packages/presets-uk"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -43,6 +44,7 @@
     "jsdom": "^30.1.1",
     "katex": "^0.18.9",
     "marked": "^18.0.14",
+    "publint": "^0.3.24",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",

@@ -13,4 +13,6 @@
   public contract (spec §4, §10.2, §10.3) that differs from the spec, or any
   network access by the packages.
 - Skipped checks are listed in the release notes with the reason and the risk.
-- Publishing is manual until a workflow and npm account are decided.
+- Publishing is manual, from the maintainer's machine, under the `@mathinput`
+  npm scope (steps in `.agents/facts/release.md`). A hosted workflow with
+  provenance may replace it later.

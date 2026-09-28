@@ -306,8 +306,18 @@ on submit and shows the Markdown payload.
 4. README with quick start for vanilla, React and Vite; changelog; MIT
    licence; publish `0.1.0` of the `@mathinput/*` packages.
 
-**Done when** the release is published and the demo is deployed (GitHub
-Pages) for stakeholder review.
+**Done when** the release is published and the demo is deployed for
+stakeholder review.
+
+**Status (28 Sep 2026): step 4 prepared, publish pending.** Steps 2 and 3 are
+covered by `npm run size` and the parser and editor fuzz tests. Step 4: README quick starts, per-package READMEs,
+MIT licence in every package, changelog section `0.1.0`, versions `0.1.0`,
+publint and a tarball consumer smoke test (Vite + React + TypeScript) all
+pass; `0.1.0` is published manually under the `@mathinput` npm scope (steps
+in `.agents/facts/release.md`). The site is deployed on Cloudflare Pages at
+https://mathinput.rztaylor.uk (not GitHub Pages). Not done: the mid-range
+Android performance pass (step 1) and the manual real-device and
+screen-reader passes, listed under Known limitations in the changelog.
 
 ---
 

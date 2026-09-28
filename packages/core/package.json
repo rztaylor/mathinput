@@ -1,6 +1,6 @@
 {
   "name": "@mathinput/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Expression tree, headless editor, serialisers and parsers for MathInput. No DOM.",
   "license": "MIT",
   "repository": {
@@ -8,16 +8,26 @@
     "url": "git+https://github.com/rztaylor/mathinput.git",
     "directory": "packages/core"
   },
-  "homepage": "https://mathinput.pages.dev",
+  "homepage": "https://mathinput.rztaylor.uk",
   "bugs": "https://github.com/rztaylor/mathinput/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "node ../../scripts/copy-license.mjs",
+    "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
