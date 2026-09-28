@@ -27,7 +27,8 @@
     "build:site": "npm run build -w @mathinput/site",
     "screenshots": "node scripts/screenshots.mjs",
     "lint:packages": "publint packages/core && publint packages/element && publint packages/react && publint packages/presets-uk",
-    "check:pack": "node scripts/check-pack.mjs"
+    "check:pack": "node scripts/check-pack.mjs",
+    "check:release": "node scripts/release-check.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

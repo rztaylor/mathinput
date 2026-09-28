@@ -13,6 +13,8 @@
   public contract (spec §4, §10.2, §10.3) that differs from the spec, or any
   network access by the packages.
 - Skipped checks are listed in the release notes with the reason and the risk.
-- Publishing is manual, from the maintainer's machine, under the `@mathinput`
-  npm scope (steps in `.agents/facts/release.md`). A hosted workflow with
-  provenance may replace it later.
+- Publishing runs in GitHub Actions (`.github/workflows/publish.yml`) when a
+  `v<version>` tag on `main` is pushed, under the `@mathinput` npm scope,
+  with npm trusted publishing and provenance (steps in
+  `.agents/facts/release.md`). Only the maintainer pushes release tags.
+  Manual publishing from the maintainer's machine is the fallback.
